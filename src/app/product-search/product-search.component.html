@@ -1,0 +1,48 @@
+<div class="product-search">
+  <div class="search-section">
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      (input)="onSearchChange()"
+      placeholder="Wyszukaj produkt..."
+      class="search-input"
+    />
+    
+    @if (searchResults().length > 0) {
+      <div class="search-results">
+        @for (product of searchResults(); track product.id) {
+          <div class="result-item" (click)="selectProduct(product)">
+            <span class="product-name">{{ product.name }}</span>
+            <span class="product-category">{{ product.category }}</span>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="custom-product-section">
+    @if (!showCustomForm()) {
+      <button type="button" class="add-custom-btn" (click)="showAddCustomForm()">
+        + Dodaj własny produkt
+      </button>
+    } @else {
+      <div class="custom-form">
+        <input
+          type="text"
+          [(ngModel)]="customProductName"
+          placeholder="Nazwa produktu"
+          class="custom-input"
+        />
+        <select [(ngModel)]="customProductCategory" class="custom-select">
+          @for (category of categories; track category) {
+            <option [value]="category">{{ category }}</option>
+          }
+        </select>
+        <div class="custom-actions">
+          <button type="button" class="btn-add" (click)="addCustomProduct()">Dodaj</button>
+          <button type="button" class="btn-cancel" (click)="cancelCustomProduct()">Anuluj</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

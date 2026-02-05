@@ -1,0 +1,112 @@
+<div class="shopping-lists-container">
+  <div class="header">
+    <div class="header-top">
+      <h1>Listy zakupów</h1>
+      <div class="header-actions">
+        <button
+          type="button"
+          class="btn-theme"
+          (click)="themeService.toggleTheme()"
+        >
+          @if (themeService.theme() === 'light') {
+            Tryb ciemny
+          } @else {
+            Tryb jasny
+          }
+        </button>
+        @if (authService.isAuthenticated()) {
+          <a [routerLink]="['/profile']" class="btn-profile">Profil</a>
+        } @else {
+          <a [routerLink]="['/login']" class="btn-login">Zaloguj się</a>
+        }
+      </div>
+    </div>
+    @if (authService.isAuthenticated()) {
+      <div class="tabs">
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab() === 'my'"
+          (click)="activeTab.set('my')"
+        >
+          Moje listy
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="activeTab() === 'shared'"
+          (click)="activeTab.set('shared')"
+        >
+          Udostępnione mi
+        </button>
+      </div>
+    }
+    @if (activeTab() === 'my' && !showCreateForm()) {
+      <button class="btn-create" (click)="showCreateFormToggle()">
+        + Nowa lista
+      </button>
+    }
+  </div>
+
+  @if (showCreateForm()) {
+    <div class="create-form">
+      <input
+        type="text"
+        [(ngModel)]="newListName"
+        placeholder="Nazwa listy"
+        class="list-name-input"
+        (keyup.enter)="createList()"
+        autofocus
+      />
+      <div class="form-actions">
+        <button class="btn-save" (click)="createList()">Utwórz</button>
+        <button class="btn-cancel" (click)="cancelCreate()">Anuluj</button>
+      </div>
+    </div>
+  }
+
+  @if (getCurrentLists().length === 0) {
+    <div class="empty-state">
+      @if (activeTab() === 'my') {
+        <p>Nie masz jeszcze żadnych list zakupów.</p>
+        <p>Utwórz nową listę, aby zacząć!</p>
+      } @else {
+        <p>Nie masz jeszcze żadnych udostępnionych list.</p>
+      }
+    </div>
+  } @else {
+    <div class="lists-grid">
+      @for (list of getCurrentLists(); track list.id) {
+        <div class="list-card" [routerLink]="['/list', list.id]">
+          <div class="list-header">
+            <h2>{{ list.name }}</h2>
+            @if (isSharedList(list)) {
+              <span class="shared-badge">Udostępnione</span>
+            }
+            @if (activeTab() === 'my') {
+              <button
+                class="btn-delete"
+                (click)="deleteList(list.id, $event)"
+                title="Usuń listę"
+              >
+                ×
+              </button>
+            }
+          </div>
+          <div class="list-info">
+            <p class="date">Utworzono: {{ list.createdAt | date:'short' }}</p>
+            <p class="products-count">
+              Produkty: {{ getPurchasedCount(list) }}/{{ getProductCount(list) }}
+            </p>
+          </div>
+          @if (getProductCount(list) > 0) {
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                [style.width.%]="(getPurchasedCount(list) / getProductCount(list)) * 100"
+              ></div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

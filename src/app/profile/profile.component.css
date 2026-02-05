@@ -1,0 +1,126 @@
+/* Mobile First Approach */
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+  min-height: 100vh;
+  color: var(--color-text-primary);
+}
+
+.profile-card {
+  background: var(--color-bg-elevated);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-back {
+  background: var(--color-accent);
+  color: var(--color-bg-elevated);
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.3s, transform 0.2s;
+  min-height: 44px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.btn-back:active {
+  background: var(--color-accent-strong);
+  transform: scale(0.98);
+}
+
+.profile-card h1 {
+  margin: 0 0 1.5rem 0;
+  color: var(--color-text-primary);
+  font-size: 1.75rem;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #eee;
+}
+
+.info-item:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.info-item label {
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.info-item span {
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  word-break: break-word;
+}
+
+.btn-logout {
+  padding: 0.875rem 1.5rem;
+  background: var(--color-danger);
+  color: var(--color-bg-elevated);
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  min-height: 44px;
+  width: 100%;
+  font-weight: 500;
+}
+
+.btn-logout:active {
+  background: var(--color-danger-strong);
+  transform: scale(0.98);
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  .profile-container {
+    padding: 2rem;
+  }
+
+  .profile-card {
+    padding: 2rem;
+  }
+
+  .profile-card h1 {
+    font-size: 2rem;
+  }
+
+  .info-item span {
+    font-size: 1.1rem;
+  }
+
+  .btn-logout {
+    width: auto;
+  }
+
+  .btn-logout:hover {
+    background: var(--color-danger-strong);
+  }
+
+  .btn-back:hover {
+    background: var(--color-accent-strong);
+  }
+}

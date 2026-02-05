@@ -1,0 +1,27 @@
+@if (user()) {
+  <div class="profile-container">
+    <div class="profile-card">
+      <button class="btn-back" [routerLink]="['/']">← Wróć</button>
+      <h1>Mój profil</h1>
+      
+      <div class="profile-info">
+        <div class="info-item">
+          <label>Email:</label>
+          <span>{{ user()!.email }}</span>
+        </div>
+        <div class="info-item">
+          <label>Nazwa użytkownika:</label>
+          <span>{{ user()!.username }}</span>
+        </div>
+        <div class="info-item">
+          <label>Data rejestracji:</label>
+          <span>{{ user()!.createdAt | date:'short' }}</span>
+        </div>
+      </div>
+
+      <button class="btn-logout" (click)="logout()">
+        Wyloguj się
+      </button>
+    </div>
+  </div>
+}

@@ -1,0 +1,57 @@
+<div class="login-container">
+  <div class="login-card">
+    <h1>Logowanie</h1>
+    
+    <div class="demo-info">
+      <p class="demo-info-title">🧪 Testowe konto:</p>
+      <p class="demo-info-credentials">
+        <strong>Email:</strong> demo&#64;test.pl<br>
+        <strong>Hasło:</strong> demo123
+      </p>
+    </div>
+    
+    @if (error()) {
+      <div class="error-message">{{ error() }}</div>
+    }
+
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
+          required
+          class="form-input"
+          placeholder="twoj@email.pl"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Hasło</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          required
+          class="form-input"
+          placeholder="Hasło"
+        />
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="isLoading()">
+        @if (isLoading()) {
+          Logowanie...
+        } @else {
+          Zaloguj się
+        }
+      </button>
+    </form>
+
+    <div class="register-link">
+      <p>Nie masz konta? <a [routerLink]="['/register']">Zarejestruj się</a></p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,148 @@
+@if (list()) {
+  <div class="list-detail-container">
+    <div class="header">
+      <button class="btn-back" [routerLink]="['/']">← Wróć do list</button>
+      <h1>{{ list()!.name }}</h1>
+      <div class="list-stats">
+        <span>{{ getPurchasedCount() }}/{{ getTotalCount() }} produktów</span>
+        @if (getTotalPrice() > 0) {
+          <span class="total-price">Szacowany koszt: {{ getTotalPrice() | number:'1.2-2' }} zł</span>
+        }
+      </div>
+      @if (isOwner()) {
+        <div class="share-section">
+          @if (!showShareForm()) {
+            <button class="btn-share" (click)="showShareForm.set(true)">Udostępnij listę</button>
+          } @else {
+            <div class="share-form">
+              <input
+                type="email"
+                [(ngModel)]="shareEmail"
+                placeholder="Email użytkownika"
+                class="share-input"
+              />
+              <div class="share-form-actions">
+                <button class="btn-share-submit" (click)="shareList()">Udostępnij</button>
+                <button class="btn-share-cancel" (click)="showShareForm.set(false)">Anuluj</button>
+              </div>
+              @if (shareError()) {
+                <div class="share-error">{{ shareError() }}</div>
+              }
+            </div>
+          }
+          @if (getSharedWith().length > 0) {
+            <div class="shared-with">
+              <p class="shared-label">Udostępnione dla:</p>
+              @for (email of getSharedWith(); track email) {
+                <div class="shared-item">
+                  <span>{{ email }}</span>
+                  <button class="btn-unshare" (click)="unshareList(email)" title="Cofnij udostępnienie">×</button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="product-search-section">
+      <app-product-search (productSelected)="onProductSelected($event)"></app-product-search>
+    </div>
+
+    <div class="controls">
+      <div class="control-row">
+        <div class="filter-control">
+          <label>Filtruj:</label>
+          <select [(ngModel)]="filterBy" (ngModelChange)="filterBy.set($event)">
+            <option value="all">Wszystkie</option>
+            <option value="purchased">Kupione</option>
+            <option value="notPurchased">Nie kupione</option>
+          </select>
+        </div>
+        <div class="sort-control">
+          <label>Sortuj:</label>
+          <select [(ngModel)]="sortBy" (ngModelChange)="sortBy.set($event)">
+            <option value="name">Nazwa</option>
+            <option value="category">Kategoria</option>
+            <option value="priority">Priorytet</option>
+            <option value="purchased">Status</option>
+          </select>
+        </div>
+      </div>
+      @if (getPurchasedCount() > 0) {
+        <button class="btn-uncheck-all" (click)="uncheckAllProducts()">
+          Odhacz wszystkie
+        </button>
+      }
+    </div>
+
+    <div class="products-list">
+      @if (getFilteredAndSortedProducts().length === 0) {
+        <div class="empty-state">
+          <p>Brak produktów w tej liście.</p>
+          <p>Dodaj produkty używając wyszukiwarki powyżej.</p>
+        </div>
+      } @else {
+        @for (product of getFilteredAndSortedProducts(); track product.id) {
+          <div class="product-item" [class.purchased]="product.isPurchased">
+            @if (editingProduct()?.id === product.id) {
+              <div class="product-edit-form">
+                <input type="text" [(ngModel)]="editingProduct()!.name" class="edit-input" />
+                <input type="number" [(ngModel)]="editingProduct()!.quantity" min="1" class="edit-input" />
+                <input type="number" [(ngModel)]="editingProduct()!.price" min="0" step="0.01" class="edit-input" placeholder="Cena" />
+                <select [(ngModel)]="editingProduct()!.category" class="edit-select">
+                  @for (category of categories; track category) {
+                    <option [value]="category">{{ category }}</option>
+                  }
+                </select>
+                <select [(ngModel)]="editingProduct()!.priority" class="edit-select">
+                  @for (priority of priorities; track priority) {
+                    <option [value]="priority">{{ priority }}</option>
+                  }
+                </select>
+                <textarea [(ngModel)]="editingProduct()!.note" class="edit-textarea" placeholder="Notatka"></textarea>
+                <div class="edit-actions">
+                  <button class="btn-save" (click)="saveEdit()">Zapisz</button>
+                  <button class="btn-cancel" (click)="cancelEdit()">Anuluj</button>
+                </div>
+              </div>
+            } @else {
+              <div class="product-content">
+                <div class="product-main">
+                  <input
+                    type="checkbox"
+                    [checked]="product.isPurchased"
+                    (change)="togglePurchased(product.id)"
+                    class="product-checkbox"
+                  />
+                  <div class="product-info">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <div class="product-details">
+                      <div class="product-detail-row">
+                        <span class="product-category">{{ product.category }}</span>
+                        <span class="product-quantity">Ilość: {{ product.quantity }}</span>
+                        @if (product.price) {
+                          <span class="product-price">{{ product.price | number:'1.2-2' }} zł</span>
+                        }
+                        <span class="product-priority priority-{{ product.priority }}">{{ product.priority }}</span>
+                      </div>
+                    </div>
+                    @if (product.note) {
+                      <p class="product-note">{{ product.note }}</p>
+                    }
+                  </div>
+                </div>
+                <div class="product-actions">
+                  <button class="btn-edit" (click)="startEdit(product)">Edytuj</button>
+                  <button class="btn-delete" (click)="deleteProduct(product.id)">Usuń</button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+} @else {
+  <div class="loading">Ładowanie...</div>
+}
