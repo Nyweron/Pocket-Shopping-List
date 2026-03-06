@@ -1,8 +1,61 @@
 @if (list()) {
   <div class="list-detail-container">
     <div class="header">
-      <button class="btn-back" [routerLink]="['/']">← Wróć do list</button>
-      <h1>{{ list()!.name }}</h1>
+      <div class="header-main">
+        <div class="header-left">
+          <button class="btn-back" [routerLink]="['/']">← Wróć</button>
+          <h1 class="list-title">{{ list()!.name }}</h1>
+        </div>
+        <div class="header-right">
+          @if (getSharedWith().length > 0) {
+            <div class="shared-avatars">
+              @for (email of getSharedWith(); track email) {
+                <div class="avatar-circle">
+                  {{ getInitialFromEmail(email) }}
+                </div>
+              }
+            </div>
+          }
+          @if (isOwner()) {
+            <button
+              type="button"
+              class="icon-button"
+              (click)="toggleShareForm()"
+              title="Udostępnij listę"
+            >
+              🔗
+            </button>
+          }
+          <button
+            type="button"
+            class="icon-button"
+            (click)="toggleOptionsMenu()"
+            title="Opcje listy"
+          >
+            ⋮
+          </button>
+          @if (showOptionsMenu()) {
+            <div class="options-menu">
+              <button type="button" (click)="toggleThemeFromMenu()">
+                @if (themeService.theme() === 'light') {
+                  Motyw: ciemny
+                } @else {
+                  Motyw: jasny
+                }
+              </button>
+              <button type="button" (click)="renameList()">Zmień nazwę listy</button>
+              <button type="button" (click)="openShareFromMenu()" [disabled]="!isOwner()">Udostępnij</button>
+              <button type="button" (click)="setSort('name')">Sortuj: nazwa</button>
+              <button type="button" (click)="setSort('category')">Sortuj: kategoria</button>
+              <button type="button" (click)="setSort('priority')">Sortuj: priorytet</button>
+              <button type="button" (click)="setSort('purchased')">Sortuj: status</button>
+              <button type="button" (click)="checkAllProducts()">Zaznacz wszystkie produkty</button>
+              <button type="button" (click)="uncheckAllProducts()">Odhacz wszystkie produkty</button>
+              <button type="button" (click)="removePurchasedProducts()">Usuń kupione produkty</button>
+            </div>
+          }
+        </div>
+      </div>
       <div class="list-stats">
         <span>{{ getPurchasedCount() }}/{{ getTotalCount() }} produktów</span>
         @if (getTotalPrice() > 0) {
@@ -27,17 +80,6 @@
               </div>
               @if (shareError()) {
                 <div class="share-error">{{ shareError() }}</div>
-              }
-            </div>
-          }
-          @if (getSharedWith().length > 0) {
-            <div class="shared-with">
-              <p class="shared-label">Udostępnione dla:</p>
-              @for (email of getSharedWith(); track email) {
-                <div class="shared-item">
-                  <span>{{ email }}</span>
-                  <button class="btn-unshare" (click)="unshareList(email)" title="Cofnij udostępnienie">×</button>
-                </div>
               }
             </div>
           }
@@ -84,9 +126,17 @@
         </div>
       } @else {
         @for (product of getFilteredAndSortedProducts(); track product.id) {
-          <div class="product-item" [class.purchased]="product.isPurchased">
+          <div
+            class="product-item"
+            [class.purchased]="product.isPurchased"
+            [class.swiped]="swipedProductId === product.id"
+            (click)="onProductTap(product)"
+            (touchstart)="onTouchStart($event, product.id)"
+            (touchmove)="onTouchMove($event)"
+            (touchend)="onTouchEnd()"
+          >
             @if (editingProduct()?.id === product.id) {
-              <div class="product-edit-form">
+              <div class="product-edit-form" (click)="$event.stopPropagation()">
                 <input type="text" [(ngModel)]="editingProduct()!.name" class="edit-input" />
                 <input type="number" [(ngModel)]="editingProduct()!.quantity" min="1" class="edit-input" />
                 <input type="number" [(ngModel)]="editingProduct()!.price" min="0" step="0.01" class="edit-input" placeholder="Cena" />
@@ -102,40 +152,46 @@
                 </select>
                 <textarea [(ngModel)]="editingProduct()!.note" class="edit-textarea" placeholder="Notatka"></textarea>
                 <div class="edit-actions">
-                  <button class="btn-save" (click)="saveEdit()">Zapisz</button>
-                  <button class="btn-cancel" (click)="cancelEdit()">Anuluj</button>
+                  <button class="btn-save" (click)="saveEdit(); $event.stopPropagation()">Zapisz</button>
+                  <button class="btn-cancel" (click)="cancelEdit(); $event.stopPropagation()">Anuluj</button>
                 </div>
               </div>
             } @else {
-              <div class="product-content">
-                <div class="product-main">
-                  <input
-                    type="checkbox"
-                    [checked]="product.isPurchased"
-                    (change)="togglePurchased(product.id)"
-                    class="product-checkbox"
-                  />
-                  <div class="product-info">
-                    <h3 class="product-name">{{ product.name }}</h3>
-                    <div class="product-details">
-                      <div class="product-detail-row">
-                        <span class="product-category">{{ product.category }}</span>
-                        <span class="product-quantity">Ilość: {{ product.quantity }}</span>
-                        @if (product.price) {
-                          <span class="product-price">{{ product.price | number:'1.2-2' }} zł</span>
-                        }
-                        <span class="product-priority priority-{{ product.priority }}">{{ product.priority }}</span>
+              <div class="product-swipe-wrapper">
+                <div class="product-content" [style.transform]="getSwipeTransform(product.id)">
+                  <div class="product-main">
+                    <input
+                      type="checkbox"
+                      [checked]="product.isPurchased"
+                      (click)="onCheckboxClick($event)"
+                      (change)="togglePurchased(product.id)"
+                      class="product-checkbox"
+                    />
+                    <div class="product-info">
+                      <h3 class="product-name">{{ product.name }}</h3>
+                      <div class="product-details">
+                        <div class="product-detail-row">
+                          <span class="product-category">{{ product.category }}</span>
+                          <span class="product-quantity">Ilość: {{ product.quantity }}</span>
+                          @if (product.price) {
+                            <span class="product-price">{{ product.price | number:'1.2-2' }} zł</span>
+                          }
+                          <span class="product-priority priority-{{ product.priority }}">{{ product.priority }}</span>
+                        </div>
                       </div>
+                      @if (product.note) {
+                        <p class="product-note">{{ product.note }}</p>
+                      }
                     </div>
-                    @if (product.note) {
-                      <p class="product-note">{{ product.note }}</p>
-                    }
                   </div>
                 </div>
-                <div class="product-actions">
-                  <button class="btn-edit" (click)="startEdit(product)">Edytuj</button>
-                  <button class="btn-delete" (click)="deleteProduct(product.id)">Usuń</button>
-                </div>
+                <button
+                  type="button"
+                  class="swipe-delete"
+                  (click)="deleteProduct(product.id); $event.stopPropagation()"
+                >
+                  Usuń
+                </button>
               </div>
             }
           </div>

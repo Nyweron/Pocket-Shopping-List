@@ -9,6 +9,7 @@ import { ShoppingListService } from '../services/shopping-list.service';
 import { ProductSearchComponent } from '../product-search/product-search.component';
 import { ShareService } from '../services/share.service';
 import { AuthService } from '../services/auth.service';
+import { ThemeService } from '../services/theme.service';
 
 type SortOption = 'name' | 'category' | 'priority' | 'purchased';
 type FilterOption = 'all' | 'purchased' | 'notPurchased';
@@ -33,13 +34,22 @@ export class ShoppingListDetailComponent implements OnInit {
   shareEmail = '';
   showShareForm = signal(false);
   shareError = signal<string | null>(null);
+  showOptionsMenu = signal(false);
+
+  private touchStartX = 0;
+  private touchCurrentX = 0;
+  private touchProductId: string | null = null;
+  swipedProductId: string | null = null;
+  private swipeBaseX = 0;
+  swipeDragX = signal(0);
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private shoppingListService: ShoppingListService,
     private shareService: ShareService,
-    private authService: AuthService
+    private authService: AuthService,
+    public themeService: ThemeService
   ) {}
 
   ngOnInit(): void {
@@ -219,5 +229,175 @@ export class ShoppingListDetailComponent implements OnInit {
     const list = this.list();
     if (!list) return [];
     return list.sharedWith || [];
+  }
+
+  getInitialFromEmail(email: string): string {
+    if (!email) return '?';
+    const namePart = email.split('@')[0] || email;
+    return namePart.charAt(0).toUpperCase();
+  }
+
+  toggleOptionsMenu(): void {
+    this.showOptionsMenu.set(!this.showOptionsMenu());
+  }
+
+  toggleShareForm(): void {
+    if (!this.isOwner()) return;
+    this.showShareForm.set(!this.showShareForm());
+    this.showOptionsMenu.set(false);
+  }
+
+  openShareFromMenu(): void {
+    if (!this.isOwner()) return;
+    this.showOptionsMenu.set(false);
+    this.showShareForm.set(true);
+  }
+
+  renameList(): void {
+    const list = this.list();
+    if (!list) {
+      return;
+    }
+    const currentName = list.name;
+    const newName = prompt('Nowa nazwa listy:', currentName);
+    if (!newName) {
+      this.showOptionsMenu.set(false);
+      return;
+    }
+    const trimmed = newName.trim();
+    if (!trimmed || trimmed === currentName) {
+      this.showOptionsMenu.set(false);
+      return;
+    }
+    list.name = trimmed;
+    this.shoppingListService.updateList(list);
+    this.loadList(list.id);
+    this.showOptionsMenu.set(false);
+  }
+
+  setSort(option: SortOption): void {
+    this.sortBy.set(option);
+    this.showOptionsMenu.set(false);
+  }
+
+  toggleThemeFromMenu(): void {
+    this.themeService.toggleTheme();
+    this.showOptionsMenu.set(false);
+  }
+
+  checkAllProducts(): void {
+    const list = this.list();
+    if (!list) return;
+
+    list.products.forEach(product => {
+      if (!product.isPurchased) {
+        this.shoppingListService.updateProductInList(list.id, product.id, { isPurchased: true });
+      }
+    });
+    this.loadList(list.id);
+    this.showOptionsMenu.set(false);
+  }
+
+  removePurchasedProducts(): void {
+    const list = this.list();
+    if (!list) return;
+
+    if (!confirm('Czy na pewno chcesz usunąć wszystkie kupione produkty z tej listy?')) {
+      return;
+    }
+
+    list.products = list.products.filter(p => !p.isPurchased);
+    this.shoppingListService.updateList(list);
+    this.loadList(list.id);
+    this.showOptionsMenu.set(false);
+  }
+
+  onProductTap(product: Product): void {
+    // Jeśli jakiś element jest wysunięty do usunięcia, najpierw schowaj
+    if (this.swipedProductId && this.swipedProductId !== product.id) {
+      this.swipedProductId = null;
+      return;
+    }
+
+    // Jeśli aktualnie ten produkt jest wysunięty – schowaj zamiast edytować
+    if (this.swipedProductId === product.id) {
+      this.swipedProductId = null;
+      return;
+    }
+
+    this.startEdit(product);
+  }
+
+  onCheckboxClick(event: Event): void {
+    event.stopPropagation();
+  }
+
+  onTouchStart(event: TouchEvent, productId: string): void {
+    if (event.touches.length !== 1) return;
+    this.touchStartX = event.touches[0].clientX;
+    this.touchCurrentX = this.touchStartX;
+    this.touchProductId = productId;
+    this.swipeBaseX = this.swipedProductId === productId ? -80 : 0;
+    this.swipeDragX.set(this.swipeBaseX);
+  }
+
+  onTouchMove(event: TouchEvent): void {
+    if (!this.touchProductId || event.touches.length !== 1) return;
+    this.touchCurrentX = event.touches[0].clientX;
+
+    const delta = this.touchCurrentX - this.touchStartX;
+    const next = Math.max(-80, Math.min(0, this.swipeBaseX + delta));
+    this.swipeDragX.set(next);
+
+    if (Math.abs(delta) > 10) {
+      event.preventDefault();
+    }
+  }
+
+  onTouchEnd(): void {
+    if (!this.touchProductId) {
+      this.resetTouch();
+      return;
+    }
+
+    const finalX = this.swipeDragX();
+    const openThreshold = -40;
+    const closeThreshold = -20;
+
+    if (finalX <= openThreshold) {
+      this.swipedProductId = this.touchProductId;
+      this.swipeDragX.set(-80);
+    } else if (finalX >= closeThreshold) {
+      this.swipedProductId = null;
+      this.swipeDragX.set(0);
+    } else {
+      // snap do najbliższego
+      if (finalX < -40) {
+        this.swipedProductId = this.touchProductId;
+        this.swipeDragX.set(-80);
+      } else {
+        this.swipedProductId = null;
+        this.swipeDragX.set(0);
+      }
+    }
+
+    this.resetTouch();
+  }
+
+  private resetTouch(): void {
+    this.touchStartX = 0;
+    this.touchCurrentX = 0;
+    this.touchProductId = null;
+    this.swipeBaseX = 0;
+  }
+
+  getSwipeTransform(productId: string): string {
+    if (this.touchProductId === productId) {
+      return `translateX(${this.swipeDragX()}px)`;
+    }
+    if (this.swipedProductId === productId) {
+      return 'translateX(-80px)';
+    }
+    return 'translateX(0px)';
   }
 }
