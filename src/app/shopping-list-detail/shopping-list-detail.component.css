@@ -31,7 +31,10 @@
   color: var(--color-text-primary);
   font-size: 1.4rem;
   font-weight: 600;
+  line-height: 1.2;
   word-break: break-word;
+  display: flex;
+  align-items: center;
 }
 
 .header-right {
@@ -64,7 +67,12 @@
   transform: scale(0.98);
 }
 
-.header h1 {
+.header h1.list-title {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.header h1:not(.list-title) {
   margin: 0 0 1rem 0;
   color: var(--color-text-primary);
   font-size: 1.5rem;
