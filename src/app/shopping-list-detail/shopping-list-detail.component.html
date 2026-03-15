@@ -163,6 +163,14 @@
               </div>
             } @else {
               <div class="product-swipe-wrapper">
+                <button
+                  type="button"
+                  class="swipe-delete"
+                  (click)="deleteProduct(product.id); $event.stopPropagation()"
+                >
+                  <span class="swipe-delete-icon" aria-hidden="true">🗑</span>
+                  <span>Usuń</span>
+                </button>
                 <div class="product-content" [style.transform]="getSwipeTransform(product.id)">
                   <div class="product-main">
                     <input
@@ -190,13 +198,6 @@
                     </div>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  class="swipe-delete"
-                  (click)="deleteProduct(product.id); $event.stopPropagation()"
-                >
-                  Usuń
-                </button>
               </div>
             }
           </div>
