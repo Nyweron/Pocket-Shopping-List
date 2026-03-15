@@ -128,12 +128,17 @@
         @for (product of getFilteredAndSortedProducts(); track product.id) {
           <div
             class="product-item"
+            appSwipePrevent
             [class.purchased]="product.isPurchased"
             [class.swiped]="swipedProductId === product.id"
             (click)="onProductTap(product)"
             (touchstart)="onTouchStart($event, product.id)"
             (touchmove)="onTouchMove($event)"
             (touchend)="onTouchEnd()"
+            (pointerdown)="onPointerDown($event, product.id)"
+            (pointermove)="onPointerMove($event)"
+            (pointerup)="onPointerUp()"
+            (pointercancel)="onPointerUp()"
           >
             @if (editingProduct()?.id === product.id) {
               <div class="product-edit-form" (click)="$event.stopPropagation()">

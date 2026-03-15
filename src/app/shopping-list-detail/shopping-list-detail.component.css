@@ -387,6 +387,7 @@
   transition: all 0.3s;
   position: relative;
   overflow: hidden;
+  touch-action: pan-y;
 }
 
 .product-item.purchased {
@@ -417,6 +418,7 @@
   top: 0;
   right: 0;
   height: 100%;
+  min-width: 80px;
   padding: 0 1rem;
   background: var(--color-danger);
   color: var(--color-bg-elevated);

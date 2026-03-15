@@ -10,13 +10,14 @@ import { ProductSearchComponent } from '../product-search/product-search.compone
 import { ShareService } from '../services/share.service';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
+import { SwipePreventDirective } from '../directives/swipe-prevent.directive';
 
 type SortOption = 'name' | 'category' | 'priority' | 'purchased';
 type FilterOption = 'all' | 'purchased' | 'notPurchased';
 
 @Component({
   selector: 'app-shopping-list-detail',
-  imports: [CommonModule, RouterModule, FormsModule, ProductSearchComponent],
+  imports: [CommonModule, RouterModule, FormsModule, ProductSearchComponent, SwipePreventDirective],
   templateUrl: './shopping-list-detail.component.html',
   styleUrl: './shopping-list-detail.component.css'
 })
@@ -39,6 +40,7 @@ export class ShoppingListDetailComponent implements OnInit {
   private touchStartX = 0;
   private touchCurrentX = 0;
   private touchProductId: string | null = null;
+  private pointerProductId: string | null = null;
   swipedProductId: string | null = null;
   private swipeBaseX = 0;
   swipeDragX = signal(0);
@@ -359,29 +361,57 @@ export class ShoppingListDetailComponent implements OnInit {
       this.resetTouch();
       return;
     }
+    this.applySwipeEnd(this.touchProductId);
+    this.resetTouch();
+  }
 
+  onPointerDown(event: PointerEvent, productId: string): void {
+    if (event.pointerType !== 'mouse' && event.pointerType !== 'touch') return;
+    if (event.pointerType === 'touch') return;
+    (event.currentTarget as HTMLElement)?.setPointerCapture?.(event.pointerId);
+    this.touchStartX = event.clientX;
+    this.touchCurrentX = event.clientX;
+    this.touchProductId = productId;
+    this.pointerProductId = productId;
+    this.swipeBaseX = this.swipedProductId === productId ? -80 : 0;
+    this.swipeDragX.set(this.swipeBaseX);
+  }
+
+  onPointerMove(event: PointerEvent): void {
+    if (!this.pointerProductId || this.touchProductId !== this.pointerProductId) return;
+    this.touchCurrentX = event.clientX;
+    const delta = this.touchCurrentX - this.touchStartX;
+    const next = Math.max(-80, Math.min(0, this.swipeBaseX + delta));
+    this.swipeDragX.set(next);
+  }
+
+  onPointerUp(): void {
+    if (!this.pointerProductId) return;
+    this.applySwipeEnd(this.pointerProductId);
+    this.pointerProductId = null;
+    this.resetTouch();
+  }
+
+  private applySwipeEnd(productId: string): void {
     const finalX = this.swipeDragX();
     const openThreshold = -40;
     const closeThreshold = -20;
 
     if (finalX <= openThreshold) {
-      this.swipedProductId = this.touchProductId;
+      this.swipedProductId = productId;
       this.swipeDragX.set(-80);
     } else if (finalX >= closeThreshold) {
       this.swipedProductId = null;
       this.swipeDragX.set(0);
     } else {
-      // snap do najbliższego
       if (finalX < -40) {
-        this.swipedProductId = this.touchProductId;
+        this.swipedProductId = productId;
         this.swipeDragX.set(-80);
       } else {
         this.swipedProductId = null;
         this.swipeDragX.set(0);
       }
     }
-
-    this.resetTouch();
   }
 
   private resetTouch(): void {
