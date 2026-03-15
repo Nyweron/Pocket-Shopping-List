@@ -141,9 +141,34 @@
             (pointercancel)="onPointerUp()"
           >
             @if (editingProduct()?.id === product.id) {
-              <div class="product-edit-form" (click)="$event.stopPropagation()">
+              <div
+                class="product-edit-form"
+                (click)="$event.stopPropagation()"
+                (touchstart)="$event.stopPropagation()"
+                (touchmove)="$event.stopPropagation()"
+                (touchend)="$event.stopPropagation()"
+                (pointerdown)="$event.stopPropagation()"
+                (pointermove)="$event.stopPropagation()"
+                (pointerup)="$event.stopPropagation()"
+                (pointercancel)="$event.stopPropagation()"
+              >
                 <input type="text" [(ngModel)]="editingProduct()!.name" class="edit-input" />
-                <input type="number" [(ngModel)]="editingProduct()!.quantity" min="1" class="edit-input" />
+                <div class="edit-quantity-row">
+                  <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    [ngModel]="editingProduct()!.quantity"
+                    (ngModelChange)="onEditingQuantityChange($event)"
+                    class="edit-input edit-quantity-input"
+                    placeholder="Ilość"
+                  />
+                  <select [(ngModel)]="editingProduct()!.quantityUnit" class="edit-select edit-unit-select">
+                    @for (u of quantityUnits; track u.value) {
+                      <option [value]="u.value">{{ u.label }}</option>
+                    }
+                  </select>
+                </div>
                 <input type="number" [(ngModel)]="editingProduct()!.price" min="0" step="0.01" class="edit-input" placeholder="Cena" />
                 <select [(ngModel)]="editingProduct()!.category" class="edit-select">
                   @for (category of categories; track category) {
@@ -185,7 +210,7 @@
                       <div class="product-details">
                         <div class="product-detail-row">
                           <span class="product-category">{{ product.category }}</span>
-                          <span class="product-quantity">Ilość: {{ product.quantity }}</span>
+                          <span class="product-quantity">Ilość: {{ getQuantityDisplay(product) }}</span>
                           @if (product.price) {
                             <span class="product-price">{{ product.price | number:'1.2-2' }} zł</span>
                           }

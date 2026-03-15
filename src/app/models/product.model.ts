@@ -11,6 +11,7 @@ export interface Product {
   name: string;
   category: ProductCategory;
   quantity: number;
+  quantityUnit?: string; // e.g. 'szt', 'g', 'kg', 'ml', 'l'
   price?: number;
   priority: ProductPriority;
   note?: string;

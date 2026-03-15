@@ -605,6 +605,19 @@
   gap: 1rem;
 }
 
+.edit-quantity-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.edit-quantity-input,
+.edit-unit-select {
+  flex: 1 1 0;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
 .edit-input,
 .edit-select {
   padding: 0.875rem;
@@ -773,6 +786,10 @@
     display: grid;
     grid-template-columns: 2fr 1fr 1fr;
     gap: 1rem;
+  }
+
+  .edit-quantity-row {
+    grid-column: 1 / -1;
   }
 
   .edit-textarea {

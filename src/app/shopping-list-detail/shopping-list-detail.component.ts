@@ -31,6 +31,14 @@ export class ShoppingListDetailComponent implements OnInit {
   filterOptions: FilterOption[] = ['all', 'purchased', 'notPurchased'];
   priorities = Object.values(ProductPriority);
   categories = Object.values(ProductCategory);
+  quantityUnits: { value: string; label: string }[] = [
+    { value: 'szt', label: 'szt.' },
+    { value: 'g', label: 'g' },
+    { value: 'kg', label: 'kg' },
+    { value: 'ml', label: 'ml' },
+    { value: 'l', label: 'l' }
+  ];
+  defaultQuantityUnit = 'szt';
 
   shareEmail = '';
   showShareForm = signal(false);
@@ -87,7 +95,22 @@ export class ShoppingListDetailComponent implements OnInit {
   }
 
   startEdit(product: Product): void {
-    this.editingProduct.set({ ...product });
+    const copy = { ...product };
+    if (copy.quantityUnit == null) copy.quantityUnit = this.defaultQuantityUnit;
+    this.editingProduct.set(copy);
+  }
+
+  getQuantityDisplay(product: Product): string {
+    const unit = product.quantityUnit ?? this.defaultQuantityUnit;
+    return `${product.quantity} ${unit}`;
+  }
+
+  onEditingQuantityChange(value: number | string | null): void {
+    const p = this.editingProduct();
+    if (!p) return;
+    const num = value === '' || value == null ? 0 : (typeof value === 'number' ? value : parseFloat(String(value)));
+    const quantity = Number.isNaN(num) ? p.quantity : Math.max(0, num);
+    this.editingProduct.set({ ...p, quantity });
   }
 
   cancelEdit(): void {
