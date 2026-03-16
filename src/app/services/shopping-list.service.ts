@@ -1,14 +1,19 @@
 import { Injectable } from '@angular/core';
-import { ShoppingList } from '../models/shopping-list.model';
-import { Product } from '../models/product.model';
+import { ShoppingList, ListTemplate } from '../models/shopping-list.model';
+import { Product, ProductPriority } from '../models/product.model';
+import { ProductCategory } from '../models/product-category.enum';
 import { LocalStorageService } from './local-storage.service';
 import { AuthService } from './auth.service';
+
+const DEMO_MAX_LISTS = 2;
+const DEMO_MAX_PRODUCTS_PER_LIST = 10;
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShoppingListService {
   private readonly STORAGE_KEY = 'shopping_lists';
+  private readonly TEMPLATES_KEY = 'list_templates';
 
   constructor(
     private localStorageService: LocalStorageService,
@@ -37,24 +42,52 @@ export class ShoppingListService {
     return lists.find(list => list.id === id);
   }
 
-  createList(name: string): ShoppingList {
+  getActiveLists(): ShoppingList[] {
+    return this.getAllLists().filter(l => !l.archived);
+  }
+
+  getArchivedLists(): ShoppingList[] {
+    return this.getAllLists().filter(l => !!l.archived);
+  }
+
+  createList(name: string): { list?: ShoppingList; error?: string } {
+    if (this.authService.isDemoUser()) {
+      const active = this.getActiveLists().filter(l => l.ownerId === this.authService.getCurrentUser()?.id);
+      if (active.length >= DEMO_MAX_LISTS) {
+        return { error: 'demo_limit_lists' };
+      }
+    }
     const currentUser = this.authService.getCurrentUser();
     const ownerId = currentUser?.id || 'anonymous';
-    
     const newList: ShoppingList = {
       id: this.generateId(),
       name,
       createdAt: new Date(),
       products: [],
       ownerId,
-      sharedWith: []
+      sharedWith: [],
+      archived: false
     };
-    
     const lists = this.getAllLists();
     lists.push(newList);
     this.saveLists(lists);
-    
-    return newList;
+    return { list: newList };
+  }
+
+  archiveList(id: string): void {
+    const list = this.getListById(id);
+    if (!list) return;
+    list.archived = true;
+    list.archivedAt = new Date().toISOString();
+    this.updateList(list);
+  }
+
+  unarchiveList(id: string): void {
+    const list = this.getListById(id);
+    if (!list) return;
+    list.archived = false;
+    list.archivedAt = undefined;
+    this.updateList(list);
   }
 
   updateList(list: ShoppingList): void {
@@ -72,20 +105,19 @@ export class ShoppingListService {
     this.saveLists(filtered);
   }
 
-  addProductToList(listId: string, product: Product): void {
+  addProductToList(listId: string, product: Product): { success: boolean; error?: string } {
     const list = this.getListById(listId);
-    if (!list) {
-      return;
+    if (!list) return { success: false };
+    if (this.authService.isDemoUser() && list.products.length >= DEMO_MAX_PRODUCTS_PER_LIST) {
+      return { success: false, error: 'demo_limit_products' };
     }
-
-    // Tworzenie kopii produktu z unikalnym ID dla tej listy
     const listProduct: Product = {
       ...product,
       id: `${product.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     };
-
     list.products.push(listProduct);
     this.updateList(list);
+    return { success: true };
   }
 
   updateProductInList(listId: string, productId: string, updates: Partial<Product>): void {
@@ -130,6 +162,61 @@ export class ShoppingListService {
 
   private generateId(): string {
     return `list_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  getTemplates(): ListTemplate[] {
+    const t = this.localStorageService.getItem<ListTemplate[]>(this.TEMPLATES_KEY);
+    return t ?? [];
+  }
+
+  saveTemplate(name: string, list: ShoppingList): ListTemplate {
+    const template: ListTemplate = {
+      id: `tpl_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      name,
+      createdAt: new Date().toISOString(),
+      products: list.products.map(p => ({
+        name: p.name,
+        category: p.category,
+        quantity: p.quantity,
+        quantityUnit: p.quantityUnit,
+        priority: p.priority
+      }))
+    };
+    const all = this.getTemplates();
+    all.push(template);
+    this.localStorageService.setItem(this.TEMPLATES_KEY, all);
+    return template;
+  }
+
+  createListFromTemplate(templateId: string, listName: string): ShoppingList | null {
+    const template = this.getTemplates().find(t => t.id === templateId);
+    if (!template) return null;
+    const result = this.createList(listName || template.name);
+    if (result.error || !result.list) return null;
+    const list = result.list;
+    const priorityMap: Record<string, ProductPriority> = {
+      [ProductPriority.HIGH]: ProductPriority.HIGH,
+      [ProductPriority.MEDIUM]: ProductPriority.MEDIUM,
+      [ProductPriority.LOW]: ProductPriority.LOW
+    };
+    for (const p of template.products) {
+      const prod: Product = {
+        id: `tpl_${p.name}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        name: p.name,
+        category: p.category as ProductCategory,
+        quantity: p.quantity,
+        quantityUnit: p.quantityUnit,
+        priority: priorityMap[p.priority] ?? ProductPriority.MEDIUM,
+        isPurchased: false
+      };
+      this.addProductToList(list.id, prod);
+    }
+    return this.getListById(list.id) ?? null;
+  }
+
+  deleteTemplate(id: string): void {
+    const all = this.getTemplates().filter(t => t.id !== id);
+    this.localStorageService.setItem(this.TEMPLATES_KEY, all);
   }
 }
 

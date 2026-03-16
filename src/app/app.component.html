@@ -1,4 +1,18 @@
 <div class="app-container">
+  @if (authService.isDemoUser() && demoLimit.limitReached()) {
+    <div class="demo-limit-banner">
+      <p class="demo-limit-text">
+        @if (demoLimit.limitReached() === 'lists') {
+          {{ 'demo.limit_lists' | translate }}
+        } @else {
+          {{ 'demo.limit_products' | translate }}
+        }
+      </p>
+      <button type="button" class="btn-demo-reset" (click)="onDemoReset()">
+        {{ 'demo.reset' | translate }}
+      </button>
+    </div>
+  }
   <div class="demo-banner">
     <div class="demo-content">
       <span class="demo-label">DEMO</span>

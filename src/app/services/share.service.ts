@@ -88,8 +88,8 @@ export class ShareService {
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser) return [];
 
-    const allLists = this.shoppingListService.getAllLists();
-    return allLists.filter(list => 
+    const allLists = this.shoppingListService.getActiveLists();
+    return allLists.filter(list =>
       list.sharedWith.includes(currentUser.email.toLowerCase())
     );
   }
@@ -98,8 +98,14 @@ export class ShareService {
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser) return [];
 
-    const allLists = this.shoppingListService.getAllLists();
+    const allLists = this.shoppingListService.getActiveLists();
     return allLists.filter(list => list.ownerId === currentUser.id);
+  }
+
+  getMyArchivedLists(): ShoppingList[] {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) return [];
+    return this.shoppingListService.getArchivedLists().filter(list => list.ownerId === currentUser.id);
   }
 
   canEditList(listId: string): boolean {

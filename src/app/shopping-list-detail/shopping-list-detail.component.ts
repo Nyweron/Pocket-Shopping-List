@@ -10,6 +10,9 @@ import { ProductSearchComponent } from '../product-search/product-search.compone
 import { ShareService } from '../services/share.service';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
+import { DemoLimitService } from '../services/demo-limit.service';
+import { TranslateService } from '../services/translate.service';
+import { TranslatePipe } from '../pipes/translate.pipe';
 import { SwipePreventDirective } from '../directives/swipe-prevent.directive';
 
 type SortOption = 'name' | 'category' | 'priority' | 'purchased';
@@ -17,7 +20,7 @@ type FilterOption = 'all' | 'purchased' | 'notPurchased';
 
 @Component({
   selector: 'app-shopping-list-detail',
-  imports: [CommonModule, RouterModule, FormsModule, ProductSearchComponent, SwipePreventDirective],
+  imports: [CommonModule, RouterModule, FormsModule, ProductSearchComponent, SwipePreventDirective, TranslatePipe],
   templateUrl: './shopping-list-detail.component.html',
   styleUrl: './shopping-list-detail.component.css'
 })
@@ -26,7 +29,8 @@ export class ShoppingListDetailComponent implements OnInit {
   editingProduct = signal<Product | null>(null);
   sortBy = signal<SortOption>('name');
   filterBy = signal<FilterOption>('all');
-  
+  listSearchQuery = signal('');
+
   sortOptions: SortOption[] = ['name', 'category', 'priority', 'purchased'];
   filterOptions: FilterOption[] = ['all', 'purchased', 'notPurchased'];
   priorities = Object.values(ProductPriority);
@@ -59,7 +63,9 @@ export class ShoppingListDetailComponent implements OnInit {
     private shoppingListService: ShoppingListService,
     private shareService: ShareService,
     private authService: AuthService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    private demoLimit: DemoLimitService,
+    public translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -82,7 +88,11 @@ export class ShoppingListDetailComponent implements OnInit {
     const list = this.list();
     if (!list) return;
 
-    this.shoppingListService.addProductToList(list.id, product);
+    const result = this.shoppingListService.addProductToList(list.id, product);
+    if (!result.success && result.error === 'demo_limit_products') {
+      this.demoLimit.showProductsLimit();
+      return;
+    }
     this.loadList(list.id);
   }
 
@@ -131,7 +141,7 @@ export class ShoppingListDetailComponent implements OnInit {
     const list = this.list();
     if (!list) return;
 
-    if (confirm('Czy na pewno chcesz usunąć ten produkt?')) {
+    if (confirm(this.translate.get('confirm.delete_product'))) {
       this.shoppingListService.removeProductFromList(list.id, productId);
       this.loadList(list.id);
     }
@@ -149,6 +159,16 @@ export class ShoppingListDetailComponent implements OnInit {
       products = products.filter(p => p.isPurchased);
     } else if (filter === 'notPurchased') {
       products = products.filter(p => !p.isPurchased);
+    }
+
+    const search = this.listSearchQuery().toLowerCase().trim();
+    if (search) {
+      products = products.filter(
+        p =>
+          p.name.toLowerCase().includes(search) ||
+          String(p.category || '').toLowerCase().includes(search) ||
+          (p.note && p.note.toLowerCase().includes(search))
+      );
     }
 
     // Sortowanie
@@ -196,7 +216,7 @@ export class ShoppingListDetailComponent implements OnInit {
     const list = this.list();
     if (!list) return;
 
-    if (confirm('Czy na pewno chcesz odznaczyć wszystkie produkty?')) {
+    if (confirm(this.translate.get('confirm.uncheck_all'))) {
       list.products.forEach(product => {
         if (product.isPurchased) {
           this.shoppingListService.updateProductInList(list.id, product.id, { isPurchased: false });
@@ -310,6 +330,38 @@ export class ShoppingListDetailComponent implements OnInit {
     this.showOptionsMenu.set(false);
   }
 
+  archiveList(): void {
+    const list = this.list();
+    if (!list || !this.isOwner()) return;
+    this.shoppingListService.archiveList(list.id);
+    this.showOptionsMenu.set(false);
+    this.router.navigate(['/']);
+  }
+
+  unarchiveList(): void {
+    const list = this.list();
+    if (!list || !this.isOwner()) return;
+    this.shoppingListService.unarchiveList(list.id);
+    this.showOptionsMenu.set(false);
+    this.loadList(list.id);
+  }
+
+  saveAsTemplate(): void {
+    const list = this.list();
+    if (!list || !this.isOwner()) return;
+    const name = prompt(this.translate.get('template.name') + ':', list.name);
+    if (!name?.trim()) {
+      this.showOptionsMenu.set(false);
+      return;
+    }
+    this.shoppingListService.saveTemplate(name.trim(), list);
+    this.showOptionsMenu.set(false);
+  }
+
+  isListArchived(): boolean {
+    return !!this.list()?.archived;
+  }
+
   checkAllProducts(): void {
     const list = this.list();
     if (!list) return;
@@ -327,7 +379,7 @@ export class ShoppingListDetailComponent implements OnInit {
     const list = this.list();
     if (!list) return;
 
-    if (!confirm('Czy na pewno chcesz usunąć wszystkie kupione produkty z tej listy?')) {
+    if (!confirm(this.translate.get('confirm.remove_purchased'))) {
       return;
     }
 

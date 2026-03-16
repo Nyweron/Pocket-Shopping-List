@@ -3,7 +3,7 @@
     <div class="header">
       <div class="header-main">
         <div class="header-left">
-          <button class="btn-back" [routerLink]="['/']">← Wróć</button>
+          <button class="btn-back" [routerLink]="['/']">← {{ 'list.back' | translate }}</button>
           <h1 class="list-title">{{ list()!.name }}</h1>
         </div>
         <div class="header-right">
@@ -37,21 +37,19 @@
           @if (showOptionsMenu()) {
             <div class="options-menu">
               <button type="button" (click)="toggleThemeFromMenu()">
-                @if (themeService.theme() === 'light') {
-                  Motyw: ciemny
-                } @else {
-                  Motyw: jasny
-                }
+                {{ 'list.theme' | translate }}: {{ themeService.theme() === 'light' ? ('list.theme_dark' | translate) : ('list.theme_light' | translate) }}
               </button>
-              <button type="button" (click)="renameList()">Zmień nazwę listy</button>
-              <button type="button" (click)="openShareFromMenu()" [disabled]="!isOwner()">Udostępnij</button>
-              <button type="button" (click)="setSort('name')">Sortuj: nazwa</button>
-              <button type="button" (click)="setSort('category')">Sortuj: kategoria</button>
-              <button type="button" (click)="setSort('priority')">Sortuj: priorytet</button>
-              <button type="button" (click)="setSort('purchased')">Sortuj: status</button>
-              <button type="button" (click)="checkAllProducts()">Zaznacz wszystkie produkty</button>
-              <button type="button" (click)="uncheckAllProducts()">Odhacz wszystkie produkty</button>
-              <button type="button" (click)="removePurchasedProducts()">Usuń kupione produkty</button>
+              @if (isListArchived()) {
+                <button type="button" (click)="unarchiveList()">{{ 'menu.unarchive' | translate }}</button>
+              } @else {
+                <button type="button" (click)="archiveList()">{{ 'menu.archive' | translate }}</button>
+              }
+              <button type="button" (click)="saveAsTemplate()" [disabled]="!isOwner()">{{ 'menu.save_template' | translate }}</button>
+              <button type="button" (click)="renameList()">{{ 'menu.rename' | translate }}</button>
+              <button type="button" (click)="openShareFromMenu()" [disabled]="!isOwner()">{{ 'menu.share' | translate }}</button>
+              <button type="button" (click)="checkAllProducts()">{{ 'list.check_all' | translate }}</button>
+              <button type="button" (click)="uncheckAllProducts()">{{ 'list.uncheck_all_btn' | translate }}</button>
+              <button type="button" (click)="removePurchasedProducts()">{{ 'list.remove_purchased' | translate }}</button>
             </div>
           }
         </div>
@@ -91,23 +89,33 @@
       <app-product-search (productSelected)="onProductSelected($event)"></app-product-search>
     </div>
 
+    <div class="list-search">
+      <input
+        type="text"
+        [placeholder]="'list.search_products' | translate"
+        [ngModel]="listSearchQuery()"
+        (ngModelChange)="listSearchQuery.set($event)"
+        class="list-search-input"
+      />
+    </div>
+
     <div class="controls">
       <div class="control-row">
         <div class="filter-control">
-          <label>Filtruj:</label>
+          <label>{{ 'list.filter' | translate }}:</label>
           <select [(ngModel)]="filterBy" (ngModelChange)="filterBy.set($event)">
-            <option value="all">Wszystkie</option>
-            <option value="purchased">Kupione</option>
-            <option value="notPurchased">Nie kupione</option>
+            <option value="all">{{ 'list.all' | translate }}</option>
+            <option value="purchased">{{ 'list.purchased' | translate }}</option>
+            <option value="notPurchased">{{ 'list.not_purchased' | translate }}</option>
           </select>
         </div>
         <div class="sort-control">
-          <label>Sortuj:</label>
+          <label>{{ 'list.sort' | translate }}:</label>
           <select [(ngModel)]="sortBy" (ngModelChange)="sortBy.set($event)">
-            <option value="name">Nazwa</option>
-            <option value="category">Kategoria</option>
-            <option value="priority">Priorytet</option>
-            <option value="purchased">Status</option>
+            <option value="name">{{ 'list.sort_name' | translate }}</option>
+            <option value="category">{{ 'list.sort_category' | translate }}</option>
+            <option value="priority">{{ 'list.sort_priority' | translate }}</option>
+            <option value="purchased">{{ 'list.sort_status' | translate }}</option>
           </select>
         </div>
       </div>

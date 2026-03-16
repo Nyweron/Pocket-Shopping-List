@@ -1,0 +1,39 @@
+<div class="stats-container">
+  <div class="stats-header">
+    <a routerLink="/" class="btn-back">← {{ 'list.back' | translate }}</a>
+    <h1>{{ 'stats.title' | translate }}</h1>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-value">{{ totalLists() }}</span>
+      <span class="stat-label">{{ 'stats.total_lists' | translate }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ archivedCount() }}</span>
+      <span class="stat-label">{{ 'stats.archived' | translate }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ totalProducts() }}</span>
+      <span class="stat-label">{{ 'stats.total_products' | translate }}</span>
+    </div>
+    <div class="stat-card highlight">
+      <span class="stat-value">{{ totalCost() | number:'1.2-2' }} zł</span>
+      <span class="stat-label">{{ 'stats.estimated_cost' | translate }}</span>
+    </div>
+  </div>
+
+  @if (costByCategory().length > 0) {
+    <div class="section">
+      <h2>{{ 'stats.by_category' | translate }}</h2>
+      <ul class="category-list">
+        @for (item of costByCategory(); track item.category) {
+          <li class="category-item">
+            <span class="cat-name">{{ item.category }}</span>
+            <span class="cat-meta">{{ item.count }} {{ 'app.products' | translate }} · {{ item.cost | number:'1.2-2' }} zł</span>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</div>

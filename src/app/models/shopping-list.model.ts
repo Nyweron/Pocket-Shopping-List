@@ -5,8 +5,17 @@ export interface ShoppingList {
   name: string;
   createdAt: Date;
   products: Product[];
-  ownerId: string; // ID użytkownika, który utworzył listę
-  sharedWith: string[]; // Lista emaili użytkowników, z którymi lista jest udostępniona
+  ownerId: string;
+  sharedWith: string[];
+  archived?: boolean;
+  archivedAt?: string; // ISO date string
+}
+
+export interface ListTemplate {
+  id: string;
+  name: string;
+  createdAt: string; // ISO
+  products: { name: string; category: string; quantity: number; quantityUnit?: string; priority: string }[];
 }
 
 export interface SharedListAccess {

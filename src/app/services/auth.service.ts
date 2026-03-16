@@ -3,6 +3,10 @@ import { Router } from '@angular/router';
 import { User, LoginCredentials, RegisterData } from '../models/user.model';
 import { LocalStorageService } from './local-storage.service';
 
+const DEMO_EMAIL = 'demo@test.pl';
+const DEMO_LAST_RESET_KEY = 'demo_last_reset';
+const DEMO_RESET_INTERVAL_MS = 24 * 60 * 60 * 1000;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -18,6 +22,33 @@ export class AuthService {
   ) {
     this.initializeDemoUser();
     this.loadCurrentUser();
+    this.maybeResetDemoAfter24h();
+  }
+
+  isDemoUser(): boolean {
+    return this.currentUser()?.email === DEMO_EMAIL;
+  }
+
+  private maybeResetDemoAfter24h(): void {
+    const user = this.currentUser();
+    if (!user || user.email !== DEMO_EMAIL) return;
+    const raw = this.localStorageService.getItem<string>(DEMO_LAST_RESET_KEY);
+    const last = raw ? new Date(raw).getTime() : 0;
+    if (Date.now() - last >= DEMO_RESET_INTERVAL_MS) {
+      this.resetDemoUserData();
+      this.setDemoLastResetNow();
+    }
+  }
+
+  resetDemoUserData(): void {
+    const demoId = 'demo_user_001';
+    const lists = this.localStorageService.getItem<any[]>('shopping_lists') ?? [];
+    const filtered = lists.filter((l: any) => l.ownerId !== demoId);
+    this.localStorageService.setItem('shopping_lists', filtered);
+  }
+
+  setDemoLastResetNow(): void {
+    this.localStorageService.setItem(DEMO_LAST_RESET_KEY, new Date().toISOString());
   }
 
   private initializeDemoUser(): void {

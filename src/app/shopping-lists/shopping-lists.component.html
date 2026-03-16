@@ -1,64 +1,77 @@
 <div class="shopping-lists-container">
   <div class="header">
     <div class="header-top">
-      <h1>Listy zakupów</h1>
+      <h1>{{ 'app.title' | translate }}</h1>
       <div class="header-actions">
-        <button
-          type="button"
-          class="btn-theme"
-          (click)="themeService.toggleTheme()"
-        >
-          @if (themeService.theme() === 'light') {
-            Tryb ciemny
-          } @else {
-            Tryb jasny
-          }
+        <select [ngModel]="translate.currentLang()" (ngModelChange)="translate.setLang($event)" class="lang-select">
+          <option value="pl">PL</option>
+          <option value="en">EN</option>
+        </select>
+        <button type="button" class="btn-theme" (click)="themeService.toggleTheme()">
+          {{ themeService.theme() === 'light' ? ('app.theme_dark' | translate) : ('app.theme_light' | translate) }}
         </button>
+        <a [routerLink]="['/stats']" class="btn-stats">{{ 'app.stats' | translate }}</a>
         @if (authService.isAuthenticated()) {
-          <a [routerLink]="['/profile']" class="btn-profile">Profil</a>
+          <a [routerLink]="['/profile']" class="btn-profile">{{ 'app.profile' | translate }}</a>
         } @else {
-          <a [routerLink]="['/login']" class="btn-login">Zaloguj się</a>
+          <a [routerLink]="['/login']" class="btn-login">{{ 'app.login' | translate }}</a>
         }
       </div>
     </div>
     @if (authService.isAuthenticated()) {
       <div class="tabs">
-        <button 
-          class="tab-btn" 
-          [class.active]="activeTab() === 'my'"
-          (click)="activeTab.set('my')"
-        >
-          Moje listy
+        <button class="tab-btn" [class.active]="activeTab() === 'my'" (click)="activeTab.set('my')">
+          {{ 'app.my_lists' | translate }}
         </button>
-        <button 
-          class="tab-btn" 
-          [class.active]="activeTab() === 'shared'"
-          (click)="activeTab.set('shared')"
-        >
-          Udostępnione mi
+        <button class="tab-btn" [class.active]="activeTab() === 'shared'" (click)="activeTab.set('shared')">
+          {{ 'app.shared_lists' | translate }}
+        </button>
+        <button class="tab-btn" [class.active]="activeTab() === 'archive'" (click)="activeTab.set('archive')">
+          {{ 'app.archive' | translate }}
         </button>
       </div>
     }
-    @if (activeTab() === 'my' && !showCreateForm()) {
-      <button class="btn-create" (click)="showCreateFormToggle()">
-        + Nowa lista
-      </button>
+    @if (activeTab() === 'my' && !showCreateForm() && !showTemplatePicker()) {
+      <div class="create-actions">
+        <button class="btn-create" (click)="showCreateFormToggle()">+ {{ 'app.new_list' | translate }}</button>
+        <button class="btn-create secondary" (click)="openTemplatePicker()">{{ 'app.from_template' | translate }}</button>
+      </div>
     }
   </div>
+
+  @if (showTemplatePicker()) {
+    <div class="template-picker">
+      <h3>{{ 'template.create_from' | translate }}</h3>
+      @if (templates().length === 0) {
+        <p class="no-templates">{{ 'app.no_templates' | translate }}</p>
+      } @else {
+        <ul class="template-list">
+          @for (t of templates(); track t.id) {
+            <li>
+              <button type="button" class="template-btn" (click)="createListFromTemplate(t.id, t.name)">
+                {{ t.name }} ({{ t.products.length }} {{ 'app.products' | translate }})
+              </button>
+            </li>
+          }
+        </ul>
+      }
+      <button type="button" class="btn-cancel" (click)="showTemplatePicker.set(false)">{{ 'app.cancel' | translate }}</button>
+    </div>
+  }
 
   @if (showCreateForm()) {
     <div class="create-form">
       <input
         type="text"
         [(ngModel)]="newListName"
-        placeholder="Nazwa listy"
+        [placeholder]="'app.list_name' | translate"
         class="list-name-input"
         (keyup.enter)="createList()"
         autofocus
       />
       <div class="form-actions">
-        <button class="btn-save" (click)="createList()">Utwórz</button>
-        <button class="btn-cancel" (click)="cancelCreate()">Anuluj</button>
+        <button class="btn-save" (click)="createList()">{{ 'app.create' | translate }}</button>
+        <button class="btn-cancel" (click)="cancelCreate()">{{ 'app.cancel' | translate }}</button>
       </div>
     </div>
   }
@@ -66,46 +79,50 @@
   @if (getCurrentLists().length === 0) {
     <div class="empty-state">
       @if (activeTab() === 'my') {
-        <p>Nie masz jeszcze żadnych list zakupów.</p>
-        <p>Utwórz nową listę, aby zacząć!</p>
+        <p>{{ 'app.empty_my_lists' | translate }}</p>
+        <p>{{ 'app.create_first' | translate }}</p>
+      } @else if (activeTab() === 'shared') {
+        <p>{{ 'app.empty_shared' | translate }}</p>
       } @else {
-        <p>Nie masz jeszcze żadnych udostępnionych list.</p>
+        <p>{{ 'app.no_archived' | translate }}</p>
       }
     </div>
   } @else {
     <div class="lists-grid">
       @for (list of getCurrentLists(); track list.id) {
-        <div class="list-card" [routerLink]="['/list', list.id]">
-          <div class="list-header">
-            <h2>{{ list.name }}</h2>
-            @if (isSharedList(list)) {
-              <span class="shared-badge">Udostępnione</span>
-            }
-            @if (activeTab() === 'my') {
-              <button
-                class="btn-delete"
-                (click)="deleteList(list.id, $event)"
-                title="Usuń listę"
-              >
-                ×
-              </button>
-            }
-          </div>
-          <div class="list-info">
-            <p class="date">Utworzono: {{ list.createdAt | date:'short' }}</p>
-            <p class="products-count">
-              Produkty: {{ getPurchasedCount(list) }}/{{ getProductCount(list) }}
-            </p>
-          </div>
-          @if (getProductCount(list) > 0) {
-            <div class="progress-bar">
-              <div
-                class="progress-fill"
-                [style.width.%]="(getPurchasedCount(list) / getProductCount(list)) * 100"
-              ></div>
+        @if (activeTab() === 'archive') {
+          <div class="list-card archived-card">
+            <div class="list-header">
+              <h2>{{ list.name }}</h2>
+              <button type="button" class="btn-restore" (click)="unarchiveList(list.id)">{{ 'app.restore' | translate }}</button>
             </div>
-          }
-        </div>
+            <div class="list-info">
+              <p class="date">{{ 'app.created' | translate }}: {{ list.createdAt | date:'short' }}</p>
+              <p class="products-count">{{ 'app.products' | translate }}: {{ getProductCount(list) }}</p>
+            </div>
+          </div>
+        } @else {
+          <a class="list-card" [routerLink]="['/list', list.id]">
+            <div class="list-header">
+              <h2>{{ list.name }}</h2>
+              @if (isSharedList(list)) {
+                <span class="shared-badge">{{ 'app.shared_badge' | translate }}</span>
+              }
+              @if (activeTab() === 'my') {
+                <button class="btn-delete" (click)="deleteList(list.id, $event); $event.preventDefault()" [title]="'app.delete_list' | translate">×</button>
+              }
+            </div>
+            <div class="list-info">
+              <p class="date">{{ 'app.created' | translate }}: {{ list.createdAt | date:'short' }}</p>
+              <p class="products-count">{{ 'app.products' | translate }}: {{ getPurchasedCount(list) }}/{{ getProductCount(list) }}</p>
+            </div>
+            @if (getProductCount(list) > 0) {
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="(getPurchasedCount(list) / getProductCount(list)) * 100"></div>
+              </div>
+            }
+          </a>
+        }
       }
     </div>
   }
