@@ -43,6 +43,9 @@
 
             <div class="options-section">
               <button type="button" (click)="focusListSearchFromMenu()"><span class="options-icon">🔍</span> Szukaj na liście</button>
+            </div>
+
+            <div class="options-section">
               <button type="button" (click)="renameList()"><span class="options-icon">✏️</span> {{ 'menu.rename' | translate }}</button>
               <button type="button" (click)="openShareFromMenu()" [disabled]="!isOwner()"><span class="options-icon">👥</span> {{ 'menu.share' | translate }}</button>
               <button type="button" (click)="stopSharingFromMenu()" [disabled]="!isOwner() || getSharedWith().length === 0"><span class="options-icon">🚫</span> Przestań udostępniać</button>
