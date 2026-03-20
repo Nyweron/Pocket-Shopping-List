@@ -42,38 +42,45 @@
             <div class="options-handle"></div>
 
             <div class="options-section">
-              <button type="button" (click)="focusListSearchFromMenu()"><span class="options-icon">🔍</span> Szukaj na liście</button>
+              <button type="button" (click)="focusListSearchFromMenu()"><span class="options-icon">⌕</span> Szukaj na liście</button>
             </div>
 
             <div class="options-section">
-              <button type="button" (click)="renameList()"><span class="options-icon">✏️</span> {{ 'menu.rename' | translate }}</button>
-              <button type="button" (click)="openShareFromMenu()" [disabled]="!isOwner()"><span class="options-icon">👥</span> {{ 'menu.share' | translate }}</button>
-              <button type="button" (click)="stopSharingFromMenu()" [disabled]="!isOwner() || getSharedWith().length === 0"><span class="options-icon">🚫</span> Przestań udostępniać</button>
+              <button type="button" (click)="renameList()"><span class="options-icon">✎</span> {{ 'menu.rename' | translate }}</button>
+              <button type="button" (click)="openShareFromMenu()" [disabled]="!isOwner()"><span class="options-icon">◎</span> {{ 'menu.share' | translate }}</button>
+              <button type="button" (click)="stopSharingFromMenu()" [disabled]="!isOwner() || getSharedWith().length === 0"><span class="options-icon">⊘</span> Przestań udostępniać</button>
             </div>
 
             <div class="options-section">
               <button type="button" (click)="openSortSheet()">
-                <span class="options-icon">↕️</span> Sortuj według:
+                <span class="options-icon">⇅</span> Sortuj według:
                 <span class="options-value">{{ getCurrentSortLabel() }}</span>
               </button>
               <button type="button" (click)="toggleThemeFromMenu()">
-                <span class="options-icon">🌓</span> {{ 'list.theme' | translate }}: {{ themeService.theme() === 'light' ? ('list.theme_dark' | translate) : ('list.theme_light' | translate) }}
+                <span class="options-icon">◐</span> {{ 'list.theme' | translate }}: {{ themeService.theme() === 'light' ? ('list.theme_dark' | translate) : ('list.theme_light' | translate) }}
               </button>
               @if (isListArchived()) {
-                <button type="button" (click)="unarchiveList()"><span class="options-icon">📂</span> {{ 'menu.unarchive' | translate }}</button>
+                <button type="button" (click)="unarchiveList()"><span class="options-icon">◫</span> {{ 'menu.unarchive' | translate }}</button>
               } @else {
-                <button type="button" (click)="archiveList()"><span class="options-icon">🗂️</span> {{ 'menu.archive' | translate }}</button>
+                <button type="button" (click)="archiveList()"><span class="options-icon">◫</span> {{ 'menu.archive' | translate }}</button>
               }
-              <button type="button" (click)="saveAsTemplate()" [disabled]="!isOwner()"><span class="options-icon">📋</span> {{ 'menu.save_template' | translate }}</button>
+              <button type="button" (click)="saveAsTemplate()" [disabled]="!isOwner()"><span class="options-icon">≣</span> {{ 'menu.save_template' | translate }}</button>
             </div>
 
             <div class="options-section">
-              <button type="button" (click)="uncheckAllProducts()"><span class="options-icon">🔄</span> {{ 'list.uncheck_all_btn' | translate }}</button>
-              <button type="button" (click)="checkAllProducts()"><span class="options-icon">✅</span> {{ 'list.check_all' | translate }}</button>
+              <button type="button" (click)="uncheckAllProducts()"><span class="options-icon">↺</span> {{ 'list.uncheck_all_btn' | translate }}</button>
+              <button type="button" (click)="checkAllProducts()"><span class="options-icon">☑</span> {{ 'list.check_all' | translate }}</button>
             </div>
 
             <div class="options-section">
-              <button type="button" class="options-danger" (click)="removePurchasedProducts()"><span class="options-icon">🗑️</span> {{ 'list.remove_purchased' | translate }}</button>
+              <button type="button" class="options-danger" (click)="removePurchasedProducts()">
+                <span class="options-icon options-icon-danger" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" class="options-icon-svg">
+                    <path d="M4 7h16M9 7V5h6v2M8 7l1 12h6l1-12M10 10v6M14 10v6" />
+                  </svg>
+                </span>
+                {{ 'list.remove_purchased' | translate }}
+              </button>
             </div>
           </div>
         </div>
@@ -159,14 +166,6 @@
 
     <div class="controls">
       <div class="control-row">
-        <div class="filter-control">
-          <label>{{ 'list.filter' | translate }}:</label>
-          <select [(ngModel)]="filterBy" (ngModelChange)="filterBy.set($event)">
-            <option value="all">{{ 'list.all' | translate }}</option>
-            <option value="purchased">{{ 'list.purchased' | translate }}</option>
-            <option value="notPurchased">{{ 'list.not_purchased' | translate }}</option>
-          </select>
-        </div>
       </div>
       @if (getPurchasedCount() > 0) {
         <button class="btn-uncheck-all" (click)="uncheckAllProducts()">

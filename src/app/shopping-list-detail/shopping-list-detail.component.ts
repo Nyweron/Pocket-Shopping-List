@@ -16,7 +16,6 @@ import { TranslatePipe } from '../pipes/translate.pipe';
 import { SwipePreventDirective } from '../directives/swipe-prevent.directive';
 
 type SortOption = 'name' | 'category' | 'priority' | 'purchased' | 'custom';
-type FilterOption = 'all' | 'purchased' | 'notPurchased';
 
 @Component({
   selector: 'app-shopping-list-detail',
@@ -29,7 +28,6 @@ export class ShoppingListDetailComponent implements OnInit {
   list = signal<ShoppingList | null>(null);
   editingProduct = signal<Product | null>(null);
   sortBy = signal<SortOption>('category');
-  filterBy = signal<FilterOption>('all');
   listSearchQuery = signal('');
 
   sortOptions: SortOption[] = [
@@ -39,7 +37,6 @@ export class ShoppingListDetailComponent implements OnInit {
     'priority',
     'purchased'
   ];
-  filterOptions: FilterOption[] = ['all', 'purchased', 'notPurchased'];
   priorities = Object.values(ProductPriority);
   categories = Object.values(ProductCategory);
   quantityUnits: { value: string; label: string }[] = [
@@ -160,14 +157,6 @@ export class ShoppingListDetailComponent implements OnInit {
     if (!list) return [];
 
     let products = [...list.products];
-
-    // Filtrowanie
-    const filter = this.filterBy();
-    if (filter === 'purchased') {
-      products = products.filter(p => p.isPurchased);
-    } else if (filter === 'notPurchased') {
-      products = products.filter(p => !p.isPurchased);
-    }
 
     const search = this.listSearchQuery().toLowerCase().trim();
     if (search) {
@@ -435,6 +424,13 @@ export class ShoppingListDetailComponent implements OnInit {
   removePurchasedProducts(): void {
     const list = this.list();
     if (!list) return;
+
+    const purchasedCount = list.products.filter(p => p.isPurchased).length;
+    if (purchasedCount === 0) {
+      alert('Brak kupionych produktów do usunięcia.');
+      this.showOptionsMenu.set(false);
+      return;
+    }
 
     if (!confirm(this.translate.get('confirm.remove_purchased'))) {
       return;
