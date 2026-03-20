@@ -1,59 +1,106 @@
-# TodoAngularCursor
+# Pocket Shopping List
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.5.
+Mobile-first shopping list application built with Angular and prepared for Android packaging via Capacitor.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- Create and manage shopping lists
+- Product management (add, edit, delete, mark purchased)
+- Quantity with units (`szt`, `g`, `kg`, `ml`, `l`)
+- List sharing flow (owner + shared users)
+- Bottom-sheet options menu (mobile UX)
+- Sorting from menu (`category`, `name`, `priority`, `status`)
+- Search inside list
+- Archive and restore lists
+- Save list as template and create list from template
+- Basic statistics view
+- Light/Dark theme switch
+- PL/EN language switch
+- Demo mode with limits and periodic reset
 
-```bash
-ng serve
-```
+## Tech Stack
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- Angular 19
+- TypeScript
+- CSS (mobile-first)
+- LocalStorage (data persistence)
+- Capacitor 8 (Android shell)
 
-## Code scaffolding
+## Requirements
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Node.js `>=18`
+- npm `>=9`
+- (Optional for Android) Android Studio with Android SDK
 
-```bash
-ng generate component component-name
-```
+## Getting Started
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Install dependencies:
 
 ```bash
-ng test
+npm install
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+Run development server:
 
 ```bash
-ng e2e
+npm run start
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Open:
 
-## Additional Resources
+- `http://localhost:4200/`
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Available Scripts
+
+- `npm run start` - start Angular dev server
+- `npm run build` - build Angular app
+- `npm run build:production` - production build
+- `npm run test` - run unit tests
+- `npm run cap:copy` - copy web assets to Android project
+- `npm run cap:sync` - sync Android Capacitor project
+- `npm run build:android` - production build + copy/sync for Android
+
+## Project Structure
+
+```text
+src/
+  app/
+    shopping-lists/          # lists overview
+    shopping-list-detail/    # list details, products, bottom sheets
+    services/                # auth, lists, theme, i18n, demo limits, etc.
+android/                     # Capacitor Android project
+graphics/                    # source graphics/icons
+```
+
+## Android Build (Local APK)
+
+1. Build and sync web app into Android project:
+
+```bash
+npm run build:android
+```
+
+2. Open `android/` in Android Studio.
+3. Build APK:
+   - `Build > Build Bundle(s) / APK(s) > Build APK(s)`
+4. Locate output APK (typically):
+   - `android/app/build/outputs/apk/debug/app-debug.apk`
+5. Install on phone directly, or upload APK to Google Drive and install from phone.
+
+> Note: `capacitor.config.ts` uses `webDir: dist/todo-angular-cursor/browser` (required for Angular 19 app build output).
+
+## Data and Demo Mode
+
+- Data is currently stored in browser/device `localStorage`.
+- Demo user flow is available for quick testing.
+- Demo constraints are applied (e.g. list/product limits), with reset support.
+
+## Notes for Contributors
+
+- Keep UI mobile-first.
+- Prefer consistent theme variables from `src/styles.css`.
+- Do not commit generated build artifacts (`dist/`, Android build caches, generated assets already covered by `.gitignore`).
+
+## License
+
+MIT
