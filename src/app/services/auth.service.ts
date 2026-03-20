@@ -22,7 +22,7 @@ export class AuthService {
   ) {
     this.initializeDemoUser();
     this.loadCurrentUser();
-    this.maybeResetDemoAfter24h();
+    //this.maybeResetDemoAfter24h();
   }
 
   isDemoUser(): boolean {

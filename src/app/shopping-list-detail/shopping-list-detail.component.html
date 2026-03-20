@@ -60,27 +60,23 @@
           <span class="total-price">Szacowany koszt: {{ getTotalPrice() | number:'1.2-2' }} zł</span>
         }
       </div>
-      @if (isOwner()) {
+      @if (isOwner() && showShareForm()) {
         <div class="share-section">
-          @if (!showShareForm()) {
-            <button class="btn-share" (click)="showShareForm.set(true)">Udostępnij listę</button>
-          } @else {
-            <div class="share-form">
-              <input
-                type="email"
-                [(ngModel)]="shareEmail"
-                placeholder="Email użytkownika"
-                class="share-input"
-              />
-              <div class="share-form-actions">
-                <button class="btn-share-submit" (click)="shareList()">Udostępnij</button>
-                <button class="btn-share-cancel" (click)="showShareForm.set(false)">Anuluj</button>
-              </div>
-              @if (shareError()) {
-                <div class="share-error">{{ shareError() }}</div>
-              }
+          <div class="share-form">
+            <input
+              type="email"
+              [(ngModel)]="shareEmail"
+              placeholder="Email użytkownika"
+              class="share-input"
+            />
+            <div class="share-form-actions">
+              <button class="btn-share-submit" (click)="shareList()">Udostępnij</button>
+              <button class="btn-share-cancel" (click)="showShareForm.set(false)">Anuluj</button>
             </div>
-          }
+            @if (shareError()) {
+              <div class="share-error">{{ shareError() }}</div>
+            }
+          </div>
         </div>
       }
     </div>
