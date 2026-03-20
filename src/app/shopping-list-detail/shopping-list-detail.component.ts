@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +15,7 @@ import { TranslateService } from '../services/translate.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { SwipePreventDirective } from '../directives/swipe-prevent.directive';
 
-type SortOption = 'name' | 'category' | 'priority' | 'purchased';
+type SortOption = 'name' | 'category' | 'priority' | 'purchased' | 'custom';
 type FilterOption = 'all' | 'purchased' | 'notPurchased';
 
 @Component({
@@ -25,13 +25,20 @@ type FilterOption = 'all' | 'purchased' | 'notPurchased';
   styleUrl: './shopping-list-detail.component.css'
 })
 export class ShoppingListDetailComponent implements OnInit {
+  @ViewChild('listSearchInput') listSearchInput?: ElementRef<HTMLInputElement>;
   list = signal<ShoppingList | null>(null);
   editingProduct = signal<Product | null>(null);
-  sortBy = signal<SortOption>('name');
+  sortBy = signal<SortOption>('category');
   filterBy = signal<FilterOption>('all');
   listSearchQuery = signal('');
 
-  sortOptions: SortOption[] = ['name', 'category', 'priority', 'purchased'];
+  sortOptions: SortOption[] = [
+    'category',
+    'name',
+    // 'custom', // Tymczasowo wyłączone - wrócimy do tej opcji później
+    'priority',
+    'purchased'
+  ];
   filterOptions: FilterOption[] = ['all', 'purchased', 'notPurchased'];
   priorities = Object.values(ProductPriority);
   categories = Object.values(ProductCategory);
@@ -48,6 +55,7 @@ export class ShoppingListDetailComponent implements OnInit {
   showShareForm = signal(false);
   shareError = signal<string | null>(null);
   showOptionsMenu = signal(false);
+  showSortSheet = signal(false);
 
   private touchStartX = 0;
   private touchCurrentX = 0;
@@ -175,6 +183,8 @@ export class ShoppingListDetailComponent implements OnInit {
     const sort = this.sortBy();
     products.sort((a, b) => {
       switch (sort) {
+        case 'custom':
+          return 0;
         case 'name':
           return a.name.localeCompare(b.name);
         case 'category':
@@ -286,6 +296,43 @@ export class ShoppingListDetailComponent implements OnInit {
     this.showOptionsMenu.set(!this.showOptionsMenu());
   }
 
+  closeOptionsMenu(): void {
+    this.showOptionsMenu.set(false);
+  }
+
+  openSortSheet(): void {
+    this.showOptionsMenu.set(false);
+    this.showSortSheet.set(true);
+  }
+
+  closeSortSheet(): void {
+    this.showSortSheet.set(false);
+  }
+
+  backToOptionsFromSortSheet(): void {
+    this.showSortSheet.set(false);
+    this.showOptionsMenu.set(true);
+  }
+
+  selectSortFromSheet(option: SortOption): void {
+    this.sortBy.set(option);
+    this.showSortSheet.set(false);
+  }
+
+  focusListSearchFromMenu(): void {
+    this.showOptionsMenu.set(false);
+    setTimeout(() => this.listSearchInput?.nativeElement?.focus(), 10);
+  }
+
+  getCurrentSortLabel(): string {
+    const current = this.sortBy();
+    if (current === 'category') return 'Kategorie';
+    if (current === 'name') return 'Alfabetycznie';
+    if (current === 'custom') return 'Własne';
+    if (current === 'priority') return this.translate.get('list.sort_priority');
+    return this.translate.get('list.sort_status');
+  }
+
   toggleShareForm(): void {
     if (!this.isOwner()) return;
     this.showShareForm.set(!this.showShareForm());
@@ -296,6 +343,16 @@ export class ShoppingListDetailComponent implements OnInit {
     if (!this.isOwner()) return;
     this.showOptionsMenu.set(false);
     this.showShareForm.set(true);
+  }
+
+  stopSharingFromMenu(): void {
+    const list = this.list();
+    if (!list || !this.isOwner()) return;
+    if (!confirm('Czy na pewno chcesz przestać udostępniać tę listę?')) return;
+    list.sharedWith = [];
+    this.shoppingListService.updateList(list);
+    this.loadList(list.id);
+    this.showOptionsMenu.set(false);
   }
 
   renameList(): void {

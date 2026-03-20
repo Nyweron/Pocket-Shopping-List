@@ -125,37 +125,116 @@
   font-weight: 600;
 }
 
-.options-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 0.5rem;
+.options-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.45);
+  z-index: 80;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.options-sheet {
+  width: min(640px, 100%);
   background: var(--color-bg-elevated);
-  border-radius: 8px;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
   border: 1px solid var(--color-border-soft);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
-  padding: 0.5rem 0;
-  min-width: 220px;
-  z-index: 20;
+  border-bottom: none;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.28);
+  padding: 0.5rem 0 1rem;
+  max-height: 82vh;
+  overflow-y: auto;
 }
 
-.header-right {
-  position: relative;
+.options-handle {
+  width: 42px;
+  height: 4px;
+  background: var(--color-border-strong);
+  border-radius: 999px;
+  margin: 0.25rem auto 0.75rem;
 }
 
-.options-menu button {
+.options-section {
+  margin: 0.5rem 0;
+}
+
+.options-section + .options-section {
+  border-top: 1px solid var(--color-border-soft);
+  padding-top: 0.5rem;
+}
+
+.options-sheet button {
   width: 100%;
-  padding: 0.6rem 1rem;
+  padding: 0.9rem 1.25rem;
   border: none;
   background: transparent;
   text-align: left;
-  font-size: 0.875rem;
+  font-size: 1.06rem;
   color: var(--color-text-primary);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
-.options-menu button:hover {
+.options-sheet button:active {
   background: var(--color-bg-subtle);
+}
+
+.options-value {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.options-sheet .options-danger {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.options-icon {
+  width: 1.25rem;
+  display: inline-flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sort-sheet .sort-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.75rem 0.6rem;
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+.sort-sheet .sort-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.sort-back,
+.sort-close {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 1.25rem;
+}
+
+.sort-sheet button.sort-active {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.sort-check {
+  margin-left: auto;
+  color: var(--color-primary);
+  font-weight: 700;
 }
 
 .total-price {

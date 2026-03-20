@@ -34,26 +34,84 @@
           >
             ⋮
           </button>
-          @if (showOptionsMenu()) {
-            <div class="options-menu">
-              <button type="button" (click)="toggleThemeFromMenu()">
-                {{ 'list.theme' | translate }}: {{ themeService.theme() === 'light' ? ('list.theme_dark' | translate) : ('list.theme_light' | translate) }}
-              </button>
-              @if (isListArchived()) {
-                <button type="button" (click)="unarchiveList()">{{ 'menu.unarchive' | translate }}</button>
-              } @else {
-                <button type="button" (click)="archiveList()">{{ 'menu.archive' | translate }}</button>
-              }
-              <button type="button" (click)="saveAsTemplate()" [disabled]="!isOwner()">{{ 'menu.save_template' | translate }}</button>
-              <button type="button" (click)="renameList()">{{ 'menu.rename' | translate }}</button>
-              <button type="button" (click)="openShareFromMenu()" [disabled]="!isOwner()">{{ 'menu.share' | translate }}</button>
-              <button type="button" (click)="checkAllProducts()">{{ 'list.check_all' | translate }}</button>
-              <button type="button" (click)="uncheckAllProducts()">{{ 'list.uncheck_all_btn' | translate }}</button>
-              <button type="button" (click)="removePurchasedProducts()">{{ 'list.remove_purchased' | translate }}</button>
-            </div>
-          }
         </div>
       </div>
+      @if (showOptionsMenu()) {
+        <div class="options-overlay" (click)="closeOptionsMenu()">
+          <div class="options-sheet" (click)="$event.stopPropagation()">
+            <div class="options-handle"></div>
+
+            <div class="options-section">
+              <button type="button" (click)="focusListSearchFromMenu()"><span class="options-icon">🔍</span> Szukaj na liście</button>
+              <button type="button" (click)="renameList()"><span class="options-icon">✏️</span> {{ 'menu.rename' | translate }}</button>
+              <button type="button" (click)="openShareFromMenu()" [disabled]="!isOwner()"><span class="options-icon">👥</span> {{ 'menu.share' | translate }}</button>
+              <button type="button" (click)="stopSharingFromMenu()" [disabled]="!isOwner() || getSharedWith().length === 0"><span class="options-icon">🚫</span> Przestań udostępniać</button>
+            </div>
+
+            <div class="options-section">
+              <button type="button" (click)="openSortSheet()">
+                <span class="options-icon">↕️</span> Sortuj według:
+                <span class="options-value">{{ getCurrentSortLabel() }}</span>
+              </button>
+              <button type="button" (click)="toggleThemeFromMenu()">
+                <span class="options-icon">🌓</span> {{ 'list.theme' | translate }}: {{ themeService.theme() === 'light' ? ('list.theme_dark' | translate) : ('list.theme_light' | translate) }}
+              </button>
+              @if (isListArchived()) {
+                <button type="button" (click)="unarchiveList()"><span class="options-icon">📂</span> {{ 'menu.unarchive' | translate }}</button>
+              } @else {
+                <button type="button" (click)="archiveList()"><span class="options-icon">🗂️</span> {{ 'menu.archive' | translate }}</button>
+              }
+              <button type="button" (click)="saveAsTemplate()" [disabled]="!isOwner()"><span class="options-icon">📋</span> {{ 'menu.save_template' | translate }}</button>
+            </div>
+
+            <div class="options-section">
+              <button type="button" (click)="uncheckAllProducts()"><span class="options-icon">🔄</span> {{ 'list.uncheck_all_btn' | translate }}</button>
+              <button type="button" (click)="checkAllProducts()"><span class="options-icon">✅</span> {{ 'list.check_all' | translate }}</button>
+            </div>
+
+            <div class="options-section">
+              <button type="button" class="options-danger" (click)="removePurchasedProducts()"><span class="options-icon">🗑️</span> {{ 'list.remove_purchased' | translate }}</button>
+            </div>
+          </div>
+        </div>
+      }
+      @if (showSortSheet()) {
+        <div class="options-overlay" (click)="closeSortSheet()">
+          <div class="options-sheet sort-sheet" (click)="$event.stopPropagation()">
+            <div class="options-handle"></div>
+            <div class="sort-header">
+              <button type="button" class="sort-back" (click)="backToOptionsFromSortSheet()">←</button>
+              <h3>Sortuj według</h3>
+              <button type="button" class="sort-close" (click)="closeSortSheet()">✕</button>
+            </div>
+
+            <div class="options-section">
+              <button type="button" (click)="selectSortFromSheet('category')" [class.sort-active]="sortBy() === 'category'">
+                <span class="options-icon">↧↥</span> Kategorie
+                <span class="sort-check">@if (sortBy() === 'category') { ✔ }</span>
+              </button>
+              <button type="button" (click)="selectSortFromSheet('name')" [class.sort-active]="sortBy() === 'name'">
+                <span class="options-icon">⇅</span> Alfabetycznie
+                <span class="sort-check">@if (sortBy() === 'name') { ✔ }</span>
+              </button>
+              <!--
+              <button type="button" (click)="selectSortFromSheet('custom')" [class.sort-active]="sortBy() === 'custom'">
+                <span class="options-icon">≡</span> Własne
+                <span class="sort-check">@if (sortBy() === 'custom') { ✔ }</span>
+              </button>
+              -->
+              <button type="button" (click)="selectSortFromSheet('priority')" [class.sort-active]="sortBy() === 'priority'">
+                <span class="options-icon">⚑</span> {{ 'list.sort_priority' | translate }}
+                <span class="sort-check">@if (sortBy() === 'priority') { ✔ }</span>
+              </button>
+              <button type="button" (click)="selectSortFromSheet('purchased')" [class.sort-active]="sortBy() === 'purchased'">
+                <span class="options-icon">☑</span> {{ 'list.sort_status' | translate }}
+                <span class="sort-check">@if (sortBy() === 'purchased') { ✔ }</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
       <div class="list-stats">
         <span>{{ getPurchasedCount() }}/{{ getTotalCount() }} produktów</span>
         @if (getTotalPrice() > 0) {
@@ -87,6 +145,7 @@
 
     <div class="list-search">
       <input
+        #listSearchInput
         type="text"
         [placeholder]="'list.search_products' | translate"
         [ngModel]="listSearchQuery()"
@@ -103,15 +162,6 @@
             <option value="all">{{ 'list.all' | translate }}</option>
             <option value="purchased">{{ 'list.purchased' | translate }}</option>
             <option value="notPurchased">{{ 'list.not_purchased' | translate }}</option>
-          </select>
-        </div>
-        <div class="sort-control">
-          <label>{{ 'list.sort' | translate }}:</label>
-          <select [(ngModel)]="sortBy" (ngModelChange)="sortBy.set($event)">
-            <option value="name">{{ 'list.sort_name' | translate }}</option>
-            <option value="category">{{ 'list.sort_category' | translate }}</option>
-            <option value="priority">{{ 'list.sort_priority' | translate }}</option>
-            <option value="purchased">{{ 'list.sort_status' | translate }}</option>
           </select>
         </div>
       </div>
