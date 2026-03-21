@@ -60,6 +60,31 @@
               <button type="button" (click)="toggleThemeFromMenu()">
                 <span class="options-icon">◐</span> {{ 'list.theme' | translate }}: {{ themeService.theme() === 'light' ? ('list.theme_dark' | translate) : ('list.theme_light' | translate) }}
               </button>
+              <div
+                class="options-toggle-row"
+                (click)="$event.stopPropagation()"
+                role="group"
+                [attr.aria-label]="translate.get('list.show_prices')"
+              >
+                <span class="options-icon options-icon-neutral" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" class="options-icon-svg" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- dwie nakładające się etykiety cenowe -->
+                    <path d="M4 5.5h9.5L17 9v9.5a1.5 1.5 0 0 1-1.5 1.5H4a1.5 1.5 0 0 1-1.5-1.5V7A1.5 1.5 0 0 1 4 5.5Z" opacity="0.85" />
+                    <path d="M8.5 4h8.5L20 7v9a1.5 1.5 0 0 1-1.5 1.5H10" />
+                  </svg>
+                </span>
+                <span class="options-toggle-label">{{ 'list.show_prices' | translate }}</span>
+                <label class="options-switch">
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    data-testid="toggle-show-prices"
+                    [checked]="priceVisibility.showPrices()"
+                    (change)="onShowPricesSwitchChange($event)"
+                  />
+                  <span class="options-switch-track" aria-hidden="true"></span>
+                </label>
+              </div>
               @if (isListArchived()) {
                 <button type="button" (click)="unarchiveList()"><span class="options-icon">◫</span> {{ 'menu.unarchive' | translate }}</button>
               } @else {
@@ -125,8 +150,8 @@
       }
       <div class="list-stats">
         <span>{{ getPurchasedCount() }}/{{ getTotalCount() }} produktów</span>
-        @if (getTotalPrice() > 0) {
-          <span class="total-price">Szacowany koszt: {{ getTotalPrice() | number:'1.2-2' }} zł</span>
+        @if (priceVisibility.showPrices() && getTotalPrice() > 0) {
+          <span class="total-price">{{ 'list.estimated_total' | translate }}: {{ getTotalPrice() | number:'1.2-2' }} zł</span>
         }
       </div>
       @if (isOwner() && showShareForm()) {
@@ -228,7 +253,15 @@
                     }
                   </select>
                 </div>
-                <input type="number" [(ngModel)]="editingProduct()!.price" min="0" step="0.01" class="edit-input" placeholder="Cena" />
+                <!-- Cena zawsze w edycji (nawet gdy „Pokaż ceny” wyłączone na liście) -->
+                <input
+                  type="number"
+                  [(ngModel)]="editingProduct()!.price"
+                  min="0"
+                  step="0.01"
+                  class="edit-input"
+                  [placeholder]="'list.price' | translate"
+                />
                 <select [(ngModel)]="editingProduct()!.category" class="edit-select">
                   @for (category of categories; track category) {
                     <option [value]="category">{{ category }}</option>
@@ -271,7 +304,7 @@
                         <div class="product-detail-row">
                           <span class="product-category">{{ product.category }}</span>
                           <span class="product-quantity">Ilość: {{ getQuantityDisplay(product) }}</span>
-                          @if (product.price) {
+                          @if (priceVisibility.showPrices() && product.price) {
                             <span class="product-price">{{ product.price | number:'1.2-2' }} zł</span>
                           }
                           <span class="product-priority priority-{{ product.priority }}">{{ product.priority }}</span>

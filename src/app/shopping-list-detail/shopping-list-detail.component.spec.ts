@@ -5,6 +5,7 @@ import { ShoppingListService } from '../services/shopping-list.service';
 import { ShareService } from '../services/share.service';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
+import { ListPriceVisibilityService } from '../services/list-price-visibility.service';
 import { DemoLimitService } from '../services/demo-limit.service';
 import { TranslateService } from '../services/translate.service';
 import { ProductPriority } from '../models/product.model';
@@ -67,6 +68,11 @@ describe('ShoppingListDetailComponent', () => {
     ]);
     const authService = jasmine.createSpyObj<AuthService>('AuthService', ['getCurrentUser']);
     themeService = jasmine.createSpyObj<ThemeService>('ThemeService', ['toggleTheme']);
+    const priceVisibility = {
+      showPrices: () => true,
+      setShowPrices: (_v: boolean): void => {},
+      toggleShowPrices: (): void => {},
+    };
     const demoLimit = jasmine.createSpyObj<DemoLimitService>('DemoLimitService', ['showProductsLimit']);
     const translate = jasmine.createSpyObj<TranslateService>('TranslateService', ['get']);
     const router = jasmine.createSpyObj<Router>('Router', ['navigate']);
@@ -84,6 +90,7 @@ describe('ShoppingListDetailComponent', () => {
         { provide: ShareService, useValue: shareService },
         { provide: AuthService, useValue: authService },
         { provide: ThemeService, useValue: themeService },
+        { provide: ListPriceVisibilityService, useValue: priceVisibility },
         { provide: DemoLimitService, useValue: demoLimit },
         { provide: TranslateService, useValue: translate },
         { provide: Router, useValue: router },

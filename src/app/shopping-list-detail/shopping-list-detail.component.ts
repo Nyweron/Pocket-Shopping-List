@@ -10,6 +10,7 @@ import { ProductSearchComponent } from '../product-search/product-search.compone
 import { ShareService } from '../services/share.service';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
+import { ListPriceVisibilityService } from '../services/list-price-visibility.service';
 import { DemoLimitService } from '../services/demo-limit.service';
 import { TranslateService } from '../services/translate.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
@@ -69,6 +70,7 @@ export class ShoppingListDetailComponent implements OnInit {
     private shareService: ShareService,
     private authService: AuthService,
     public themeService: ThemeService,
+    public priceVisibility: ListPriceVisibilityService,
     private demoLimit: DemoLimitService,
     public translate: TranslateService
   ) {}
@@ -374,6 +376,11 @@ export class ShoppingListDetailComponent implements OnInit {
   toggleThemeFromMenu(): void {
     this.themeService.toggleTheme();
     this.showOptionsMenu.set(false);
+  }
+
+  onShowPricesSwitchChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.priceVisibility.setShowPrices(input.checked);
   }
 
   archiveList(): void {

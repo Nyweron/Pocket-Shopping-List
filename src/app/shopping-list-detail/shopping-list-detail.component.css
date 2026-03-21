@@ -172,6 +172,97 @@
   border-top: 1px solid var(--color-border-soft);
 }
 
+.options-section button + .options-toggle-row,
+.options-section .options-toggle-row + button {
+  border-top: 1px solid var(--color-border-soft);
+}
+
+/* Wiersz: ikona + „Pokaż ceny” + przełącznik (jak w Lidl / Listonic) */
+.options-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.9rem 1.25rem;
+  min-height: 48px;
+  box-sizing: border-box;
+  color: var(--color-text-primary);
+  font-size: 1.06rem;
+  font-weight: 500;
+}
+
+.options-toggle-label {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.options-icon-neutral {
+  color: var(--color-text-secondary);
+}
+
+.options-icon-neutral .options-icon-svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.options-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.options-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+.options-switch-track {
+  display: block;
+  width: 48px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--color-toggle-track-off);
+  transition: background 0.2s ease;
+  position: relative;
+}
+
+.options-switch-track::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-toggle-thumb);
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
+}
+
+.options-switch input:checked + .options-switch-track {
+  background: var(--color-toggle-track-on);
+}
+
+.options-switch input:checked + .options-switch-track::after {
+  transform: translateX(20px);
+}
+
+.options-switch input:focus-visible + .options-switch-track {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.options-toggle-row:active {
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .options-sheet button {
   width: 100%;
   padding: 0.9rem 1.25rem;
