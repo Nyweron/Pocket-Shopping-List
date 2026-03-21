@@ -58,6 +58,9 @@ lerna-debug.log*
 .history/*
 *.vsix
 
+# Cursor — rules and editor state stay local (not committed)
+.cursor/
+
 # System files
 .DS_Store
 Thumbs.db

@@ -54,7 +54,7 @@ export class AuthService {
   private initializeDemoUser(): void {
     const users = this.getAllUsers();
     
-    // Sprawdź czy testowy użytkownik już istnieje
+    // Ensure demo user exists only once
     const demoUserExists = users.some(u => u.email === 'demo@test.pl');
     
     if (!demoUserExists) {
@@ -74,12 +74,12 @@ export class AuthService {
   register(data: RegisterData): { success: boolean; error?: string } {
     const users = this.getAllUsers();
     
-    // Sprawdź czy email już istnieje
+    // Reject duplicate email
     if (users.some(u => u.email.toLowerCase() === data.email.toLowerCase())) {
       return { success: false, error: 'Email już jest zarejestrowany' };
     }
 
-    // Sprawdź czy username już istnieje
+    // Reject duplicate username
     if (users.some(u => u.username.toLowerCase() === data.username.toLowerCase())) {
       return { success: false, error: 'Nazwa użytkownika już istnieje' };
     }
@@ -88,7 +88,7 @@ export class AuthService {
       id: this.generateId(),
       email: data.email.toLowerCase(),
       username: data.username,
-      password: data.password, // W produkcji powinno być zahashowane
+      password: data.password, // Should be hashed in production
       createdAt: new Date()
     };
 

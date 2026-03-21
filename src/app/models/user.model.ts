@@ -2,7 +2,7 @@ export interface User {
   id: string;
   email: string;
   username: string;
-  password: string; // W produkcji powinno być zahashowane
+  password: string; // Should be hashed in production
   createdAt: Date;
 }
 

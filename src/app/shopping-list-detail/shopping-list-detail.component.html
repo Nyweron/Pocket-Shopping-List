@@ -68,7 +68,7 @@
               >
                 <span class="options-icon options-icon-neutral" aria-hidden="true">
                   <svg viewBox="0 0 24 24" class="options-icon-svg" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
-                    <!-- dwie nakładające się etykiety cenowe -->
+                    <!-- Two overlapping price labels -->
                     <path d="M4 5.5h9.5L17 9v9.5a1.5 1.5 0 0 1-1.5 1.5H4a1.5 1.5 0 0 1-1.5-1.5V7A1.5 1.5 0 0 1 4 5.5Z" opacity="0.85" />
                     <path d="M8.5 4h8.5L20 7v9a1.5 1.5 0 0 1-1.5 1.5H10" />
                   </svg>
@@ -130,6 +130,7 @@
                 <span class="options-icon">⇅</span> Alfabetycznie
                 <span class="sort-check">@if (sortBy() === 'name') { ✔ }</span>
               </button>
+              <!-- Custom sort option disabled for now (see component TS). -->
               <!--
               <button type="button" (click)="selectSortFromSheet('custom')" [class.sort-active]="sortBy() === 'custom'">
                 <span class="options-icon">≡</span> Własne
@@ -253,7 +254,7 @@
                     }
                   </select>
                 </div>
-                <!-- Cena zawsze w edycji (nawet gdy „Pokaż ceny” wyłączone na liście) -->
+                <!-- Price field always in edit form (even when “Show prices” is off on the list) -->
                 <input
                   type="number"
                   [(ngModel)]="editingProduct()!.price"

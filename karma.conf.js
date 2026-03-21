@@ -26,7 +26,7 @@ module.exports = function (config) {
       dir: require('path').join(__dirname, './coverage/todo-angular-cursor'),
       subdir: '.',
       reporters: [{ type: 'html' }, { type: 'text-summary' }, { type: 'lcovonly' }],
-      // Łagodny próg: poniżej obecnego stanu projektu; podnosimy stopniowo wraz z testami.
+      // Soft thresholds below current project levels; raise gradually as coverage grows.
       check: {
         global: {
           statements: 35,

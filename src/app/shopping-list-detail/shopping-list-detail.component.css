@@ -177,7 +177,7 @@
   border-top: 1px solid var(--color-border-soft);
 }
 
-/* Wiersz: ikona + „Pokaż ceny” + przełącznik (jak w Lidl / Listonic) */
+/* Row: icon + “Show prices” label + toggle (Lidl / Listonic style) */
 .options-toggle-row {
   display: flex;
   align-items: center;
@@ -684,7 +684,7 @@
   line-height: 1;
 }
 
-/* transform jest sterowany inline style */
+/* transform is driven by inline style */
 
 .product-checkbox {
   width: 24px;

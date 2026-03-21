@@ -16,6 +16,6 @@ export interface Product {
   priority: ProductPriority;
   note?: string;
   isPurchased: boolean;
-  isCustom?: boolean; // true jeśli dodany przez użytkownika
+  isCustom?: boolean; // true if user-added (custom product)
 }
 

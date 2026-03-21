@@ -20,7 +20,7 @@ export class LoginComponent {
     private authService: AuthService,
     private router: Router
   ) {
-    // Jeśli użytkownik jest już zalogowany, przekieruj do głównej strony
+    // If already logged in, redirect to home
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/']);
     }

@@ -9,13 +9,13 @@ export type ThemeName = 'light' | 'dark';
 export class ThemeService {
   private readonly STORAGE_KEY = 'theme';
 
-  // domyślnie light, nadpiszemy przy inicjalizacji
+  // Default light until initTheme() runs
   private readonly _theme = signal<ThemeName>('light');
 
   readonly theme = this._theme.asReadonly();
 
   constructor(private localStorage: LocalStorageService) {
-    // Synchronizuj każdą zmianę theme z dokumentem
+    // Keep document data-theme in sync with signal
     effect(() => {
       const current = this._theme();
       this.applyThemeToDocument(current);
@@ -23,14 +23,14 @@ export class ThemeService {
   }
 
   initTheme(): void {
-    // 1. Spróbuj odczytać z localStorage
+    // 1. Prefer stored preference
     const stored = this.localStorage.getItem<ThemeName>(this.STORAGE_KEY);
     if (stored === 'light' || stored === 'dark') {
       this._theme.set(stored);
       return;
     }
 
-    // 2. W przeciwnym razie spróbuj użyć preferencji systemowej
+    // 2. Else follow prefers-color-scheme
     if (typeof window !== 'undefined' && window.matchMedia) {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       this._theme.set(prefersDark ? 'dark' : 'light');

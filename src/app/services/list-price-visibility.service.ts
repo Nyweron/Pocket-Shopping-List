@@ -4,14 +4,14 @@ import { LocalStorageService } from './local-storage.service';
 const STORAGE_KEY = 'list_show_prices';
 
 /**
- * Globalne ustawienie: czy na liście zakupów pokazywać ceny produktów i sumę.
- * Domyślnie wyłączone — użytkownik włącza w menu (stan w localStorage).
+ * Global preference: whether to show per-item prices and estimated total on the list.
+ * Default off; user toggles in the menu (persisted in localStorage).
  */
 @Injectable({ providedIn: 'root' })
 export class ListPriceVisibilityService {
   private readonly _showPrices = signal(false);
 
-  /** Gdy false — ukryj ceny w wierszach listy i szacowany koszt (edycja: pole ceny zostaje). */
+  /** When false, hide row prices and estimated total (edit form still has price field). */
   readonly showPrices = this._showPrices.asReadonly();
 
   constructor(private localStorage: LocalStorageService) {

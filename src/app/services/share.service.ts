@@ -42,18 +42,18 @@ export class ShareService {
       return { success: false, error: 'Lista jest już udostępniona temu użytkownikowi' };
     }
 
-    // Sprawdź czy użytkownik o podanym emailu istnieje
+    // Target user must exist
     const allUsers = this.getAllUsers();
     const targetUser = allUsers.find(u => u.email.toLowerCase() === normalizedEmail);
     if (!targetUser) {
       return { success: false, error: 'Użytkownik o podanym emailu nie istnieje' };
     }
 
-    // Dodaj email do listy udostępnień
+    // Append to shared-with list on the list
     list.sharedWith.push(normalizedEmail);
     this.shoppingListService.updateList(list);
 
-    // Zapisz informację o udostępnieniu
+    // Persist share metadata
     const access: SharedListAccess = {
       listId: list.id,
       ownerEmail: currentUser.email,
@@ -76,7 +76,7 @@ export class ShareService {
     list.sharedWith = list.sharedWith.filter(e => e !== normalizedEmail);
     this.shoppingListService.updateList(list);
 
-    // Usuń z listy udostępnień
+    // Remove from shared-with list
     const allAccess = this.getAllSharedAccess();
     const filtered = allAccess.filter(
       a => !(a.listId === listId && a.sharedWithEmail === normalizedEmail)
@@ -115,7 +115,7 @@ export class ShareService {
     const list = this.shoppingListService.getListById(listId);
     if (!list) return false;
 
-    // Może edytować jeśli jest właścicielem lub lista jest z nim udostępniona
+    // Can edit if owner or list is shared with current user
     return list.ownerId === currentUser.id || 
            list.sharedWith.includes(currentUser.email.toLowerCase());
   }
@@ -131,7 +131,7 @@ export class ShareService {
   }
 
   private getAllUsers(): User[] {
-    // Używamy LocalStorageService bezpośrednio, ponieważ potrzebujemy dostępu do wszystkich użytkowników
+    // Use LocalStorageService directly to read the full users collection
     const users = this.localStorageService.getItem<User[]>('users');
     if (!users) {
       return [];

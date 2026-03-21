@@ -25,7 +25,7 @@ export class ShoppingListService {
     if (!lists) {
       return [];
     }
-    // Konwersja dat z stringów na obiekty Date i uzupełnienie brakujących pól
+    // Parse dates from JSON and fill missing fields
     return lists.map(list => ({
       ...list,
       createdAt: new Date(list.createdAt),

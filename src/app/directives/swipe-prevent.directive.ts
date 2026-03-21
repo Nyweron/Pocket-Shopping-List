@@ -1,8 +1,8 @@
 import { Directive, ElementRef, OnInit, OnDestroy } from '@angular/core';
 
 /**
- * Zapobiega przewijaniu strony przy poziomym swipe na elemencie.
- * Listener touchmove z passive: false umożliwia preventDefault().
+ * Prevents page scroll when the user swipes horizontally on the host element.
+ * touchmove uses passive: false so preventDefault() can run.
  */
 @Directive({
   selector: '[appSwipePrevent]',
@@ -31,7 +31,7 @@ export class SwipePreventDirective implements OnInit, OnDestroy {
       if (e.touches.length !== 1) return;
       const dx = e.touches[0].clientX - this.touchStartX;
       const dy = e.touches[0].clientY - this.touchStartY;
-      // Blokuj domyślne zachowanie tylko przy wyraźnym ruchu poziomym
+      // Only block default on clear horizontal gesture
       if (Math.abs(dx) > 15 && Math.abs(dx) > Math.abs(dy)) {
         e.preventDefault();
       }

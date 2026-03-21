@@ -34,7 +34,7 @@ export class ShoppingListDetailComponent implements OnInit {
   sortOptions: SortOption[] = [
     'category',
     'name',
-    // 'custom', // Tymczasowo wyłączone - wrócimy do tej opcji później
+    // 'custom', // Temporarily disabled — revisit later
     'priority',
     'purchased'
   ];
@@ -170,7 +170,7 @@ export class ShoppingListDetailComponent implements OnInit {
       );
     }
 
-    // Sortowanie
+    // Sorting
     const sort = this.sortBy();
     products.sort((a, b) => {
       switch (sort) {
@@ -450,13 +450,13 @@ export class ShoppingListDetailComponent implements OnInit {
   }
 
   onProductTap(product: Product): void {
-    // Jeśli jakiś element jest wysunięty do usunięcia, najpierw schowaj
+    // If another row is swiped open for delete, collapse it first
     if (this.swipedProductId && this.swipedProductId !== product.id) {
       this.swipedProductId = null;
       return;
     }
 
-    // Jeśli aktualnie ten produkt jest wysunięty – schowaj zamiast edytować
+    // If this product row is swiped open, collapse instead of opening edit
     if (this.swipedProductId === product.id) {
       this.swipedProductId = null;
       return;
