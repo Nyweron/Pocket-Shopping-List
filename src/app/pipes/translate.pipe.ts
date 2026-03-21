@@ -6,8 +6,8 @@ export class TranslatePipe implements PipeTransform {
   private translate = inject(TranslateService);
   private cdr = inject(ChangeDetectorRef);
 
-  transform(key: string): string {
+  transform(key: string, params?: Record<string, string>): string {
     this.translate.currentLang();
-    return this.translate.get(key);
+    return this.translate.get(key, params);
   }
 }

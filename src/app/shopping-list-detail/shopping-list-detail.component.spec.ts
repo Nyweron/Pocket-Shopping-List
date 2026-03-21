@@ -6,7 +6,6 @@ import { ShareService } from '../services/share.service';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
 import { ListPriceVisibilityService } from '../services/list-price-visibility.service';
-import { DemoLimitService } from '../services/demo-limit.service';
 import { TranslateService } from '../services/translate.service';
 import { ProductPriority } from '../models/product.model';
 import { ProductCategory } from '../models/product-category.enum';
@@ -73,7 +72,6 @@ describe('ShoppingListDetailComponent', () => {
       setShowPrices: (_v: boolean): void => {},
       toggleShowPrices: (): void => {},
     };
-    const demoLimit = jasmine.createSpyObj<DemoLimitService>('DemoLimitService', ['showProductsLimit']);
     const translate = jasmine.createSpyObj<TranslateService>('TranslateService', ['get']);
     const router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     translate.get.and.callFake((k: string) => k);
@@ -91,7 +89,6 @@ describe('ShoppingListDetailComponent', () => {
         { provide: AuthService, useValue: authService },
         { provide: ThemeService, useValue: themeService },
         { provide: ListPriceVisibilityService, useValue: priceVisibility },
-        { provide: DemoLimitService, useValue: demoLimit },
         { provide: TranslateService, useValue: translate },
         { provide: Router, useValue: router },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => 'l1' } } } },

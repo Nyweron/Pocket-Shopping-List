@@ -30,9 +30,12 @@ test.describe('Smoke flows', () => {
     await loginDemo(page);
     await createListAndOpen(page);
 
-    await page.getByTestId('add-custom-toggle').click();
-    await page.getByTestId('custom-product-name').fill('Produkt smoke');
-    await page.getByTestId('custom-product-submit').click();
+    await page.getByTestId('fab-add-products').click();
+    await expect(page).toHaveURL(/\/add$/);
+    await page.getByTestId('add-products-search-input').fill('Produkt smoke');
+    await page.getByTestId('add-custom-suggestion').click();
+    await page.getByTestId('add-page-back').click();
+    await expect(page).not.toHaveURL(/\/add$/);
 
     const firstCheckbox = page.locator('[data-testid^="product-checkbox-"]').first();
     await expect(firstCheckbox).toBeVisible();
@@ -43,9 +46,10 @@ test.describe('Smoke flows', () => {
     await loginDemo(page);
     await createListAndOpen(page, 'Edit flow');
 
-    await page.getByTestId('add-custom-toggle').click();
-    await page.getByTestId('custom-product-name').fill('Do edycji');
-    await page.getByTestId('custom-product-submit').click();
+    await page.getByTestId('fab-add-products').click();
+    await page.getByTestId('add-products-search-input').fill('Do edycji');
+    await page.getByTestId('add-custom-suggestion').click();
+    await page.getByTestId('add-page-back').click();
 
     const firstItem = page.locator('[data-testid^="product-item-"]').first();
     await firstItem.click();
@@ -61,9 +65,10 @@ test.describe('Smoke flows', () => {
     await loginDemo(page);
     await createListAndOpen(page, 'Sort flow');
 
-    await page.getByTestId('add-custom-toggle').click();
-    await page.getByTestId('custom-product-name').fill('Sortowany');
-    await page.getByTestId('custom-product-submit').click();
+    await page.getByTestId('fab-add-products').click();
+    await page.getByTestId('add-products-search-input').fill('Sortowany');
+    await page.getByTestId('add-custom-suggestion').click();
+    await page.getByTestId('add-page-back').click();
     await page.getByTestId('open-options-menu').click();
     await page.getByTestId('open-sort-sheet').click();
     await page.getByTestId('sort-option-name').click();
@@ -78,9 +83,10 @@ test.describe('Smoke flows', () => {
     await loginDemo(page);
     await createListAndOpen(page, 'Remove flow');
 
-    await page.getByTestId('add-custom-toggle').click();
-    await page.getByTestId('custom-product-name').fill('Do usunięcia');
-    await page.getByTestId('custom-product-submit').click();
+    await page.getByTestId('fab-add-products').click();
+    await page.getByTestId('add-products-search-input').fill('Do usunięcia');
+    await page.getByTestId('add-custom-suggestion').click();
+    await page.getByTestId('add-page-back').click();
 
     const firstCheckbox = page.locator('[data-testid^="product-checkbox-"]').first();
     await firstCheckbox.click();

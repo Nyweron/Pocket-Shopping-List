@@ -139,6 +139,73 @@ describe('ShoppingListService', () => {
     expect(service.getListById(list.id)!.products.length).toBe(0);
   });
 
+  it('addOrIncrementProduct merges same name and category', () => {
+    const list = createBaseList();
+    const tpl = {
+      id: 'cat1',
+      name: 'Mleko',
+      category: ProductCategory.DAIRY,
+      quantity: 1,
+      priority: ProductPriority.HIGH,
+      isPurchased: false,
+    } as any;
+    expect(service.addOrIncrementProduct(list.id, tpl).success).toBeTrue();
+    expect(service.addOrIncrementProduct(list.id, tpl).success).toBeTrue();
+    const loaded = service.getListById(list.id)!;
+    expect(loaded.products.length).toBe(1);
+    expect(loaded.products[0].quantity).toBe(2);
+  });
+
+  it('addOrIncrementProduct adds a new line when all matching lines are purchased', () => {
+    const list = createBaseList();
+    service.addProductToList(list.id, {
+      id: 'e',
+      name: 'Jajka',
+      category: ProductCategory.DAIRY,
+      quantity: 1,
+      priority: ProductPriority.HIGH,
+      isPurchased: true,
+    } as any);
+    const tpl = {
+      id: '12',
+      name: 'Jajka',
+      category: ProductCategory.DAIRY,
+      quantity: 1,
+      priority: ProductPriority.HIGH,
+      isPurchased: false,
+    } as any;
+    expect(service.addOrIncrementProduct(list.id, tpl).success).toBeTrue();
+    const loaded = service.getListById(list.id)!;
+    expect(loaded.products.length).toBe(2);
+    const fresh = loaded.products.find(p => !p.isPurchased);
+    expect(fresh?.name).toBe('Jajka');
+    expect(fresh?.quantity).toBe(1);
+  });
+
+  it('decrementMatchingProduct decreases quantity or removes line', () => {
+    const list = createBaseList();
+    service.addProductToList(list.id, {
+      id: 'x',
+      name: 'Woda',
+      category: ProductCategory.BEVERAGES,
+      quantity: 2,
+      priority: ProductPriority.MEDIUM,
+      isPurchased: false,
+    } as any);
+    service.decrementMatchingProduct(list.id, 'Woda', ProductCategory.BEVERAGES);
+    expect(service.getListById(list.id)!.products[0].quantity).toBe(1);
+    service.decrementMatchingProduct(list.id, 'Woda', ProductCategory.BEVERAGES);
+    expect(service.getListById(list.id)!.products.length).toBe(0);
+  });
+
+  it('removeAllMatchingProducts removes all lines with same name and category', () => {
+    const list = createBaseList();
+    service.addProductToList(list.id, { id: 'a', name: 'X', category: ProductCategory.OTHER, quantity: 1, priority: ProductPriority.LOW, isPurchased: false } as any);
+    service.addProductToList(list.id, { id: 'b', name: 'X', category: ProductCategory.OTHER, quantity: 1, priority: ProductPriority.LOW, isPurchased: false } as any);
+    service.removeAllMatchingProducts(list.id, 'X', ProductCategory.OTHER);
+    expect(service.getListById(list.id)!.products.length).toBe(0);
+  });
+
   it('toggleProductPurchased switches state', () => {
     const list = createBaseList();
     service.addProductToList(list.id, { id: 'a', name: 'A', category: ProductCategory.OTHER, quantity: 1, priority: ProductPriority.LOW, isPurchased: false } as any);

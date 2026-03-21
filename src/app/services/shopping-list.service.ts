@@ -143,6 +143,70 @@ export class ShoppingListService {
     this.updateList(list);
   }
 
+  /**
+   * Adds a product or increments quantity on a matching line (same name + category, case-insensitive).
+   * Prefers the first not-yet-purchased line; if every matching line is purchased, adds a new line (next trip).
+   */
+  addOrIncrementProduct(listId: string, template: Product): { success: boolean; error?: string } {
+    const list = this.getListById(listId);
+    if (!list) {
+      return { success: false };
+    }
+    const nameKey = template.name.toLowerCase().trim();
+    const matches = list.products.filter(
+      p => p.name.toLowerCase().trim() === nameKey && p.category === template.category
+    );
+    if (matches.length === 0) {
+      return this.addProductToList(listId, { ...template, quantity: template.quantity ?? 1 });
+    }
+    const delta = template.quantity ?? 1;
+    const unpurchased = matches.filter(p => !p.isPurchased);
+    if (unpurchased.length === 0) {
+      return this.addProductToList(listId, {
+        ...template,
+        quantity: delta,
+        isPurchased: false
+      });
+    }
+    const target = unpurchased[0];
+    this.updateProductInList(listId, target.id, { quantity: target.quantity + delta });
+    return { success: true };
+  }
+
+  /** Decrements quantity on the last matching line, or removes that line if quantity would go below 1. */
+  decrementMatchingProduct(listId: string, name: string, category: ProductCategory): void {
+    const list = this.getListById(listId);
+    if (!list) {
+      return;
+    }
+    const nameKey = name.toLowerCase().trim();
+    const matches = list.products.filter(
+      p => p.name.toLowerCase().trim() === nameKey && p.category === category
+    );
+    if (matches.length === 0) {
+      return;
+    }
+    const last = matches[matches.length - 1];
+    if (last.quantity > 1) {
+      this.updateProductInList(listId, last.id, { quantity: last.quantity - 1 });
+    } else {
+      this.removeProductFromList(listId, last.id);
+    }
+  }
+
+  /** Removes all list lines that match name + category (case-insensitive name). */
+  removeAllMatchingProducts(listId: string, name: string, category: ProductCategory): void {
+    const list = this.getListById(listId);
+    if (!list) {
+      return;
+    }
+    const nameKey = name.toLowerCase().trim();
+    list.products = list.products.filter(
+      p => !(p.name.toLowerCase().trim() === nameKey && p.category === category)
+    );
+    this.updateList(list);
+  }
+
   toggleProductPurchased(listId: string, productId: string): void {
     const list = this.getListById(listId);
     if (!list) {

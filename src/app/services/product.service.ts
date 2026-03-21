@@ -74,7 +74,51 @@ export class ProductService {
     { id: '47', name: 'Olej', category: ProductCategory.OTHER, quantity: 1, priority: ProductPriority.MEDIUM, isPurchased: false },
     { id: '48', name: 'Ocet', category: ProductCategory.OTHER, quantity: 1, priority: ProductPriority.LOW, isPurchased: false },
     { id: '49', name: 'Sól', category: ProductCategory.OTHER, quantity: 1, priority: ProductPriority.MEDIUM, isPurchased: false },
-    { id: '50', name: 'Pieprz', category: ProductCategory.OTHER, quantity: 1, priority: ProductPriority.MEDIUM, isPurchased: false }
+    { id: '50', name: 'Pieprz', category: ProductCategory.OTHER, quantity: 1, priority: ProductPriority.MEDIUM, isPurchased: false },
+
+    // Extra everyday items (PL)
+    { id: '51', name: 'Parówki', category: ProductCategory.MEAT, quantity: 1, priority: ProductPriority.MEDIUM, isPurchased: false },
+    { id: '52', name: 'Czosnek', category: ProductCategory.FRUITS_VEGETABLES, quantity: 1, priority: ProductPriority.MEDIUM, isPurchased: false },
+    { id: '53', name: 'Pietruszka', category: ProductCategory.FRUITS_VEGETABLES, quantity: 1, priority: ProductPriority.LOW, isPurchased: false },
+    { id: '54', name: 'Ketchup', category: ProductCategory.OTHER, quantity: 1, priority: ProductPriority.LOW, isPurchased: false },
+    { id: '55', name: 'Majonez', category: ProductCategory.OTHER, quantity: 1, priority: ProductPriority.LOW, isPurchased: false },
+    { id: '56', name: 'Masło orzechowe', category: ProductCategory.OTHER, quantity: 1, priority: ProductPriority.LOW, isPurchased: false },
+    { id: '57', name: 'Dżem', category: ProductCategory.SWEETS, quantity: 1, priority: ProductPriority.LOW, isPurchased: false },
+    { id: '58', name: 'Musztarda', category: ProductCategory.OTHER, quantity: 1, priority: ProductPriority.LOW, isPurchased: false },
+    { id: '59', name: 'Śmietanka 30%', category: ProductCategory.DAIRY, quantity: 1, priority: ProductPriority.MEDIUM, isPurchased: false },
+    { id: '60', name: 'Ser mozzarella', category: ProductCategory.DAIRY, quantity: 1, priority: ProductPriority.MEDIUM, isPurchased: false },
+    { id: '61', name: 'Szpinak', category: ProductCategory.FRUITS_VEGETABLES, quantity: 1, priority: ProductPriority.MEDIUM, isPurchased: false },
+    { id: '62', name: 'Brokuły', category: ProductCategory.FRUITS_VEGETABLES, quantity: 1, priority: ProductPriority.MEDIUM, isPurchased: false },
+    { id: '63', name: 'Cukinia', category: ProductCategory.FRUITS_VEGETABLES, quantity: 1, priority: ProductPriority.MEDIUM, isPurchased: false },
+    { id: '64', name: 'Cytryna', category: ProductCategory.FRUITS_VEGETABLES, quantity: 1, priority: ProductPriority.LOW, isPurchased: false },
+    { id: '65', name: 'Awokado', category: ProductCategory.FRUITS_VEGETABLES, quantity: 1, priority: ProductPriority.LOW, isPurchased: false },
+    { id: '66', name: 'Hummus', category: ProductCategory.OTHER, quantity: 1, priority: ProductPriority.LOW, isPurchased: false },
+    { id: '67', name: 'Tortilla', category: ProductCategory.BREAD, quantity: 1, priority: ProductPriority.MEDIUM, isPurchased: false },
+    { id: '68', name: 'Płatki śniadaniowe', category: ProductCategory.GRAINS, quantity: 1, priority: ProductPriority.MEDIUM, isPurchased: false },
+    { id: '69', name: 'Orzechy', category: ProductCategory.OTHER, quantity: 1, priority: ProductPriority.LOW, isPurchased: false },
+    { id: '70', name: 'Rodzynki', category: ProductCategory.SWEETS, quantity: 1, priority: ProductPriority.LOW, isPurchased: false }
+  ];
+
+  /** Catalog ids in “Popularne” order (everyday staples). */
+  private readonly popularCatalogIds = [
+    '7',
+    '51',
+    '25',
+    '12',
+    '28',
+    '11',
+    '34',
+    '13',
+    '6',
+    '52',
+    '1',
+    '5',
+    '3',
+    '19',
+    '42',
+    '44',
+    '35',
+    '36'
   ];
 
   constructor() {}
@@ -93,6 +137,19 @@ export class ProductService {
 
   getAllProducts(): Product[] {
     return [...this.defaultProducts];
+  }
+
+  /** Curated subset for the “Popularne” tab (falls back if id missing). */
+  getPopularProducts(): Product[] {
+    const byId = new Map(this.defaultProducts.map(p => [p.id, p]));
+    const ordered: Product[] = [];
+    for (const id of this.popularCatalogIds) {
+      const p = byId.get(id);
+      if (p) {
+        ordered.push({ ...p });
+      }
+    }
+    return ordered;
   }
 
   getProductById(id: string): Product | undefined {

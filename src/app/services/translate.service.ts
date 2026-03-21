@@ -43,7 +43,7 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'list.uncheck_all': 'Odhacz wszystkie',
     'list.search_products': 'Szukaj na liście...',
     'list.empty_products': 'Brak produktów w tej liście.',
-    'list.add_products': 'Dodaj produkty używając wyszukiwarki powyżej.',
+    'list.add_products': 'Dodaj produkty — naciśnij przycisk „Dodaj” na dole ekranu.',
     'list.quantity': 'Ilość',
     'list.price': 'Cena',
     'list.note': 'Notatka',
@@ -88,6 +88,16 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'app.no_archived': 'Brak zarchiwizowanych list.',
     'app.restore': 'Przywróć',
     'app.no_templates': 'Brak zapisanych szablonów.',
+    'add.search_placeholder': 'Dodaj nową pozycję…',
+    'add.tab_popular': 'Popularne',
+    'add.tab_categories': 'Kategorie',
+    'add.tab_recent': 'Ostatnie',
+    'add.add_custom_named': 'Dodaj „{{name}}” jako własną pozycję',
+    'add.no_search_results': 'Brak wyników w katalogu.',
+    'add.no_recent': 'Tu pojawią się produkty, które ostatnio dodawałeś.',
+    'add.add_product': 'Dodaj do listy',
+    'add.add_product_purchased': 'Na liście — już kupione; dotknij, by dodać ponownie',
+    'add.readonly_hint': 'Możesz tylko przeglądać tę listę — nie możesz dodawać produktów.',
   },
   en: {
     'app.title': 'Shopping lists',
@@ -129,7 +139,7 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'list.uncheck_all': 'Uncheck all',
     'list.search_products': 'Search in list...',
     'list.empty_products': 'No products on this list.',
-    'list.add_products': 'Add products using the search above.',
+    'list.add_products': 'Add products — tap the “Add” button at the bottom.',
     'list.quantity': 'Quantity',
     'list.price': 'Price',
     'list.note': 'Note',
@@ -174,6 +184,16 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'app.no_archived': 'No archived lists.',
     'app.restore': 'Restore',
     'app.no_templates': 'No saved templates.',
+    'add.search_placeholder': 'Add a new item…',
+    'add.tab_popular': 'Popular',
+    'add.tab_categories': 'Categories',
+    'add.tab_recent': 'Recent',
+    'add.add_custom_named': 'Add “{{name}}” as a custom item',
+    'add.no_search_results': 'No catalog matches.',
+    'add.no_recent': 'Products you add recently will show up here.',
+    'add.add_product': 'Add to list',
+    'add.add_product_purchased': 'On list — already bought; tap to add again',
+    'add.readonly_hint': 'This list is view-only — you cannot add products.',
   }
 };
 
@@ -196,8 +216,14 @@ export class TranslateService {
     localStorage.setItem(this.LANG_KEY, l);
   }
 
-  get(key: string): string {
+  get(key: string, params?: Record<string, string>): string {
     const l = this.lang();
-    return TRANSLATIONS[l]?.[key] ?? key;
+    let s = TRANSLATIONS[l]?.[key] ?? key;
+    if (params) {
+      for (const [k, v] of Object.entries(params)) {
+        s = s.split(`{{${k}}}`).join(v);
+      }
+    }
+    return s;
   }
 }

@@ -161,10 +161,6 @@
       }
     </div>
 
-    <div id="product-search-anchor" class="product-search-section">
-      <app-product-search (productSelected)="onProductSelected($event)"></app-product-search>
-    </div>
-
     <div class="list-search">
       <input
         #listSearchInput
@@ -214,7 +210,7 @@
     </div>
 
     <div class="list-fab-wrap">
-      <button type="button" class="list-fab" data-testid="fab-add-products" (click)="scrollToAddProducts()">
+      <button type="button" class="list-fab" data-testid="fab-add-products" (click)="openAddProductsPage()">
         <span class="list-fab-plus">+</span>
         <span class="list-fab-label">{{ 'list.add_fab' | translate }}</span>
       </button>

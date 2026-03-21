@@ -6,6 +6,10 @@ export const routes: Routes = [
     loadComponent: () => import('./shopping-lists/shopping-lists.component').then(m => m.ShoppingListsComponent)
   },
   {
+    path: 'list/:id/add',
+    loadComponent: () => import('./add-products-page/add-products-page.component').then(m => m.AddProductsPageComponent)
+  },
+  {
     path: 'list/:id',
     loadComponent: () => import('./shopping-list-detail/shopping-list-detail.component').then(m => m.ShoppingListDetailComponent)
   },

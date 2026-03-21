@@ -6,12 +6,10 @@ import { ShoppingList } from '../models/shopping-list.model';
 import { Product, ProductPriority } from '../models/product.model';
 import { ProductCategory } from '../models/product-category.enum';
 import { ShoppingListService } from '../services/shopping-list.service';
-import { ProductSearchComponent } from '../product-search/product-search.component';
 import { ShareService } from '../services/share.service';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
 import { ListPriceVisibilityService } from '../services/list-price-visibility.service';
-import { DemoLimitService } from '../services/demo-limit.service';
 import { TranslateService } from '../services/translate.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { SwipePreventDirective } from '../directives/swipe-prevent.directive';
@@ -20,7 +18,7 @@ type SortOption = 'name' | 'category' | 'priority' | 'purchased' | 'custom';
 
 @Component({
   selector: 'app-shopping-list-detail',
-  imports: [CommonModule, RouterModule, FormsModule, ProductSearchComponent, SwipePreventDirective, TranslatePipe],
+  imports: [CommonModule, RouterModule, FormsModule, SwipePreventDirective, TranslatePipe],
   templateUrl: './shopping-list-detail.component.html',
   styleUrls: ['./shopping-list-detail.component.css', './shopping-list-detail-overlays.component.css']
 })
@@ -73,7 +71,6 @@ export class ShoppingListDetailComponent implements OnInit {
     public authService: AuthService,
     public themeService: ThemeService,
     public priceVisibility: ListPriceVisibilityService,
-    private demoLimit: DemoLimitService,
     public translate: TranslateService
   ) {}
 
@@ -91,18 +88,6 @@ export class ShoppingListDetailComponent implements OnInit {
       return;
     }
     this.list.set(list);
-  }
-
-  onProductSelected(product: Product): void {
-    const list = this.list();
-    if (!list) return;
-
-    const result = this.shoppingListService.addProductToList(list.id, product);
-    if (!result.success && result.error === 'demo_limit_products') {
-      this.demoLimit.showProductsLimit();
-      return;
-    }
-    this.loadList(list.id);
   }
 
   togglePurchased(productId: string): void {
@@ -236,10 +221,11 @@ export class ShoppingListDetailComponent implements OnInit {
     return [...this.getFilteredActiveProducts(), ...this.getFilteredCompletedProducts()];
   }
 
-  scrollToAddProducts(): void {
-    setTimeout(() => {
-      document.getElementById('product-search-anchor')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 0);
+  openAddProductsPage(): void {
+    const id = this.list()?.id;
+    if (id) {
+      void this.router.navigate(['/list', id, 'add']);
+    }
   }
 
   getTotalPrice(): number {

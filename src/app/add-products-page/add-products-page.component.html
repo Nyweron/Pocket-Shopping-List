@@ -1,0 +1,136 @@
+<div class="add-page">
+  <header class="add-header">
+    <button type="button" class="add-back" data-testid="add-page-back" (click)="back()" [attr.aria-label]="'list.back' | translate">
+      ←
+    </button>
+    <div class="add-search-wrap">
+      <input
+        type="search"
+        class="add-search-input"
+        data-testid="add-products-search-input"
+        [placeholder]="'add.search_placeholder' | translate"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        autocomplete="off"
+      />
+    </div>
+  </header>
+
+  @if (!canEdit()) {
+    <p class="add-readonly-hint">{{ 'add.readonly_hint' | translate }}</p>
+  }
+
+  @if (searchQuery().trim()) {
+    <div class="add-results">
+      @for (p of searchResults(); track trackByProductId($index, p)) {
+        <ng-container *ngTemplateOutlet="productRow; context: { $implicit: p }" />
+      }
+      @if (showCustomAddRow()) {
+        <button type="button" class="add-custom-suggestion" data-testid="add-custom-suggestion" (click)="addCustomFromSearch()">
+          {{ translate.get('add.add_custom_named', { name: searchQuery().trim() }) }}
+        </button>
+      }
+      @if (searchResults().length === 0 && !showCustomAddRow()) {
+        <p class="add-empty">{{ 'add.no_search_results' | translate }}</p>
+      }
+    </div>
+  } @else {
+    <nav class="add-tabs" role="tablist" aria-label="Widok produktów">
+      <button
+        type="button"
+        role="tab"
+        class="add-tab"
+        data-testid="add-tab-popular"
+        [class.add-tab-active]="activeTab() === 'popular'"
+        [attr.aria-selected]="activeTab() === 'popular'"
+        (click)="setTab('popular')"
+      >
+        <span class="add-tab-icon" aria-hidden="true">✦</span>
+        {{ 'add.tab_popular' | translate }}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="add-tab"
+        data-testid="add-tab-categories"
+        [class.add-tab-active]="activeTab() === 'categories'"
+        [attr.aria-selected]="activeTab() === 'categories'"
+        (click)="setTab('categories')"
+      >
+        <span class="add-tab-icon" aria-hidden="true">▦</span>
+        {{ 'add.tab_categories' | translate }}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="add-tab"
+        data-testid="add-tab-recent"
+        [class.add-tab-active]="activeTab() === 'recent'"
+        [attr.aria-selected]="activeTab() === 'recent'"
+        (click)="setTab('recent')"
+      >
+        <span class="add-tab-icon" aria-hidden="true">↺</span>
+        {{ 'add.tab_recent' | translate }}
+      </button>
+    </nav>
+
+    @if (activeTab() === 'categories') {
+      <div class="add-category-chips">
+        @for (cat of categories; track cat) {
+          <button
+            type="button"
+            class="add-chip"
+            [class.add-chip-active]="selectedCategory() === cat"
+            (click)="selectedCategory.set(cat)"
+          >
+            {{ cat }}
+          </button>
+        }
+      </div>
+    }
+
+    <div class="add-results">
+      @if (activeTab() === 'recent' && recentRows().length === 0) {
+        <p class="add-empty">{{ 'add.no_recent' | translate }}</p>
+      } @else {
+        @for (p of currentTabRows(); track trackByNameCategory($index, p)) {
+          <ng-container *ngTemplateOutlet="productRow; context: { $implicit: p }" />
+        }
+      }
+    </div>
+  }
+</div>
+
+<ng-template #productRow let-p>
+  @let st = lineState(p);
+  <div class="add-row" [attr.data-testid]="'add-product-row-' + p.id">
+    <button
+      type="button"
+      class="add-row-plus"
+      [class.add-row-plus-on-list]="st.onList && !st.allPurchased"
+      [class.add-row-tick]="st.onList && st.allPurchased"
+      [disabled]="!canEdit()"
+      (click)="onAdd(p, $event)"
+      [attr.aria-label]="
+        st.onList && st.allPurchased ? ('add.add_product_purchased' | translate) : ('add.add_product' | translate)
+      "
+    >
+      @if (st.onList && st.allPurchased) {
+        <span class="add-row-tick-mark" aria-hidden="true">✓</span>
+      } @else {
+        +
+      }
+    </button>
+    <span class="add-row-name">{{ p.name }}</span>
+    <div class="add-row-actions">
+      @if (st.onList) {
+        @if (st.totalQty > 1) {
+          <span class="add-row-qty">{{ st.totalQty }}</span>
+          <button type="button" class="add-row-minus" [disabled]="!canEdit()" (click)="onDecrement(p, $event)" aria-label="−">−</button>
+        } @else {
+          <button type="button" class="add-row-remove" [disabled]="!canEdit()" (click)="onRemoveAll(p, $event)" aria-label="×">✕</button>
+        }
+      }
+    </div>
+  </div>
+</ng-template>
