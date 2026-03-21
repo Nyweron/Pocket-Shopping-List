@@ -68,7 +68,8 @@
   box-sizing: border-box;
   color: var(--color-text-primary);
   font-size: 1.06rem;
-  font-weight: 500;
+  /* Match .options-sheet button (normal 400); 500 looked bolder than other rows */
+  font-weight: 400;
 }
 
 :host .options-toggle-label {
