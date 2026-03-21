@@ -177,7 +177,7 @@
   border-top: 1px solid var(--color-border-soft);
 }
 
-/* Row: icon + “Show prices” label + toggle (Lidl / Listonic style) */
+/* Row: icon + “Show prices” label + toggle (list options sheet) */
 .options-toggle-row {
   display: flex;
   align-items: center;
@@ -630,11 +630,16 @@
   position: relative;
   overflow: hidden;
   border-radius: 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .product-content {
   position: relative;
   z-index: 1;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   background: var(--color-bg-elevated);
   display: flex;
   flex-direction: column;
@@ -654,6 +659,7 @@
   position: absolute;
   top: 0;
   right: 0;
+  z-index: 0;
   width: 80px;
   min-width: 80px;
   height: 100%;
@@ -1071,5 +1077,341 @@
   .product-name {
     font-size: 1.25rem;
   }
+}
+
+/* --- Compact list layout (header, progress bar, grouped purchased) --- */
+.list-detail-compact {
+  padding: 0.65rem 0.85rem calc(5.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+.list-detail-compact .header {
+  margin-bottom: 0.75rem;
+}
+
+.compact-top-bar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.compact-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+  text-decoration: none;
+  font-size: 1.25rem;
+  border: 1px solid var(--color-border-soft);
+  transition: background 0.15s ease;
+}
+
+.compact-back:active {
+  background: var(--color-bg-elevated);
+}
+
+.compact-list-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-primary);
+}
+
+.compact-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.compact-icon-btn {
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.compact-user-avatar {
+  width: 36px;
+  height: 36px;
+  font-size: 0.85rem;
+}
+
+.compact-shared-avatars .avatar-circle {
+  width: 30px;
+  height: 30px;
+  font-size: 0.7rem;
+}
+
+.list-progress-track {
+  height: 3px;
+  width: 100%;
+  background: var(--color-border-soft);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.65rem;
+}
+
+.list-progress-fill {
+  height: 100%;
+  background: #22c55e;
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+.list-stats-compact {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.products-list-compact {
+  gap: 0;
+  border-radius: 0;
+}
+
+.product-item-compact {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-border-soft);
+  border-radius: 0;
+  padding: 0.7rem 0;
+  margin: 0;
+}
+
+.product-item-compact:last-child {
+  border-bottom: none;
+}
+
+.product-item-compact.purchased {
+  opacity: 0.62;
+  background: transparent;
+}
+
+.product-item-compact.purchased .product-name-compact,
+.product-item-compact.purchased .product-qty-inline {
+  color: var(--color-text-muted);
+}
+
+.product-swipe-compact {
+  border-radius: 0;
+  width: 100%;
+}
+
+.product-swipe-compact .swipe-delete {
+  border-radius: 0;
+}
+
+/* Sliding panel must be opaque; transparent bg showed the absolute delete button behind it */
+.product-content-compact {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: var(--color-bg);
+}
+
+.product-main-compact {
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.compact-checkbox-wrap {
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  /* Touch target; invisible input covers full box so clicks/e2e hit the real checkbox */
+  width: 44px;
+  height: 44px;
+}
+
+.compact-checkbox-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+.compact-checkbox-ui {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #3b82f6;
+  box-sizing: border-box;
+  display: block;
+  pointer-events: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  background: transparent;
+}
+
+.compact-checkbox-input:focus-visible + .compact-checkbox-ui {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.compact-checkbox-input:checked + .compact-checkbox-ui {
+  background: #22c55e;
+  border-color: #16a34a;
+}
+
+.compact-checkbox-input:checked + .compact-checkbox-ui::after {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+  margin: 3px auto 0;
+}
+
+.product-info-compact {
+  flex: 1;
+  min-width: 0;
+}
+
+.product-line-compact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.5rem;
+}
+
+.product-name-compact {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.product-qty-inline {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+}
+
+.product-meta-compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.65rem;
+  align-items: center;
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.product-category-chip {
+  background: var(--color-chip-bg);
+  color: var(--color-chip-text);
+  padding: 0.15rem 0.45rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.purchased-section-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.5rem;
+  margin: 0.25rem 0 0;
+  border-radius: 10px;
+  background: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--color-border-soft);
+  transition: background 0.15s ease;
+}
+
+.purchased-section-toggle:active {
+  background: var(--color-bg-elevated);
+}
+
+.purchased-section-label {
+  text-align: center;
+}
+
+.purchased-section-chevron {
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+  color: var(--color-text-muted);
+}
+
+.purchased-section-chevron.collapsed {
+  transform: rotate(180deg);
+}
+
+.list-fab-wrap {
+  position: fixed;
+  right: max(0.85rem, env(safe-area-inset-right));
+  bottom: calc(0.85rem + env(safe-area-inset-bottom, 0px));
+  z-index: 45;
+  pointer-events: none;
+}
+
+.list-fab {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.15rem;
+  border: none;
+  border-radius: 14px;
+  background: #38bdf8;
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.45);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.list-fab:active {
+  transform: scale(0.97);
+}
+
+.list-fab-plus {
+  font-size: 1.2rem;
+  line-height: 1;
+  font-weight: 700;
+}
+
+:root[data-theme='light'] .list-fab {
+  color: #0c4a6e;
+  box-shadow: 0 4px 14px rgba(14, 116, 144, 0.35);
 }
 

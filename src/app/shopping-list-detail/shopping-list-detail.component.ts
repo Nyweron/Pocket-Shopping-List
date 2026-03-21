@@ -54,6 +54,8 @@ export class ShoppingListDetailComponent implements OnInit {
   shareError = signal<string | null>(null);
   showOptionsMenu = signal(false);
   showSortSheet = signal(false);
+  /** When false, the purchased (checked) section is collapsed. */
+  purchasedSectionExpanded = signal(true);
 
   private touchStartX = 0;
   private touchCurrentX = 0;
@@ -68,7 +70,7 @@ export class ShoppingListDetailComponent implements OnInit {
     private router: Router,
     private shoppingListService: ShoppingListService,
     private shareService: ShareService,
-    private authService: AuthService,
+    public authService: AuthService,
     public themeService: ThemeService,
     public priceVisibility: ListPriceVisibilityService,
     private demoLimit: DemoLimitService,
@@ -154,12 +156,28 @@ export class ShoppingListDetailComponent implements OnInit {
     }
   }
 
-  getFilteredAndSortedProducts(): Product[] {
+  getUserInitial(): string {
+    const u = this.authService.getCurrentUser();
+    if (!u) return '?';
+    const s = (u.username || u.email || '?').trim();
+    return s.charAt(0).toUpperCase() || '?';
+  }
+
+  getListProgressPercent(): number {
+    const total = this.getTotalCount();
+    if (total === 0) return 0;
+    return Math.round((this.getPurchasedCount() / total) * 100);
+  }
+
+  togglePurchasedSection(): void {
+    this.purchasedSectionExpanded.update(v => !v);
+  }
+
+  /** Filter list search only (no sort). */
+  private getSearchFilteredProducts(): Product[] {
     const list = this.list();
     if (!list) return [];
-
     let products = [...list.products];
-
     const search = this.listSearchQuery().toLowerCase().trim();
     if (search) {
       products = products.filter(
@@ -169,28 +187,59 @@ export class ShoppingListDetailComponent implements OnInit {
           (p.note && p.note.toLowerCase().includes(search))
       );
     }
+    return products;
+  }
 
-    // Sorting
+  private sortProductsSubset(products: Product[]): Product[] {
     const sort = this.sortBy();
-    products.sort((a, b) => {
-      switch (sort) {
+    const effectiveSort: SortOption = sort === 'purchased' ? 'category' : sort;
+    const copy = [...products];
+    copy.sort((a, b) => {
+      switch (effectiveSort) {
         case 'custom':
           return 0;
         case 'name':
           return a.name.localeCompare(b.name);
         case 'category':
           return a.category.localeCompare(b.category);
-        case 'priority':
+        case 'priority': {
           const priorityOrder = { [ProductPriority.HIGH]: 3, [ProductPriority.MEDIUM]: 2, [ProductPriority.LOW]: 1 };
           return priorityOrder[b.priority] - priorityOrder[a.priority];
-        case 'purchased':
-          return a.isPurchased === b.isPurchased ? 0 : a.isPurchased ? 1 : -1;
+        }
         default:
           return 0;
       }
     });
+    return copy;
+  }
 
-    return products;
+  /** Not purchased — top section; always sorted within the group. */
+  getFilteredActiveProducts(): Product[] {
+    const products = this.getSearchFilteredProducts().filter(p => !p.isPurchased);
+    return this.sortProductsSubset(products);
+  }
+
+  /** Purchased — bottom section; same sort within the group. */
+  getFilteredCompletedProducts(): Product[] {
+    const products = this.getSearchFilteredProducts().filter(p => p.isPurchased);
+    return this.sortProductsSubset(products);
+  }
+
+  getFilteredProductCount(): number {
+    return this.getSearchFilteredProducts().length;
+  }
+
+  /**
+   * Active first, then completed (used by unit tests and legacy callers).
+   */
+  getFilteredAndSortedProducts(): Product[] {
+    return [...this.getFilteredActiveProducts(), ...this.getFilteredCompletedProducts()];
+  }
+
+  scrollToAddProducts(): void {
+    setTimeout(() => {
+      document.getElementById('product-search-anchor')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 0);
   }
 
   getTotalPrice(): number {

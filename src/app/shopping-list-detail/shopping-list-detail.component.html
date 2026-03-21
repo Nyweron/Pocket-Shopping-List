@@ -1,41 +1,26 @@
 @if (list()) {
-  <div class="list-detail-container">
+  <div class="list-detail-container list-detail-compact">
     <div class="header">
-      <div class="header-main">
-        <div class="header-left">
-          <button class="btn-back" [routerLink]="['/']">← {{ 'list.back' | translate }}</button>
-          <h1 class="list-title">{{ list()!.name }}</h1>
-        </div>
-        <div class="header-right">
+      <div class="compact-top-bar">
+        <a class="compact-back" [routerLink]="['/']" [attr.aria-label]="'list.back' | translate">←</a>
+        <h1 class="compact-list-title">{{ list()!.name }}</h1>
+        <div class="compact-top-actions">
           @if (getSharedWith().length > 0) {
-            <div class="shared-avatars">
+            <div class="shared-avatars compact-shared-avatars">
               @for (email of getSharedWith(); track email) {
-                <div class="avatar-circle">
-                  {{ getInitialFromEmail(email) }}
-                </div>
+                <div class="avatar-circle" [title]="email">{{ getInitialFromEmail(email) }}</div>
               }
             </div>
           }
+          <div class="avatar-circle compact-user-avatar" [attr.aria-label]="'app.profile' | translate">{{ getUserInitial() }}</div>
           @if (isOwner()) {
-            <button
-              type="button"
-              class="icon-button"
-              (click)="toggleShareForm()"
-              title="Udostępnij listę"
-            >
-              🔗
-            </button>
+            <button type="button" class="icon-button compact-icon-btn" (click)="toggleShareForm()" [attr.title]="'list.share' | translate">🔗</button>
           }
-          <button
-            type="button"
-            class="icon-button"
-            data-testid="open-options-menu"
-            (click)="toggleOptionsMenu()"
-            title="Opcje listy"
-          >
-            ⋮
-          </button>
+          <button type="button" class="icon-button compact-icon-btn" data-testid="open-options-menu" (click)="toggleOptionsMenu()" [attr.title]="'list.options' | translate">⋮</button>
         </div>
+      </div>
+      <div class="list-progress-track" role="progressbar" [attr.aria-valuenow]="getPurchasedCount()" [attr.aria-valuemin]="0" [attr.aria-valuemax]="getTotalCount()">
+        <div class="list-progress-fill" [style.width.%]="getListProgressPercent()"></div>
       </div>
       @if (showOptionsMenu()) {
         <div class="options-overlay" (click)="closeOptionsMenu()">
@@ -149,8 +134,8 @@
           </div>
         </div>
       }
-      <div class="list-stats">
-        <span>{{ getPurchasedCount() }}/{{ getTotalCount() }} produktów</span>
+      <div class="list-stats list-stats-compact">
+        <span>{{ getPurchasedCount() }}/{{ getTotalCount() }} {{ 'app.products' | translate }}</span>
         @if (priceVisibility.showPrices() && getTotalPrice() > 0) {
           <span class="total-price">{{ 'list.estimated_total' | translate }}: {{ getTotalPrice() | number:'1.2-2' }} zł</span>
         }
@@ -176,7 +161,7 @@
       }
     </div>
 
-    <div class="product-search-section">
+    <div id="product-search-anchor" class="product-search-section">
       <app-product-search (productSelected)="onProductSelected($event)"></app-product-search>
     </div>
 
@@ -192,137 +177,160 @@
       />
     </div>
 
-    <div class="controls">
-      <div class="control-row">
-      </div>
-      @if (getPurchasedCount() > 0) {
-        <button class="btn-uncheck-all" (click)="uncheckAllProducts()">
-          Odhacz wszystkie
-        </button>
-      }
-    </div>
-
-    <div class="products-list">
-      @if (getFilteredAndSortedProducts().length === 0) {
+    <div class="products-list products-list-compact">
+      @if (getFilteredProductCount() === 0) {
         <div class="empty-state">
-          <p>Brak produktów w tej liście.</p>
-          <p>Dodaj produkty używając wyszukiwarki powyżej.</p>
+          <p>{{ 'list.empty_products' | translate }}</p>
+          <p>{{ 'list.add_products' | translate }}</p>
         </div>
       } @else {
-        @for (product of getFilteredAndSortedProducts(); track product.id) {
-          <div
-            class="product-item"
-            [attr.data-testid]="'product-item-' + product.id"
-            appSwipePrevent
-            [class.purchased]="product.isPurchased"
-            [class.swiped]="swipedProductId === product.id"
-            (click)="onProductTap(product)"
-            (touchstart)="onTouchStart($event, product.id)"
-            (touchmove)="onTouchMove($event)"
-            (touchend)="onTouchEnd()"
-            (pointerdown)="onPointerDown($event, product.id)"
-            (pointermove)="onPointerMove($event)"
-            (pointerup)="onPointerUp()"
-            (pointercancel)="onPointerUp()"
+        @for (product of getFilteredActiveProducts(); track product.id) {
+          <ng-container *ngTemplateOutlet="productRow; context: { $implicit: product }" />
+        }
+        @if (getFilteredCompletedProducts().length > 0) {
+          <button
+            type="button"
+            class="purchased-section-toggle"
+            data-testid="purchased-section-toggle"
+            (click)="togglePurchasedSection()"
           >
-            @if (editingProduct()?.id === product.id) {
-              <div
-                class="product-edit-form"
-                (click)="$event.stopPropagation()"
-                (touchstart)="$event.stopPropagation()"
-                (touchmove)="$event.stopPropagation()"
-                (touchend)="$event.stopPropagation()"
-                (pointerdown)="$event.stopPropagation()"
-                (pointermove)="$event.stopPropagation()"
-                (pointerup)="$event.stopPropagation()"
-                (pointercancel)="$event.stopPropagation()"
-              >
-                <input type="text" [(ngModel)]="editingProduct()!.name" class="edit-input" />
-                <div class="edit-quantity-row">
-                  <input
-                    type="number"
-                    min="0"
-                    step="any"
-                    [ngModel]="editingProduct()!.quantity"
-                    (ngModelChange)="onEditingQuantityChange($event)"
-                    class="edit-input edit-quantity-input"
-                    placeholder="Ilość"
-                  />
-                  <select [(ngModel)]="editingProduct()!.quantityUnit" class="edit-select edit-unit-select">
-                    @for (u of quantityUnits; track u.value) {
-                      <option [value]="u.value">{{ u.label }}</option>
-                    }
-                  </select>
-                </div>
-                <!-- Price field always in edit form (even when “Show prices” is off on the list) -->
-                <input
-                  type="number"
-                  [(ngModel)]="editingProduct()!.price"
-                  min="0"
-                  step="0.01"
-                  class="edit-input"
-                  [placeholder]="'list.price' | translate"
-                />
-                <select [(ngModel)]="editingProduct()!.category" class="edit-select">
-                  @for (category of categories; track category) {
-                    <option [value]="category">{{ category }}</option>
-                  }
-                </select>
-                <select [(ngModel)]="editingProduct()!.priority" class="edit-select">
-                  @for (priority of priorities; track priority) {
-                    <option [value]="priority">{{ priority }}</option>
-                  }
-                </select>
-                <textarea [(ngModel)]="editingProduct()!.note" class="edit-textarea" placeholder="Notatka"></textarea>
-                <div class="edit-actions">
-                  <button class="btn-save" data-testid="edit-save-btn" (click)="saveEdit(); $event.stopPropagation()">Zapisz</button>
-                  <button class="btn-cancel" (click)="cancelEdit(); $event.stopPropagation()">Anuluj</button>
-                </div>
-              </div>
-            } @else {
-              <div class="product-swipe-wrapper">
-                <button
-                  type="button"
-                  class="swipe-delete"
-                  (click)="deleteProduct(product.id); $event.stopPropagation()"
-                >
-                  <span class="swipe-delete-icon" aria-hidden="true">🗑</span>
-                  <span>Usuń</span>
-                </button>
-                <div class="product-content" [style.transform]="getSwipeTransform(product.id)">
-                  <div class="product-main">
-                    <input
-                      type="checkbox"
-                      [attr.data-testid]="'product-checkbox-' + product.id"
-                      [checked]="product.isPurchased"
-                      (click)="onCheckboxClick($event)"
-                      (change)="togglePurchased(product.id)"
-                      class="product-checkbox"
-                    />
-                    <div class="product-info">
-                      <h3 class="product-name">{{ product.name }}</h3>
-                      <div class="product-details">
-                        <div class="product-detail-row">
-                          <span class="product-category">{{ product.category }}</span>
-                          <span class="product-quantity">Ilość: {{ getQuantityDisplay(product) }}</span>
-                          @if (priceVisibility.showPrices() && product.price) {
-                            <span class="product-price">{{ product.price | number:'1.2-2' }} zł</span>
-                          }
-                          <span class="product-priority priority-{{ product.priority }}">{{ product.priority }}</span>
-                        </div>
-                      </div>
-                      @if (product.note) {
-                        <p class="product-note">{{ product.note }}</p>
-                      }
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <span class="purchased-section-label">
+              ({{ getFilteredCompletedProducts().length }})
+              @if (purchasedSectionExpanded()) {
+                {{ 'list.hide_checked_products' | translate }}
+              } @else {
+                {{ 'list.show_checked_products' | translate }}
+              }
+            </span>
+            <span class="purchased-section-chevron" [class.collapsed]="!purchasedSectionExpanded()">⌃</span>
+          </button>
+          @if (purchasedSectionExpanded()) {
+            @for (product of getFilteredCompletedProducts(); track product.id) {
+              <ng-container *ngTemplateOutlet="productRow; context: { $implicit: product }" />
             }
-          </div>
+          }
         }
       }
     </div>
+
+    <div class="list-fab-wrap">
+      <button type="button" class="list-fab" data-testid="fab-add-products" (click)="scrollToAddProducts()">
+        <span class="list-fab-plus">+</span>
+        <span class="list-fab-label">{{ 'list.add_fab' | translate }}</span>
+      </button>
+    </div>
+
+    <ng-template #productRow let-product>
+      <div
+        class="product-item product-item-compact"
+        [attr.data-testid]="'product-item-' + product.id"
+        appSwipePrevent
+        [class.purchased]="product.isPurchased"
+        [class.swiped]="swipedProductId === product.id"
+        (click)="onProductTap(product)"
+        (touchstart)="onTouchStart($event, product.id)"
+        (touchmove)="onTouchMove($event)"
+        (touchend)="onTouchEnd()"
+        (pointerdown)="onPointerDown($event, product.id)"
+        (pointermove)="onPointerMove($event)"
+        (pointerup)="onPointerUp()"
+        (pointercancel)="onPointerUp()"
+      >
+        @if (editingProduct()?.id === product.id) {
+          <div
+            class="product-edit-form"
+            (click)="$event.stopPropagation()"
+            (touchstart)="$event.stopPropagation()"
+            (touchmove)="$event.stopPropagation()"
+            (touchend)="$event.stopPropagation()"
+            (pointerdown)="$event.stopPropagation()"
+            (pointermove)="$event.stopPropagation()"
+            (pointerup)="$event.stopPropagation()"
+            (pointercancel)="$event.stopPropagation()"
+          >
+            <input type="text" [(ngModel)]="editingProduct()!.name" class="edit-input" />
+            <div class="edit-quantity-row">
+              <input
+                type="number"
+                min="0"
+                step="any"
+                [ngModel]="editingProduct()!.quantity"
+                (ngModelChange)="onEditingQuantityChange($event)"
+                class="edit-input edit-quantity-input"
+                [placeholder]="'list.quantity' | translate"
+              />
+              <select [(ngModel)]="editingProduct()!.quantityUnit" class="edit-select edit-unit-select">
+                @for (u of quantityUnits; track u.value) {
+                  <option [value]="u.value">{{ u.label }}</option>
+                }
+              </select>
+            </div>
+            <input
+              type="number"
+              [(ngModel)]="editingProduct()!.price"
+              min="0"
+              step="0.01"
+              class="edit-input"
+              [placeholder]="'list.price' | translate"
+            />
+            <select [(ngModel)]="editingProduct()!.category" class="edit-select">
+              @for (category of categories; track category) {
+                <option [value]="category">{{ category }}</option>
+              }
+            </select>
+            <select [(ngModel)]="editingProduct()!.priority" class="edit-select">
+              @for (priority of priorities; track priority) {
+                <option [value]="priority">{{ priority }}</option>
+              }
+            </select>
+            <textarea [(ngModel)]="editingProduct()!.note" class="edit-textarea" [placeholder]="'list.note' | translate"></textarea>
+            <div class="edit-actions">
+              <button class="btn-save" data-testid="edit-save-btn" (click)="saveEdit(); $event.stopPropagation()">{{ 'list.save' | translate }}</button>
+              <button class="btn-cancel" (click)="cancelEdit(); $event.stopPropagation()">{{ 'app.cancel' | translate }}</button>
+            </div>
+          </div>
+        } @else {
+          <div class="product-swipe-wrapper product-swipe-compact">
+            <button type="button" class="swipe-delete" (click)="deleteProduct(product.id); $event.stopPropagation()">
+              <span class="swipe-delete-icon" aria-hidden="true">🗑</span>
+              <span>{{ 'list.delete' | translate }}</span>
+            </button>
+            <div class="product-content product-content-compact" [style.transform]="getSwipeTransform(product.id)">
+              <div class="product-main product-main-compact">
+                <label class="compact-checkbox-wrap" (click)="$event.stopPropagation()">
+                  <input
+                    type="checkbox"
+                    [attr.data-testid]="'product-checkbox-' + product.id"
+                    [checked]="product.isPurchased"
+                    (click)="onCheckboxClick($event)"
+                    (change)="togglePurchased(product.id)"
+                    class="compact-checkbox-input"
+                  />
+                  <span class="compact-checkbox-ui" aria-hidden="true"></span>
+                </label>
+                <div class="product-info product-info-compact">
+                  <div class="product-line-compact">
+                    <span class="product-name-compact">{{ product.name }}</span>
+                    <span class="product-qty-inline">{{ getQuantityDisplay(product) }}</span>
+                  </div>
+                  <div class="product-meta-compact">
+                    <span class="product-category-chip">{{ product.category }}</span>
+                    <span class="product-quantity">{{ 'list.quantity' | translate }}: {{ getQuantityDisplay(product) }}</span>
+                    @if (priceVisibility.showPrices() && product.price) {
+                      <span class="product-price">{{ product.price | number:'1.2-2' }} zł</span>
+                    }
+                    <span class="product-priority priority-{{ product.priority }}">{{ product.priority }}</span>
+                  </div>
+                  @if (product.note) {
+                    <p class="product-note">{{ product.note }}</p>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </ng-template>
   </div>
 } @else {
   <div class="loading">Ładowanie...</div>

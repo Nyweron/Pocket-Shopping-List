@@ -116,6 +116,21 @@ describe('ShoppingListDetailComponent', () => {
     expect(categorySorted[0].category <= categorySorted[1].category).toBeTrue();
   });
 
+  it('keeps active products on top and completed at bottom', () => {
+    const active = component.getFilteredActiveProducts();
+    const done = component.getFilteredCompletedProducts();
+    expect(active.every(p => !p.isPurchased)).toBeTrue();
+    expect(done.every(p => p.isPurchased)).toBeTrue();
+    expect(active.map(p => p.id)).toEqual(['p1']);
+    expect(done.map(p => p.id)).toEqual(['p2']);
+  });
+
+  it('toggles purchased section expanded flag', () => {
+    component.purchasedSectionExpanded.set(false);
+    component.togglePurchasedSection();
+    expect(component.purchasedSectionExpanded()).toBeTrue();
+  });
+
   it('handles edit flow and quantity changes', () => {
     const p = component.list()!.products[0] as any;
     component.startEdit(p);
