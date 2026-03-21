@@ -29,6 +29,7 @@
           <button
             type="button"
             class="icon-button"
+            data-testid="open-options-menu"
             (click)="toggleOptionsMenu()"
             title="Opcje listy"
           >
@@ -52,7 +53,7 @@
             </div>
 
             <div class="options-section">
-              <button type="button" (click)="openSortSheet()">
+              <button type="button" data-testid="open-sort-sheet" (click)="openSortSheet()">
                 <span class="options-icon">⇅</span> Sortuj według:
                 <span class="options-value">{{ getCurrentSortLabel() }}</span>
               </button>
@@ -73,7 +74,7 @@
             </div>
 
             <div class="options-section">
-              <button type="button" class="options-danger" (click)="removePurchasedProducts()">
+              <button type="button" data-testid="remove-purchased-products" class="options-danger" (click)="removePurchasedProducts()">
                 <span class="options-icon options-icon-danger" aria-hidden="true">
                   <svg viewBox="0 0 24 24" class="options-icon-svg">
                     <path d="M4 7h16M9 7V5h6v2M8 7l1 12h6l1-12M10 10v6M14 10v6" />
@@ -87,7 +88,7 @@
       }
       @if (showSortSheet()) {
         <div class="options-overlay" (click)="closeSortSheet()">
-          <div class="options-sheet sort-sheet" (click)="$event.stopPropagation()">
+          <div class="options-sheet sort-sheet" data-testid="sort-sheet" (click)="$event.stopPropagation()">
             <div class="options-handle"></div>
             <div class="sort-header">
               <button type="button" class="sort-back" (click)="backToOptionsFromSortSheet()">←</button>
@@ -96,11 +97,11 @@
             </div>
 
             <div class="options-section">
-              <button type="button" (click)="selectSortFromSheet('category')" [class.sort-active]="sortBy() === 'category'">
+              <button type="button" data-testid="sort-option-category" (click)="selectSortFromSheet('category')" [class.sort-active]="sortBy() === 'category'">
                 <span class="options-icon">↧↥</span> Kategorie
                 <span class="sort-check">@if (sortBy() === 'category') { ✔ }</span>
               </button>
-              <button type="button" (click)="selectSortFromSheet('name')" [class.sort-active]="sortBy() === 'name'">
+              <button type="button" data-testid="sort-option-name" (click)="selectSortFromSheet('name')" [class.sort-active]="sortBy() === 'name'">
                 <span class="options-icon">⇅</span> Alfabetycznie
                 <span class="sort-check">@if (sortBy() === 'name') { ✔ }</span>
               </button>
@@ -110,11 +111,11 @@
                 <span class="sort-check">@if (sortBy() === 'custom') { ✔ }</span>
               </button>
               -->
-              <button type="button" (click)="selectSortFromSheet('priority')" [class.sort-active]="sortBy() === 'priority'">
+              <button type="button" data-testid="sort-option-priority" (click)="selectSortFromSheet('priority')" [class.sort-active]="sortBy() === 'priority'">
                 <span class="options-icon">⚑</span> {{ 'list.sort_priority' | translate }}
                 <span class="sort-check">@if (sortBy() === 'priority') { ✔ }</span>
               </button>
-              <button type="button" (click)="selectSortFromSheet('purchased')" [class.sort-active]="sortBy() === 'purchased'">
+              <button type="button" data-testid="sort-option-purchased" (click)="selectSortFromSheet('purchased')" [class.sort-active]="sortBy() === 'purchased'">
                 <span class="options-icon">☑</span> {{ 'list.sort_status' | translate }}
                 <span class="sort-check">@if (sortBy() === 'purchased') { ✔ }</span>
               </button>
@@ -157,6 +158,7 @@
       <input
         #listSearchInput
         type="text"
+        data-testid="list-search-input"
         [placeholder]="'list.search_products' | translate"
         [ngModel]="listSearchQuery()"
         (ngModelChange)="listSearchQuery.set($event)"
@@ -184,6 +186,7 @@
         @for (product of getFilteredAndSortedProducts(); track product.id) {
           <div
             class="product-item"
+            [attr.data-testid]="'product-item-' + product.id"
             appSwipePrevent
             [class.purchased]="product.isPurchased"
             [class.swiped]="swipedProductId === product.id"
@@ -238,7 +241,7 @@
                 </select>
                 <textarea [(ngModel)]="editingProduct()!.note" class="edit-textarea" placeholder="Notatka"></textarea>
                 <div class="edit-actions">
-                  <button class="btn-save" (click)="saveEdit(); $event.stopPropagation()">Zapisz</button>
+                  <button class="btn-save" data-testid="edit-save-btn" (click)="saveEdit(); $event.stopPropagation()">Zapisz</button>
                   <button class="btn-cancel" (click)="cancelEdit(); $event.stopPropagation()">Anuluj</button>
                 </div>
               </div>
@@ -256,6 +259,7 @@
                   <div class="product-main">
                     <input
                       type="checkbox"
+                      [attr.data-testid]="'product-checkbox-' + product.id"
                       [checked]="product.isPurchased"
                       (click)="onCheckboxClick($event)"
                       (change)="togglePurchased(product.id)"

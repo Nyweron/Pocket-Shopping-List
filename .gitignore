@@ -97,6 +97,10 @@ xcuserdata/
 
 # Firebase local tooling and sensitive keys
 .firebase/
+
+# Playwright artifacts
+/playwright-report/
+/test-results/
 firebase-debug.log*
 firestore-debug.log*
 ui-debug.log*

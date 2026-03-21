@@ -20,6 +20,7 @@
         <input
           type="email"
           id="email"
+          data-testid="login-email"
           [(ngModel)]="email"
           name="email"
           required
@@ -33,6 +34,7 @@
         <input
           type="password"
           id="password"
+          data-testid="login-password"
           [(ngModel)]="password"
           name="password"
           required
@@ -41,7 +43,7 @@
         />
       </div>
 
-      <button type="submit" class="btn-submit" [disabled]="isLoading()">
+      <button type="submit" class="btn-submit" data-testid="login-submit" [disabled]="isLoading()">
         @if (isLoading()) {
           Logowanie...
         } @else {

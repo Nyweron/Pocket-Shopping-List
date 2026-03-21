@@ -33,7 +33,7 @@
     }
     @if (activeTab() === 'my' && !showCreateForm() && !showTemplatePicker()) {
       <div class="create-actions">
-        <button class="btn-create" (click)="showCreateFormToggle()">+ {{ 'app.new_list' | translate }}</button>
+        <button class="btn-create" data-testid="create-list-btn" (click)="showCreateFormToggle()">+ {{ 'app.new_list' | translate }}</button>
         <button class="btn-create secondary" (click)="openTemplatePicker()">{{ 'app.from_template' | translate }}</button>
       </div>
     }
@@ -63,6 +63,7 @@
     <div class="create-form">
       <input
         type="text"
+        data-testid="new-list-name-input"
         [(ngModel)]="newListName"
         [placeholder]="'app.list_name' | translate"
         class="list-name-input"
@@ -70,7 +71,7 @@
         autofocus
       />
       <div class="form-actions">
-        <button class="btn-save" (click)="createList()">{{ 'app.create' | translate }}</button>
+        <button class="btn-save" data-testid="create-list-submit" (click)="createList()">{{ 'app.create' | translate }}</button>
         <button class="btn-cancel" (click)="cancelCreate()">{{ 'app.cancel' | translate }}</button>
       </div>
     </div>
@@ -102,7 +103,7 @@
             </div>
           </div>
         } @else {
-          <a class="list-card" [routerLink]="['/list', list.id]">
+          <a class="list-card" [routerLink]="['/list', list.id]" [attr.data-testid]="'list-card-' + list.id">
             <div class="list-header">
               <h2>{{ list.name }}</h2>
               @if (isSharedList(list)) {

@@ -55,10 +55,39 @@ Open:
 - `npm run start` - start Angular dev server
 - `npm run build` - build Angular app
 - `npm run build:production` - production build
-- `npm run test` - run unit tests
+- `npm run test` - run unit tests (watch mode)
+- `npm run test:unit` - run unit tests once (CI/local gate mode)
+- `npm run test:watch` - run unit tests in watch mode
+- `npm run test:coverage` - run unit tests with coverage report
+- `npm run test:e2e` - run Playwright smoke e2e tests
+- `npm run lint` - run ESLint for TypeScript sources
+- `npm run verify` - local quality gate: `lint + unit + production build`
+- `npm run verify:full` - extended local gate: `lint + unit + e2e + production build`
 - `npm run cap:copy` - copy web assets to Android project
 - `npm run cap:sync` - sync Android Capacitor project
 - `npm run build:android` - production build + copy/sync for Android
+
+## Testing Workflow (Local Development)
+
+Recommended flow before bigger merges in dev branch:
+
+1. Fast check:
+
+```bash
+npm run verify
+```
+
+2. Full smoke check (including e2e):
+
+```bash
+npm run verify:full
+```
+
+3. Coverage snapshot:
+
+```bash
+npm run test:coverage
+```
 
 ## Project Structure
 
