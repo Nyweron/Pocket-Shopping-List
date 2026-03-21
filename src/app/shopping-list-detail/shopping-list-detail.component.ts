@@ -22,7 +22,7 @@ type SortOption = 'name' | 'category' | 'priority' | 'purchased' | 'custom';
   selector: 'app-shopping-list-detail',
   imports: [CommonModule, RouterModule, FormsModule, ProductSearchComponent, SwipePreventDirective, TranslatePipe],
   templateUrl: './shopping-list-detail.component.html',
-  styleUrl: './shopping-list-detail.component.css'
+  styleUrls: ['./shopping-list-detail.component.css', './shopping-list-detail-overlays.component.css']
 })
 export class ShoppingListDetailComponent implements OnInit {
   @ViewChild('listSearchInput') listSearchInput?: ElementRef<HTMLInputElement>;

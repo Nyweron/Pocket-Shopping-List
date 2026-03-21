@@ -1,0 +1,321 @@
+/**
+ * Options / sort sheets and share form — separate stylesheet (still lazy-loaded with the route).
+ * Uses :host so rules apply with view encapsulation; global `app-shopping-list-detail` selectors
+ * can fail to match or be dropped when styles live only in the initial bundle.
+ */
+:host .options-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.45);
+  /* Above .demo-banner (z-index 1000) so the sheet is usable */
+  z-index: 1100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+:host .options-sheet {
+  width: min(640px, 100%);
+  background: var(--color-bg-elevated);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  border: 1px solid var(--color-border-soft);
+  border-bottom: none;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.28);
+  padding: 0.5rem 0.75rem 1rem;
+  max-height: 82vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+:host .options-handle {
+  width: 42px;
+  height: 4px;
+  background: var(--color-border-strong);
+  border-radius: 999px;
+  margin: 0.25rem auto 0.75rem;
+}
+
+:host .options-section {
+  margin: 0.6rem 0;
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border-soft);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+:host .options-section + .options-section {
+  padding-top: 0;
+}
+
+:host .options-section button + button {
+  border-top: 1px solid var(--color-border-soft);
+}
+
+:host .options-section button + .options-toggle-row,
+:host .options-section .options-toggle-row + button {
+  border-top: 1px solid var(--color-border-soft);
+}
+
+:host .options-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.9rem 1.25rem;
+  min-height: 48px;
+  box-sizing: border-box;
+  color: var(--color-text-primary);
+  font-size: 1.06rem;
+  font-weight: 500;
+}
+
+:host .options-toggle-label {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+:host .options-icon-neutral {
+  color: var(--color-text-secondary);
+}
+
+:host .options-icon-neutral .options-icon-svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+:host .options-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+:host .options-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+:host .options-switch-track {
+  display: block;
+  width: 48px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--color-toggle-track-off);
+  transition: background 0.2s ease;
+  position: relative;
+}
+
+:host .options-switch-track::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-toggle-thumb);
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
+}
+
+:host .options-switch input:checked + .options-switch-track {
+  background: var(--color-toggle-track-on);
+}
+
+:host .options-switch input:checked + .options-switch-track::after {
+  transform: translateX(20px);
+}
+
+:host .options-switch input:focus-visible + .options-switch-track {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+:host .options-toggle-row:active {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+:host .options-sheet button {
+  width: 100%;
+  padding: 0.9rem 1.25rem;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: 1.06rem;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+:host .options-sheet button:active {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+:host .options-value {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+:host .options-sheet .options-danger {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+:host .options-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+:host .options-icon-danger {
+  color: var(--color-danger);
+}
+
+:host .options-icon-svg {
+  width: 1rem;
+  height: 1rem;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+:host .sort-sheet .sort-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.75rem 0.6rem;
+  border-bottom: 1px solid var(--color-border-soft);
+}
+
+:host .sort-sheet .sort-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+:host .sort-back,
+:host .sort-close {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 1.25rem;
+}
+
+:host .sort-sheet button.sort-active {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+:host .sort-check {
+  margin-left: auto;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+:host .share-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border-soft);
+}
+
+:host .share-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+:host .share-input {
+  width: 100%;
+  padding: 0.875rem;
+  border: 1px solid var(--color-border-soft);
+  border-radius: 6px;
+  font-size: 1rem;
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+:host .share-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.18);
+}
+
+:host .share-form-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+:host .btn-share-submit,
+:host .btn-share-cancel {
+  flex: 1;
+  padding: 0.875rem 1.25rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background 0.3s, transform 0.2s;
+  min-height: 44px;
+  font-weight: 500;
+}
+
+:host .btn-share-submit {
+  background: var(--color-primary);
+  color: var(--color-bg-elevated);
+}
+
+:host .btn-share-submit:active {
+  background: var(--color-primary-strong);
+  transform: scale(0.98);
+}
+
+:host .btn-share-cancel {
+  background: var(--color-danger);
+  color: var(--color-bg-elevated);
+}
+
+:host .btn-share-cancel:active {
+  background: var(--color-danger-strong);
+  transform: scale(0.98);
+}
+
+:host .share-error {
+  width: 100%;
+  background: rgba(248, 113, 113, 0.12);
+  color: #fecaca;
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  :host .btn-share-submit:hover {
+    background: #45a049;
+  }
+
+  :host .btn-share-cancel:hover {
+    background: #da190b;
+  }
+}

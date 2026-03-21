@@ -159,6 +159,7 @@ npm run build:android
 
 - UI trzymaj w podejściu mobile-first.
 - Korzystaj ze zmiennych motywu z `src/styles.css`.
+- Style bottom sheetów (opcje/sortowanie) i udostępniania listy: `shopping-list-detail-overlays.component.css` (drugi `styleUrls` u szczegółów listy, selektory z `:host`), żeby działały z enkapsulacją i ładowały się z lazy chunkiem.
 - Nie commituj artefaktów buildu (`dist/`, cache Androida itd. — patrz `.gitignore`).
 
 ### Licencja
@@ -320,6 +321,7 @@ npm run build:android
 
 - Keep UI mobile-first.
 - Prefer consistent theme variables from `src/styles.css`.
+- Bottom sheets (options/sort) and list share form use `shopping-list-detail-overlays.component.css` (second `styleUrls` entry on list detail; `:host` selectors) so styles work with encapsulation and load with the lazy chunk.
 - Do not commit generated build artifacts (`dist/`, Android build caches, etc. — see `.gitignore`).
 
 ### License
