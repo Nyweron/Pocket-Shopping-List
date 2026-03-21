@@ -37,6 +37,7 @@
     "test:unit": "ng test --watch=false --browsers=ChromeHeadless",
     "test:watch": "ng test",
     "test:coverage": "ng test --watch=false --browsers=ChromeHeadless --code-coverage",
+    "icons": "node scripts/generate-favicons.cjs",
     "lint": "eslint \"src/**/*.ts\"",
     "test:e2e": "playwright test",
     "cap:copy": "npx cap copy android",
@@ -66,8 +67,8 @@
     "@angular/compiler-cli": "^19.1.0",
     "@capacitor/android": "^8.2.0",
     "@capacitor/cli": "^8.2.0",
-    "@types/jasmine": "~5.1.0",
     "@playwright/test": "^1.53.1",
+    "@types/jasmine": "~5.1.0",
     "@typescript-eslint/eslint-plugin": "^8.35.1",
     "@typescript-eslint/parser": "^8.35.1",
     "baseline-browser-mapping": "^2.9.19",
@@ -78,6 +79,8 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "png-to-ico": "^2.1.8",
+    "sharp": "^0.34.5",
     "typescript": "~5.7.2"
   }
 }

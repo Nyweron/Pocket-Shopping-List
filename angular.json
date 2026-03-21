@@ -24,6 +24,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "icon_background_foreground.svg",
+                "input": "graphics",
+                "output": "/"
               }
             ],
             "styles": [

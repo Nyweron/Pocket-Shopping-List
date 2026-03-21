@@ -74,6 +74,11 @@ W przeglądarce: `http://localhost:4200/`
 - `npm run cap:copy` — kopiowanie zasobów web do projektu Android
 - `npm run cap:sync` — synchronizacja projektu Capacitor (Android)
 - `npm run build:android` — build produkcyjny + copy/sync pod Androida
+- `npm run icons` — odtwarza `favicon.ico` oraz PNG (16×16, 32×32) z `graphics/icon_background_foreground.svg` (uruchom po zmianie ikony)
+
+### Favicon (SVG + fallbacki)
+
+W `index.html` jest favicon SVG oraz fallbacki PNG i `.ico` w `public/` dla starszych przeglądarek. Po edycji pliku SVG uruchom `npm run icons`, żeby zaktualizować pliki rastrowe.
 
 ### Praca z testami (rozwój lokalny)
 
@@ -230,6 +235,11 @@ Open: `http://localhost:4200/`
 - `npm run cap:copy` — copy web assets to Android project
 - `npm run cap:sync` — sync Capacitor Android project
 - `npm run build:android` — production build + copy/sync for Android
+- `npm run icons` — regenerates `favicon.ico` and PNGs (16×16, 32×32) from `graphics/icon_background_foreground.svg` (run after changing the logo)
+
+### Favicon (SVG + fallbacks)
+
+`index.html` references an SVG favicon plus PNG and `.ico` fallbacks in `public/` for older browsers. After editing the SVG source, run `npm run icons` to refresh the raster files.
 
 ### Testing workflow (local development)
 
