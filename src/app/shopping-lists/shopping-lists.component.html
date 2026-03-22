@@ -125,7 +125,17 @@
                 <span class="shared-badge">{{ 'app.shared_badge' | translate }}</span>
               }
               @if (activeTab() === 'my') {
-                <button class="btn-delete" (click)="deleteList(list.id, $event); $event.preventDefault()" [title]="'app.delete_list' | translate">×</button>
+                <button
+                  type="button"
+                  class="btn-delete"
+                  (click)="deleteList(list.id, $event); $event.preventDefault()"
+                  [title]="'app.delete_list' | translate"
+                  [attr.aria-label]="'app.delete_list' | translate"
+                >
+                  <svg class="btn-delete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M7 7l10 10M17 7L7 17" />
+                  </svg>
+                </button>
               }
             </div>
             <div class="list-info">
