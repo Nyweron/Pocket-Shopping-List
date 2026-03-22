@@ -721,11 +721,20 @@
 }
 
 .purchased-section-chevron {
-  display: inline-block;
-  font-size: 1rem;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  flex-shrink: 0;
   transition: transform 0.2s ease;
   color: var(--color-text-muted);
+}
+
+.purchased-section-chevron-svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  pointer-events: none;
 }
 
 .purchased-section-chevron.collapsed {

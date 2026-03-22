@@ -202,7 +202,20 @@
                 {{ 'list.show_checked_products' | translate }}
               }
             </span>
-            <span class="purchased-section-chevron" [class.collapsed]="!purchasedSectionExpanded()">⌃</span>
+            <span class="purchased-section-chevron" [class.collapsed]="!purchasedSectionExpanded()" aria-hidden="true">
+              <svg
+                class="purchased-section-chevron-svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <!-- chevron up; .collapsed rotates 180° → chevron down -->
+                <path d="m18 15-6-6-6 6" />
+              </svg>
+            </span>
           </button>
           @if (purchasedSectionExpanded()) {
             @for (product of getFilteredCompletedProducts(); track product.id) {
