@@ -7,8 +7,23 @@
           <option value="pl">PL</option>
           <option value="en">EN</option>
         </select>
-        <button type="button" class="btn-theme" (click)="themeService.toggleTheme()">
-          {{ themeService.theme() === 'light' ? ('app.theme_dark' | translate) : ('app.theme_light' | translate) }}
+        <button
+          type="button"
+          class="btn-theme"
+          (click)="themeService.toggleTheme()"
+          [attr.aria-label]="themeService.theme() === 'light' ? ('app.theme_dark' | translate) : ('app.theme_light' | translate)"
+          [attr.title]="themeService.theme() === 'light' ? ('app.theme_dark' | translate) : ('app.theme_light' | translate)"
+        >
+          @if (themeService.theme() === 'light') {
+            <svg class="btn-theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          } @else {
+            <svg class="btn-theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+            </svg>
+          }
         </button>
         <a [routerLink]="['/stats']" class="btn-stats">{{ 'app.stats' | translate }}</a>
         @if (authService.isAuthenticated()) {
@@ -98,7 +113,7 @@
               <button type="button" class="btn-restore" (click)="unarchiveList(list.id)">{{ 'app.restore' | translate }}</button>
             </div>
             <div class="list-info">
-              <p class="date">{{ 'app.created' | translate }}: {{ list.createdAt | date:'short' }}</p>
+              <p class="date">{{ 'app.created' | translate }}: {{ list.createdAt | date:(translate.currentLang() === 'pl' ? 'dd.MM.yyyy, HH:mm' : 'short') }}</p>
               <p class="products-count">{{ 'app.products' | translate }}: {{ getProductCount(list) }}</p>
             </div>
           </div>
@@ -114,7 +129,7 @@
               }
             </div>
             <div class="list-info">
-              <p class="date">{{ 'app.created' | translate }}: {{ list.createdAt | date:'short' }}</p>
+              <p class="date">{{ 'app.created' | translate }}: {{ list.createdAt | date:(translate.currentLang() === 'pl' ? 'dd.MM.yyyy, HH:mm' : 'short') }}</p>
               <p class="products-count">{{ 'app.products' | translate }}: {{ getPurchasedCount(list) }}/{{ getProductCount(list) }}</p>
             </div>
             @if (getProductCount(list) > 0) {
