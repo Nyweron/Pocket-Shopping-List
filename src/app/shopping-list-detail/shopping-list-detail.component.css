@@ -88,10 +88,6 @@
   border-color: var(--color-accent);
 }
 
-.product-search-section {
-  margin-bottom: 1.5rem;
-}
-
 .products-list {
   display: flex;
   flex-direction: column;
