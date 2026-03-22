@@ -155,14 +155,37 @@
   background: var(--color-bg-subtle);
 }
 
-.lang-select {
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
+.btn-lang {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 0.65rem;
+  border-radius: 999px;
   border: 1px solid var(--color-border-soft);
   background: var(--color-bg-elevated);
   color: var(--color-text-primary);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s, transform 0.15s, border-color 0.2s;
+}
+
+.btn-lang:hover {
+  background: var(--color-bg-subtle);
+  border-color: var(--color-border-strong);
+}
+
+.btn-lang:active {
+  transform: scale(0.96);
+}
+
+.btn-lang:focus-visible {
+  outline: 2px solid var(--color-accent, #60a5fa);
+  outline-offset: 2px;
 }
 
 .btn-stats {

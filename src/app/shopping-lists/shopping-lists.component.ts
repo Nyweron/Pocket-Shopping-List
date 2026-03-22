@@ -127,4 +127,8 @@ export class ShoppingListsComponent implements OnInit {
     this.shoppingListService.unarchiveList(id);
     this.loadLists();
   }
+
+  toggleLang(): void {
+    this.translate.setLang(this.translate.currentLang() === 'pl' ? 'en' : 'pl');
+  }
 }

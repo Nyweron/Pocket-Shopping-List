@@ -3,10 +3,16 @@
     <div class="header-top">
       <h1>{{ 'app.title' | translate }}</h1>
       <div class="header-actions">
-        <select [ngModel]="translate.currentLang()" (ngModelChange)="translate.setLang($event)" class="lang-select">
-          <option value="pl">PL</option>
-          <option value="en">EN</option>
-        </select>
+        <button
+          type="button"
+          class="btn-lang"
+          data-testid="lang-toggle"
+          (click)="toggleLang()"
+          [attr.aria-label]="translate.currentLang() === 'pl' ? translate.get('app.lang_switch_to_en') : translate.get('app.lang_switch_to_pl')"
+          [attr.title]="translate.currentLang() === 'pl' ? translate.get('app.lang_switch_to_en') : translate.get('app.lang_switch_to_pl')"
+        >
+          {{ translate.currentLang() === 'pl' ? 'PL' : 'EN' }}
+        </button>
         <button
           type="button"
           class="btn-theme"
