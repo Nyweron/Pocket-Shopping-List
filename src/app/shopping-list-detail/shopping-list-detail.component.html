@@ -2,7 +2,11 @@
   <div class="list-detail-container list-detail-compact">
     <div class="header">
       <div class="compact-top-bar">
-        <a class="compact-back" [routerLink]="['/']" [attr.aria-label]="'list.back' | translate">←</a>
+        <a class="compact-back" [routerLink]="['/']" [attr.aria-label]="'list.back' | translate">
+          <svg class="compact-back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </a>
         <h1 class="compact-list-title">{{ list()!.name }}</h1>
         <div class="compact-top-actions">
           @if (getSharedWith().length > 0) {
