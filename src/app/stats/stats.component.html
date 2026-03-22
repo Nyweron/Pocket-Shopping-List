@@ -1,6 +1,19 @@
 <div class="stats-container">
   <div class="stats-header">
-    <a routerLink="/" class="btn-back">← {{ 'list.back' | translate }}</a>
+    <a routerLink="/" class="stats-back" [attr.aria-label]="'list.back' | translate">
+      <svg
+        class="stats-back-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.25"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
+    </a>
     <h1>{{ 'stats.title' | translate }}</h1>
   </div>
 
