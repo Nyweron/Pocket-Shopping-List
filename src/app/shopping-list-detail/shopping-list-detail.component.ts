@@ -13,12 +13,13 @@ import { ListPriceVisibilityService } from '../services/list-price-visibility.se
 import { TranslateService } from '../services/translate.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { SwipePreventDirective } from '../directives/swipe-prevent.directive';
+import { IconPlusComponent } from '../shared/icons/icon-plus.component';
 
 type SortOption = 'name' | 'category' | 'priority' | 'purchased' | 'custom';
 
 @Component({
   selector: 'app-shopping-list-detail',
-  imports: [CommonModule, RouterModule, FormsModule, SwipePreventDirective, TranslatePipe],
+  imports: [CommonModule, RouterModule, FormsModule, SwipePreventDirective, TranslatePipe, IconPlusComponent],
   templateUrl: './shopping-list-detail.component.html',
   styleUrls: ['./shopping-list-detail.component.css', './shopping-list-detail-overlays.component.css']
 })

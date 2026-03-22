@@ -118,9 +118,9 @@
       "
     >
       @if (st.onList && st.allPurchased) {
-        <span class="add-row-tick-mark" aria-hidden="true">✓</span>
+        <app-icon-check class="add-row-tick-icon" />
       } @else {
-        +
+        <app-icon-plus class="add-row-plus-icon" />
       }
     </button>
     <span class="add-row-name">{{ p.name }}</span>

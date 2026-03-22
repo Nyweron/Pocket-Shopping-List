@@ -12,10 +12,11 @@ import { DemoLimitService } from '../services/demo-limit.service';
 import { RefreshListsService } from '../services/refresh-lists.service';
 import { TranslateService } from '../services/translate.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
+import { IconPlusComponent } from '../shared/icons/icon-plus.component';
 
 @Component({
   selector: 'app-shopping-lists',
-  imports: [CommonModule, RouterModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, RouterModule, FormsModule, TranslatePipe, IconPlusComponent],
   templateUrl: './shopping-lists.component.html',
   styleUrl: './shopping-lists.component.css'
 })

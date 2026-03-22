@@ -54,7 +54,10 @@
     }
     @if (activeTab() === 'my' && !showCreateForm() && !showTemplatePicker()) {
       <div class="create-actions">
-        <button class="btn-create" data-testid="create-list-btn" (click)="showCreateFormToggle()">+ {{ 'app.new_list' | translate }}</button>
+        <button type="button" class="btn-create" data-testid="create-list-btn" (click)="showCreateFormToggle()">
+          <app-icon-plus class="btn-create-plus-icon" />
+          {{ 'app.new_list' | translate }}
+        </button>
         <button class="btn-create secondary" (click)="openTemplatePicker()">{{ 'app.from_template' | translate }}</button>
       </div>
     }
