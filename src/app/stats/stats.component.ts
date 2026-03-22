@@ -5,11 +5,12 @@ import { ShoppingListService } from '../services/shopping-list.service';
 import { AuthService } from '../services/auth.service';
 import { TranslateService } from '../services/translate.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
+import { BackControlComponent } from '../shared/back-control.component';
 
 @Component({
   selector: 'app-stats',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslatePipe],
+  imports: [CommonModule, RouterModule, TranslatePipe, BackControlComponent],
   templateUrl: './stats.component.html',
   styleUrl: './stats.component.css'
 })

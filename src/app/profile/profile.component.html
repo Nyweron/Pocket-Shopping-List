@@ -1,7 +1,7 @@
 @if (user()) {
   <div class="profile-container">
     <div class="profile-card">
-      <button class="btn-back" [routerLink]="['/']">← Wróć</button>
+      <app-back-control [routerLink]="['/']" />
       <h1>Mój profil</h1>
       
       <div class="profile-info">

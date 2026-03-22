@@ -14,13 +14,22 @@ import { TranslateService } from '../services/translate.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { IconPlusComponent } from '../shared/icons/icon-plus.component';
 import { IconCheckComponent } from '../shared/icons/icon-check.component';
+import { BackControlComponent } from '../shared/back-control.component';
 
 export type AddProductsTab = 'popular' | 'categories' | 'recent';
 
 @Component({
   selector: 'app-add-products-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, TranslatePipe, IconPlusComponent, IconCheckComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    TranslatePipe,
+    IconPlusComponent,
+    IconCheckComponent,
+    BackControlComponent,
+  ],
   templateUrl: './add-products-page.component.html',
   styleUrl: './add-products-page.component.css'
 })

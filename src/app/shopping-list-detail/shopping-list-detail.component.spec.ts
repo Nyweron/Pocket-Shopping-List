@@ -7,6 +7,7 @@ import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
 import { ListPriceVisibilityService } from '../services/list-price-visibility.service';
 import { TranslateService } from '../services/translate.service';
+import { UiDialogService } from '../services/ui-dialog.service';
 import { ProductPriority } from '../models/product.model';
 import { ProductCategory } from '../models/product-category.enum';
 
@@ -16,6 +17,7 @@ describe('ShoppingListDetailComponent', () => {
   let shoppingListService: jasmine.SpyObj<ShoppingListService>;
   let shareService: jasmine.SpyObj<ShareService>;
   let themeService: jasmine.SpyObj<ThemeService>;
+  let uiDialog: jasmine.SpyObj<UiDialogService>;
 
   const baseList = {
     id: 'l1',
@@ -74,6 +76,9 @@ describe('ShoppingListDetailComponent', () => {
     };
     const translate = jasmine.createSpyObj<TranslateService>('TranslateService', ['get']);
     const router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+    uiDialog = jasmine.createSpyObj<UiDialogService>('UiDialogService', ['confirm', 'alert']);
+    uiDialog.confirm.and.returnValue(Promise.resolve(true));
+    uiDialog.alert.and.returnValue(Promise.resolve());
     translate.get.and.callFake((k: string) => k);
     shoppingListService.getListById.and.returnValue(structuredClone(baseList) as any);
     shoppingListService.addProductToList.and.returnValue({ success: true });
@@ -90,6 +95,7 @@ describe('ShoppingListDetailComponent', () => {
         { provide: ThemeService, useValue: themeService },
         { provide: ListPriceVisibilityService, useValue: priceVisibility },
         { provide: TranslateService, useValue: translate },
+        { provide: UiDialogService, useValue: uiDialog },
         { provide: Router, useValue: router },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => 'l1' } } } },
       ],
@@ -184,25 +190,24 @@ describe('ShoppingListDetailComponent', () => {
     expect(shoppingListService.updateProductInList).toHaveBeenCalled();
   });
 
-  it('uncheckAllProducts uses confirm and updates purchased', () => {
-    spyOn(window, 'confirm').and.returnValue(true);
-    component.uncheckAllProducts();
+  it('uncheckAllProducts uses confirm and updates purchased', async () => {
+    await component.uncheckAllProducts();
+    expect(uiDialog.confirm).toHaveBeenCalledWith('confirm.uncheck_all');
     expect(shoppingListService.updateProductInList).toHaveBeenCalled();
   });
 
-  it('removePurchasedProducts alerts when zero purchased', () => {
+  it('removePurchasedProducts alerts when zero purchased', async () => {
     const list = component.list()!;
     list.products.forEach(p => (p.isPurchased = false));
     component.list.set(list as any);
-    spyOn(window, 'alert');
 
-    component.removePurchasedProducts();
-    expect(window.alert).toHaveBeenCalled();
+    await component.removePurchasedProducts();
+    expect(uiDialog.alert).toHaveBeenCalledWith('alert.no_purchased_to_remove');
   });
 
-  it('removePurchasedProducts removes when confirmed', () => {
-    spyOn(window, 'confirm').and.returnValue(true);
-    component.removePurchasedProducts();
+  it('removePurchasedProducts removes when confirmed', async () => {
+    await component.removePurchasedProducts();
+    expect(uiDialog.confirm).toHaveBeenCalledWith('confirm.remove_purchased');
     expect(shoppingListService.updateList).toHaveBeenCalled();
   });
 

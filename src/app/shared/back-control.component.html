@@ -1,0 +1,42 @@
+@if (backAsButton) {
+  <button
+    type="button"
+    class="app-back-control"
+    [attr.data-testid]="testId || null"
+    [attr.aria-label]="ariaLabelKey | translate"
+    (click)="onButtonClick()"
+  >
+    <svg
+      class="app-back-control-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.25"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+  </button>
+} @else {
+  <a
+    class="app-back-control"
+    [routerLink]="routerLink"
+    [attr.data-testid]="testId || null"
+    [attr.aria-label]="ariaLabelKey | translate"
+  >
+    <svg
+      class="app-back-control-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.25"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+  </a>
+}

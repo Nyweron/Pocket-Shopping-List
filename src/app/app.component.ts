@@ -6,10 +6,11 @@ import { AuthService } from './services/auth.service';
 import { DemoLimitService } from './services/demo-limit.service';
 import { RefreshListsService } from './services/refresh-lists.service';
 import { TranslatePipe } from './pipes/translate.pipe';
+import { DialogHostComponent } from './dialog-host/dialog-host.component';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, RouterOutlet, TranslatePipe],
+  imports: [CommonModule, RouterOutlet, TranslatePipe, DialogHostComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })

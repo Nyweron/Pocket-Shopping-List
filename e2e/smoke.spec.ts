@@ -104,8 +104,6 @@ test.describe('Smoke flows', () => {
   });
 
   test('swipe open then tap delete removes product (confirm)', async ({ page }) => {
-    page.once('dialog', dialog => dialog.accept());
-
     await loginDemo(page);
     await createListAndOpen(page, 'Swipe delete');
 
@@ -130,6 +128,10 @@ test.describe('Smoke flows', () => {
     const deleteBtn = row.locator('[data-testid^="swipe-delete-"]');
     await expect(deleteBtn).toBeVisible();
     await deleteBtn.click();
+    const deleteDialog = page.getByRole('alertdialog');
+    await expect(deleteDialog).toBeVisible();
+    await deleteDialog.getByRole('button', { name: /^(Potwierdź|Confirm)$/ }).click();
+    await expect(page.getByTestId('app-dialog')).toHaveCount(0);
 
     await expect(page.getByText('DeleteSwipeItem')).toHaveCount(0);
   });
@@ -170,9 +172,12 @@ test.describe('Smoke flows', () => {
     const firstCheckbox = page.locator('[data-testid^="product-checkbox-"]').first();
     await firstCheckbox.click();
 
-    page.on('dialog', dialog => dialog.accept());
     await page.getByTestId('open-options-menu').click();
     await page.getByTestId('remove-purchased-products').click();
+    const removeDialog = page.getByRole('alertdialog');
+    await expect(removeDialog).toBeVisible();
+    await removeDialog.getByRole('button', { name: /^(Potwierdź|Confirm)$/ }).click();
+    await expect(page.getByTestId('app-dialog')).toHaveCount(0);
 
     await expect(page.getByText('Do usunięcia')).toHaveCount(0);
   });

@@ -13,6 +13,7 @@ import { RefreshListsService } from '../services/refresh-lists.service';
 import { TranslateService } from '../services/translate.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { IconPlusComponent } from '../shared/icons/icon-plus.component';
+import { UiDialogService } from '../services/ui-dialog.service';
 
 @Component({
   selector: 'app-shopping-lists',
@@ -37,7 +38,8 @@ export class ShoppingListsComponent implements OnInit {
     public themeService: ThemeService,
     private demoLimit: DemoLimitService,
     private refreshLists: RefreshListsService,
-    public translate: TranslateService
+    public translate: TranslateService,
+    private uiDialog: UiDialogService
   ) {
     effect(() => {
       this.refreshLists.trigger();
@@ -88,12 +90,12 @@ export class ShoppingListsComponent implements OnInit {
     this.showTemplatePicker.set(true);
   }
 
-  deleteList(id: string, event: Event): void {
+  async deleteList(id: string, event: Event): Promise<void> {
     event.stopPropagation();
-    if (confirm(this.translate.get('confirm.delete_list'))) {
-      this.shoppingListService.deleteList(id);
-      this.loadLists();
-    }
+    const ok = await this.uiDialog.confirm('confirm.delete_list');
+    if (!ok) return;
+    this.shoppingListService.deleteList(id);
+    this.loadLists();
   }
 
   showCreateFormToggle(): void {

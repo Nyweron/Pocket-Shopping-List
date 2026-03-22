@@ -14,6 +14,8 @@ import { TranslateService } from '../services/translate.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { SwipePreventDirective } from '../directives/swipe-prevent.directive';
 import { IconPlusComponent } from '../shared/icons/icon-plus.component';
+import { BackControlComponent } from '../shared/back-control.component';
+import { UiDialogService } from '../services/ui-dialog.service';
 import { shouldSwipeStayOpen, shouldSuppressNextRowClickAfterSwipe } from './swipe-end.util';
 import { isSwipeDeleteTarget } from './swipe-target.util';
 
@@ -21,7 +23,15 @@ type SortOption = 'name' | 'category' | 'priority' | 'purchased' | 'custom';
 
 @Component({
   selector: 'app-shopping-list-detail',
-  imports: [CommonModule, RouterModule, FormsModule, SwipePreventDirective, TranslatePipe, IconPlusComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    SwipePreventDirective,
+    TranslatePipe,
+    IconPlusComponent,
+    BackControlComponent,
+  ],
   templateUrl: './shopping-list-detail.component.html',
   styleUrls: ['./shopping-list-detail.component.css', './shopping-list-detail-overlays.component.css']
 })
@@ -81,7 +91,8 @@ export class ShoppingListDetailComponent implements OnInit {
     public authService: AuthService,
     public themeService: ThemeService,
     public priceVisibility: ListPriceVisibilityService,
-    public translate: TranslateService
+    public translate: TranslateService,
+    private uiDialog: UiDialogService
   ) {}
 
   ngOnInit(): void {
@@ -141,14 +152,14 @@ export class ShoppingListDetailComponent implements OnInit {
     this.loadList(list.id);
   }
 
-  deleteProduct(productId: string): void {
+  async deleteProduct(productId: string): Promise<void> {
     const list = this.list();
     if (!list) return;
 
-    if (confirm(this.translate.get('confirm.delete_product'))) {
-      this.shoppingListService.removeProductFromList(list.id, productId);
-      this.loadList(list.id);
-    }
+    const ok = await this.uiDialog.confirm('confirm.delete_product');
+    if (!ok) return;
+    this.shoppingListService.removeProductFromList(list.id, productId);
+    this.loadList(list.id);
   }
 
   getUserInitial(): string {
@@ -258,18 +269,18 @@ export class ShoppingListDetailComponent implements OnInit {
     return list.products.length;
   }
 
-  uncheckAllProducts(): void {
+  async uncheckAllProducts(): Promise<void> {
     const list = this.list();
     if (!list) return;
 
-    if (confirm(this.translate.get('confirm.uncheck_all'))) {
-      list.products.forEach(product => {
-        if (product.isPurchased) {
-          this.shoppingListService.updateProductInList(list.id, product.id, { isPurchased: false });
-        }
-      });
-      this.loadList(list.id);
-    }
+    const ok = await this.uiDialog.confirm('confirm.uncheck_all');
+    if (!ok) return;
+    list.products.forEach(product => {
+      if (product.isPurchased) {
+        this.shoppingListService.updateProductInList(list.id, product.id, { isPurchased: false });
+      }
+    });
+    this.loadList(list.id);
   }
 
   isOwner(): boolean {
@@ -306,14 +317,14 @@ export class ShoppingListDetailComponent implements OnInit {
     }
   }
 
-  unshareList(email: string): void {
+  async unshareList(email: string): Promise<void> {
     const list = this.list();
     if (!list) return;
 
-    if (confirm(`Czy na pewno chcesz cofnąć udostępnienie dla ${email}?`)) {
-      this.shareService.unshareList(list.id, email);
-      this.loadList(list.id);
-    }
+    const ok = await this.uiDialog.confirm('confirm.revoke_share_email', { email });
+    if (!ok) return;
+    this.shareService.unshareList(list.id, email);
+    this.loadList(list.id);
   }
 
   getSharedWith(): string[] {
@@ -381,10 +392,11 @@ export class ShoppingListDetailComponent implements OnInit {
     this.showShareForm.set(true);
   }
 
-  stopSharingFromMenu(): void {
+  async stopSharingFromMenu(): Promise<void> {
     const list = this.list();
     if (!list || !this.isOwner()) return;
-    if (!confirm('Czy na pewno chcesz przestać udostępniać tę listę?')) return;
+    const ok = await this.uiDialog.confirm('confirm.stop_sharing_list');
+    if (!ok) return;
     list.sharedWith = [];
     this.shoppingListService.updateList(list);
     this.loadList(list.id);
@@ -473,20 +485,19 @@ export class ShoppingListDetailComponent implements OnInit {
     this.showOptionsMenu.set(false);
   }
 
-  removePurchasedProducts(): void {
+  async removePurchasedProducts(): Promise<void> {
     const list = this.list();
     if (!list) return;
 
     const purchasedCount = list.products.filter(p => p.isPurchased).length;
     if (purchasedCount === 0) {
-      alert('Brak kupionych produktów do usunięcia.');
+      await this.uiDialog.alert('alert.no_purchased_to_remove');
       this.showOptionsMenu.set(false);
       return;
     }
 
-    if (!confirm(this.translate.get('confirm.remove_purchased'))) {
-      return;
-    }
+    const ok = await this.uiDialog.confirm('confirm.remove_purchased');
+    if (!ok) return;
 
     list.products = list.products.filter(p => !p.isPurchased);
     this.shoppingListService.updateList(list);
@@ -495,8 +506,7 @@ export class ShoppingListDetailComponent implements OnInit {
   }
 
   onProductTap(product: Product, event?: Event): void {
-    const t = event?.target;
-    if (t instanceof Element && t.closest('.swipe-delete')) {
+    if (isSwipeDeleteTarget(event?.target ?? null)) {
       return;
     }
     if (this.ignoreNextRowClickProductId === product.id) {

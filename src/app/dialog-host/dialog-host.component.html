@@ -1,0 +1,30 @@
+@if (uiDialog.state(); as dlg) {
+  <div class="dialog-host-root" role="presentation">
+    <div class="dialog-backdrop" (click)="onBackdropClick()" aria-hidden="true"></div>
+    <div
+      class="dialog-panel"
+      role="alertdialog"
+      aria-modal="true"
+      data-testid="app-dialog"
+      (click)="$event.stopPropagation()"
+    >
+      <p class="dialog-message" id="app-dialog-desc">
+        {{ dlg.messageKey | translate: dlg.messageParams }}
+      </p>
+      <div class="dialog-actions">
+        @if (dlg.kind === 'confirm') {
+          <button type="button" class="dialog-btn dialog-btn-secondary" data-testid="dialog-btn-cancel" (click)="cancel()">
+            {{ 'app.cancel' | translate }}
+          </button>
+          <button type="button" class="dialog-btn dialog-btn-primary" data-testid="dialog-btn-ok" (click)="confirmOk()">
+            {{ 'dialog.confirm' | translate }}
+          </button>
+        } @else {
+          <button type="button" class="dialog-btn dialog-btn-primary" data-testid="dialog-btn-ok" (click)="alertOk()">
+            {{ 'dialog.ok' | translate }}
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+}
