@@ -1,7 +1,9 @@
 <div class="add-page">
   <header class="add-header">
     <button type="button" class="add-back" data-testid="add-page-back" (click)="back()" [attr.aria-label]="'list.back' | translate">
-      ←
+      <svg class="add-back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
     </button>
     <div class="add-search-wrap">
       <input
