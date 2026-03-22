@@ -227,7 +227,7 @@
         appSwipePrevent
         [class.purchased]="product.isPurchased"
         [class.swiped]="swipedProductId === product.id"
-        (click)="onProductTap(product)"
+        (click)="onProductTap(product, $event)"
         (touchstart)="onTouchStart($event, product.id)"
         (touchmove)="onTouchMove($event)"
         (touchend)="onTouchEnd()"
@@ -291,7 +291,12 @@
           </div>
         } @else {
           <div class="product-swipe-wrapper product-swipe-compact">
-            <button type="button" class="swipe-delete" (click)="deleteProduct(product.id); $event.stopPropagation()">
+            <button
+              type="button"
+              class="swipe-delete"
+              [attr.data-testid]="'swipe-delete-' + product.id"
+              (click)="deleteProduct(product.id); $event.stopPropagation()"
+            >
               <span class="swipe-delete-icon" aria-hidden="true">🗑</span>
               <span>{{ 'list.delete' | translate }}</span>
             </button>

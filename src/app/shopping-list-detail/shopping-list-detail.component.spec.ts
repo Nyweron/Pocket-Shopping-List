@@ -128,6 +128,27 @@ describe('ShoppingListDetailComponent', () => {
     expect(component.purchasedSectionExpanded()).toBeTrue();
   });
 
+  it('togglePurchased moves product between active and completed sections', () => {
+    const store = structuredClone(baseList) as any;
+    shoppingListService.getListById.and.callFake(() => structuredClone(store) as any);
+    shoppingListService.toggleProductPurchased.and.callFake((_l: string, pid: string) => {
+      const p = store.products.find((x: { id: string }) => x.id === pid);
+      if (p) p.isPurchased = !p.isPurchased;
+    });
+    component.list.set(structuredClone(store) as any);
+
+    expect(component.getFilteredActiveProducts().map(p => p.id)).toContain('p1');
+    expect(component.getFilteredCompletedProducts().map(p => p.id)).not.toContain('p1');
+
+    component.togglePurchased('p1');
+    expect(component.getFilteredActiveProducts().map(p => p.id)).not.toContain('p1');
+    expect(component.getFilteredCompletedProducts().map(p => p.id)).toContain('p1');
+
+    component.togglePurchased('p1');
+    expect(component.getFilteredActiveProducts().map(p => p.id)).toContain('p1');
+    expect(component.getFilteredCompletedProducts().map(p => p.id)).not.toContain('p1');
+  });
+
   it('handles edit flow and quantity changes', () => {
     const p = component.list()!.products[0] as any;
     component.startEdit(p);

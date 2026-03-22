@@ -14,6 +14,8 @@ import { TranslateService } from '../services/translate.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
 import { SwipePreventDirective } from '../directives/swipe-prevent.directive';
 import { IconPlusComponent } from '../shared/icons/icon-plus.component';
+import { shouldSwipeStayOpen, shouldSuppressNextRowClickAfterSwipe } from './swipe-end.util';
+import { isSwipeDeleteTarget } from './swipe-target.util';
 
 type SortOption = 'name' | 'category' | 'priority' | 'purchased' | 'custom';
 
@@ -60,9 +62,16 @@ export class ShoppingListDetailComponent implements OnInit {
   private touchCurrentX = 0;
   private touchProductId: string | null = null;
   private pointerProductId: string | null = null;
+  /** Avoid preventDefault + swipe handling when the gesture began on the purchase checkbox (allows tap to toggle). */
+  private touchStartedOnCheckbox = false;
   swipedProductId: string | null = null;
   private swipeBaseX = 0;
   swipeDragX = signal(0);
+  /**
+   * After opening the delete strip via pointer/touch swipe, the browser still fires a synthetic click on the row.
+   * onProductTap would then treat it as "tap to collapse" — ignore that one click.
+   */
+  private ignoreNextRowClickProductId: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -485,7 +494,15 @@ export class ShoppingListDetailComponent implements OnInit {
     this.showOptionsMenu.set(false);
   }
 
-  onProductTap(product: Product): void {
+  onProductTap(product: Product, event?: Event): void {
+    const t = event?.target;
+    if (t instanceof Element && t.closest('.swipe-delete')) {
+      return;
+    }
+    if (this.ignoreNextRowClickProductId === product.id) {
+      this.ignoreNextRowClickProductId = null;
+      return;
+    }
     // If another row is swiped open for delete, collapse it first
     if (this.swipedProductId && this.swipedProductId !== product.id) {
       this.swipedProductId = null;
@@ -507,6 +524,15 @@ export class ShoppingListDetailComponent implements OnInit {
 
   onTouchStart(event: TouchEvent, productId: string): void {
     if (event.touches.length !== 1) return;
+    const target = event.target;
+    this.touchStartedOnCheckbox =
+      target instanceof Element && !!target.closest('.compact-checkbox-wrap');
+    if (this.touchStartedOnCheckbox) {
+      return;
+    }
+    if (isSwipeDeleteTarget(target)) {
+      return;
+    }
     this.touchStartX = event.touches[0].clientX;
     this.touchCurrentX = this.touchStartX;
     this.touchProductId = productId;
@@ -515,7 +541,7 @@ export class ShoppingListDetailComponent implements OnInit {
   }
 
   onTouchMove(event: TouchEvent): void {
-    if (!this.touchProductId || event.touches.length !== 1) return;
+    if (this.touchStartedOnCheckbox || !this.touchProductId || event.touches.length !== 1) return;
     this.touchCurrentX = event.touches[0].clientX;
 
     const delta = this.touchCurrentX - this.touchStartX;
@@ -532,13 +558,25 @@ export class ShoppingListDetailComponent implements OnInit {
       this.resetTouch();
       return;
     }
-    this.applySwipeEnd(this.touchProductId);
+    const id = this.touchProductId;
+    const wasSwipedOpen = this.swipedProductId === id;
+    this.applySwipeEnd(id);
+    if (shouldSuppressNextRowClickAfterSwipe(wasSwipedOpen, this.swipedProductId, id)) {
+      this.ignoreNextRowClickProductId = id;
+    }
     this.resetTouch();
   }
 
   onPointerDown(event: PointerEvent, productId: string): void {
     if (event.pointerType !== 'mouse' && event.pointerType !== 'touch') return;
     if (event.pointerType === 'touch') return;
+    const target = event.target;
+    if (target instanceof Element && target.closest('.compact-checkbox-wrap')) {
+      return;
+    }
+    if (isSwipeDeleteTarget(target)) {
+      return;
+    }
     (event.currentTarget as HTMLElement)?.setPointerCapture?.(event.pointerId);
     this.touchStartX = event.clientX;
     this.touchCurrentX = event.clientX;
@@ -558,30 +596,24 @@ export class ShoppingListDetailComponent implements OnInit {
 
   onPointerUp(): void {
     if (!this.pointerProductId) return;
-    this.applySwipeEnd(this.pointerProductId);
+    const id = this.pointerProductId;
+    const wasSwipedOpen = this.swipedProductId === id;
+    this.applySwipeEnd(id);
+    if (shouldSuppressNextRowClickAfterSwipe(wasSwipedOpen, this.swipedProductId, id)) {
+      this.ignoreNextRowClickProductId = id;
+    }
     this.pointerProductId = null;
     this.resetTouch();
   }
 
   private applySwipeEnd(productId: string): void {
     const finalX = this.swipeDragX();
-    const openThreshold = -40;
-    const closeThreshold = -20;
-
-    if (finalX <= openThreshold) {
+    if (shouldSwipeStayOpen(finalX)) {
       this.swipedProductId = productId;
       this.swipeDragX.set(-80);
-    } else if (finalX >= closeThreshold) {
+    } else {
       this.swipedProductId = null;
       this.swipeDragX.set(0);
-    } else {
-      if (finalX < -40) {
-        this.swipedProductId = productId;
-        this.swipeDragX.set(-80);
-      } else {
-        this.swipedProductId = null;
-        this.swipeDragX.set(0);
-      }
     }
   }
 
@@ -590,6 +622,7 @@ export class ShoppingListDetailComponent implements OnInit {
     this.touchCurrentX = 0;
     this.touchProductId = null;
     this.swipeBaseX = 0;
+    this.touchStartedOnCheckbox = false;
   }
 
   getSwipeTransform(productId: string): string {

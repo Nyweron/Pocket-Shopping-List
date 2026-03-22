@@ -79,6 +79,85 @@ test.describe('Smoke flows', () => {
     await expect(page.getByText('Brak produktów w tej liście.')).toBeVisible();
   });
 
+  test('swipe row left keeps delete strip open (swiped class)', async ({ page }) => {
+    await loginDemo(page);
+    await createListAndOpen(page, 'Swipe open');
+
+    await page.getByTestId('fab-add-products').click();
+    await page.getByTestId('add-products-search-input').fill('SwipeRowItem');
+    await page.getByTestId('add-custom-suggestion').click();
+    await page.getByTestId('add-page-back').click();
+
+    const row = page.locator('[data-testid^="product-item-"]').filter({ hasText: 'SwipeRowItem' });
+    await expect(row).toBeVisible();
+    const box = await row.boundingBox();
+    expect(box).toBeTruthy();
+    // Start drag on the right side of the row (avoid checkbox on the left)
+    const startX = box!.x + box!.width - 32;
+    const startY = box!.y + box!.height / 2;
+    await page.mouse.move(startX, startY);
+    await page.mouse.down();
+    await page.mouse.move(startX - 120, startY);
+    await page.mouse.up();
+
+    await expect(row).toHaveClass(/swiped/);
+  });
+
+  test('swipe open then tap delete removes product (confirm)', async ({ page }) => {
+    page.once('dialog', dialog => dialog.accept());
+
+    await loginDemo(page);
+    await createListAndOpen(page, 'Swipe delete');
+
+    await page.getByTestId('fab-add-products').click();
+    await page.getByTestId('add-products-search-input').fill('DeleteSwipeItem');
+    await page.getByTestId('add-custom-suggestion').click();
+    await page.getByTestId('add-page-back').click();
+
+    const row = page.locator('[data-testid^="product-item-"]').filter({ hasText: 'DeleteSwipeItem' });
+    await expect(row).toBeVisible();
+    const box = await row.boundingBox();
+    expect(box).toBeTruthy();
+    const startX = box!.x + box!.width - 32;
+    const startY = box!.y + box!.height / 2;
+    await page.mouse.move(startX, startY);
+    await page.mouse.down();
+    await page.mouse.move(startX - 120, startY);
+    await page.mouse.up();
+
+    await expect(row).toHaveClass(/swiped/);
+
+    const deleteBtn = row.locator('[data-testid^="swipe-delete-"]');
+    await expect(deleteBtn).toBeVisible();
+    await deleteBtn.click();
+
+    await expect(page.getByText('DeleteSwipeItem')).toHaveCount(0);
+  });
+
+  test('checkbox: mark purchased then uncheck — item moves between sections', async ({ page }) => {
+    await loginDemo(page);
+    await createListAndOpen(page, 'Toggle purchased');
+
+    await page.getByTestId('fab-add-products').click();
+    await page.getByTestId('add-products-search-input').fill('Pantofle test');
+    await page.getByTestId('add-custom-suggestion').click();
+    await page.getByTestId('add-page-back').click();
+
+    const row = page.locator('[data-testid^="product-item-"]').filter({ hasText: 'Pantofle test' });
+    const checkbox = page.locator('[data-testid^="product-checkbox-"]').first();
+
+    await expect(checkbox).not.toBeChecked();
+    await expect(row).not.toHaveClass(/purchased/);
+
+    await checkbox.click();
+    await expect(checkbox).toBeChecked();
+    await expect(row).toHaveClass(/purchased/);
+
+    await checkbox.click();
+    await expect(checkbox).not.toBeChecked();
+    await expect(row).not.toHaveClass(/purchased/);
+  });
+
   test('remove purchased products with confirm dialog', async ({ page }) => {
     await loginDemo(page);
     await createListAndOpen(page, 'Remove flow');

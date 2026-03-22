@@ -142,6 +142,11 @@
   align-items: start;
 }
 
+/* When row is swiped open, keep delete above sliding panel (.product-content is z-index:1) */
+.product-item.swiped .swipe-delete {
+  z-index: 2;
+}
+
 .swipe-delete {
   position: absolute;
   top: 0;
