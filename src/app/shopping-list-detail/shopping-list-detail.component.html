@@ -12,7 +12,14 @@
               }
             </div>
           }
-          <div class="avatar-circle compact-user-avatar" [attr.aria-label]="'app.profile' | translate">{{ getUserInitial() }}</div>
+          <a
+            [routerLink]="['/profile']"
+            [queryParams]="{ listId: list()!.id }"
+            class="avatar-circle compact-user-avatar avatar-profile-link"
+            data-testid="header-profile-avatar"
+            [attr.aria-label]="'app.profile' | translate"
+            [attr.title]="'app.profile' | translate"
+          >{{ getUserInitial() }}</a>
           @if (isOwner()) {
             <button type="button" class="icon-button compact-icon-btn" (click)="toggleShareForm()" [attr.title]="'list.share' | translate">🔗</button>
           }

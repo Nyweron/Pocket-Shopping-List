@@ -468,6 +468,26 @@
   font-size: 0.85rem;
 }
 
+/* Profile avatar is a link; keep 36×36 and override global `a { min-width/min-height: 44px }`. */
+a.avatar-profile-link.compact-user-avatar {
+  box-sizing: border-box;
+  min-width: 36px;
+  min-height: 36px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a.avatar-profile-link.compact-user-avatar:focus-visible {
+  outline: 2px solid var(--color-accent, #60a5fa);
+  outline-offset: 2px;
+}
+
+a.avatar-profile-link.compact-user-avatar:active {
+  opacity: 0.88;
+}
+
 .compact-shared-avatars .avatar-circle {
   width: 30px;
   height: 30px;

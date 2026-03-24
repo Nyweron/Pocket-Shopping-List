@@ -1,6 +1,7 @@
+import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, provideRouter, Routes } from '@angular/router';
 import { ShoppingListDetailComponent } from './shopping-list-detail.component';
 import { ShoppingListService } from '../services/shopping-list.service';
 import { ShareService } from '../services/share.service';
@@ -12,12 +13,21 @@ import { UiDialogService } from '../services/ui-dialog.service';
 import { ProductPriority } from '../models/product.model';
 import { ProductCategory } from '../models/product-category.enum';
 
+@Component({ standalone: true, template: '' })
+class RouterStubComponent {}
+
+const detailTestRoutes: Routes = [
+  { path: 'profile', component: RouterStubComponent },
+  { path: '**', component: RouterStubComponent },
+];
+
 describe('ShoppingListDetailComponent', () => {
   let component: ShoppingListDetailComponent;
   let fixture: any;
   let shoppingListService: jasmine.SpyObj<ShoppingListService>;
   let shareService: jasmine.SpyObj<ShareService>;
   let themeService: jasmine.SpyObj<ThemeService>;
+  let authService: jasmine.SpyObj<AuthService>;
   let uiDialog: jasmine.SpyObj<UiDialogService>;
 
   const baseList = {
@@ -68,15 +78,15 @@ describe('ShoppingListDetailComponent', () => {
       'shareList',
       'unshareList',
     ]);
-    const authService = jasmine.createSpyObj<AuthService>('AuthService', ['getCurrentUser']);
+    authService = jasmine.createSpyObj<AuthService>('AuthService', ['getCurrentUser']);
     themeService = jasmine.createSpyObj<ThemeService>('ThemeService', ['toggleTheme']);
     const priceVisibility = {
       showPrices: () => true,
       setShowPrices: (_v: boolean): void => {},
       toggleShowPrices: (): void => {},
     };
-    const translate = jasmine.createSpyObj<TranslateService>('TranslateService', ['get']);
-    const router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+    const translate = jasmine.createSpyObj<TranslateService>('TranslateService', ['get', 'currentLang']);
+    translate.currentLang.and.returnValue('pl');
     uiDialog = jasmine.createSpyObj<UiDialogService>('UiDialogService', ['confirm', 'alert']);
     uiDialog.confirm.and.returnValue(Promise.resolve(true));
     uiDialog.alert.and.returnValue(Promise.resolve());
@@ -88,9 +98,10 @@ describe('ShoppingListDetailComponent', () => {
     shareService.shareList.and.returnValue({ success: true });
 
     await TestBed.configureTestingModule({
-      imports: [ShoppingListDetailComponent],
+      imports: [ShoppingListDetailComponent, RouterStubComponent],
       providers: [
         provideNoopAnimations(),
+        provideRouter(detailTestRoutes),
         { provide: ShoppingListService, useValue: shoppingListService },
         { provide: ShareService, useValue: shareService },
         { provide: AuthService, useValue: authService },
@@ -98,7 +109,6 @@ describe('ShoppingListDetailComponent', () => {
         { provide: ListPriceVisibilityService, useValue: priceVisibility },
         { provide: TranslateService, useValue: translate },
         { provide: UiDialogService, useValue: uiDialog },
-        { provide: Router, useValue: router },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => 'l1' } } } },
       ],
     }).compileComponents();
@@ -106,6 +116,17 @@ describe('ShoppingListDetailComponent', () => {
     fixture = TestBed.createComponent(ShoppingListDetailComponent);
     component = fixture.componentInstance;
     component.list.set(structuredClone(baseList) as any);
+  });
+
+  it('header user avatar links to profile', () => {
+    authService.getCurrentUser.and.returnValue({ id: 'u1', email: 'dan@test.pl', username: 'dan' } as any);
+    fixture.detectChanges();
+    const link = fixture.nativeElement.querySelector('[data-testid="header-profile-avatar"]') as HTMLAnchorElement | null;
+    expect(link).not.toBeNull();
+    expect(link!.tagName.toLowerCase()).toBe('a');
+    expect(link!.getAttribute('href')).toContain('/profile');
+    expect(link!.getAttribute('href')).toContain('listId=l1');
+    expect(link!.textContent?.trim()).toBe('D');
   });
 
   it('filters and sorts products by search and sort mode', () => {

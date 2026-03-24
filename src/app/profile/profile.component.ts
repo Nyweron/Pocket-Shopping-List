@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { User } from '../models/user.model';
 import { UiDialogService } from '../services/ui-dialog.service';
@@ -14,10 +14,13 @@ import { BackControlComponent } from '../shared/back-control.component';
 })
 export class ProfileComponent implements OnInit {
   user = signal<User | null>(null);
+  /** Back target: list detail when opened via avatar (`?listId=`), otherwise home. */
+  backLink = signal<string | unknown[]>(['/']);
 
   constructor(
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private uiDialog: UiDialogService
   ) {}
 
@@ -27,6 +30,8 @@ export class ProfileComponent implements OnInit {
       return;
     }
     this.user.set(this.authService.getCurrentUser());
+    const listId = this.route.snapshot.queryParamMap.get('listId')?.trim();
+    this.backLink.set(listId ? ['/list', listId] : ['/']);
   }
 
   async logout(): Promise<void> {
