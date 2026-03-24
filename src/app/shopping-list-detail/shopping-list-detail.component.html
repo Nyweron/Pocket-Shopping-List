@@ -47,18 +47,18 @@
             </div>
 
             <div class="options-section">
-              <button type="button" (click)="focusListSearchFromMenu()"><span class="options-icon">⌕</span> Szukaj na liście</button>
+              <button type="button" (click)="focusListSearchFromMenu()"><span class="options-icon">⌕</span> {{ 'list.menu_search_list' | translate }}</button>
             </div>
 
             <div class="options-section">
               <button type="button" (click)="renameList()"><span class="options-icon">✎</span> {{ 'menu.rename' | translate }}</button>
               <button type="button" (click)="openShareFromMenu()" [disabled]="!isOwner()"><span class="options-icon">◎</span> {{ 'menu.share' | translate }}</button>
-              <button type="button" (click)="stopSharingFromMenu()" [disabled]="!isOwner() || getSharedWith().length === 0"><span class="options-icon">⊘</span> Przestań udostępniać</button>
+              <button type="button" (click)="stopSharingFromMenu()" [disabled]="!isOwner() || getSharedWith().length === 0"><span class="options-icon">⊘</span> {{ 'menu.stop_sharing' | translate }}</button>
             </div>
 
             <div class="options-section">
               <button type="button" data-testid="open-sort-sheet" (click)="openSortSheet()">
-                <span class="options-icon">⇅</span> Sortuj według:
+                <span class="options-icon">⇅</span> {{ 'list.sort_by_label' | translate }}
                 <span class="options-value">{{ getCurrentSortLabel() }}</span>
               </button>
               <button type="button" (click)="toggleThemeFromMenu()">
@@ -121,17 +121,17 @@
             <div class="options-handle"></div>
             <div class="sort-header">
               <button type="button" class="sort-back" (click)="backToOptionsFromSortSheet()">←</button>
-              <h3>Sortuj według</h3>
+              <h3>{{ 'list.sort_sheet_title' | translate }}</h3>
               <button type="button" class="sort-close" (click)="closeSortSheet()">✕</button>
             </div>
 
             <div class="options-section">
               <button type="button" data-testid="sort-option-category" (click)="selectSortFromSheet('category')" [class.sort-active]="sortBy() === 'category'">
-                <span class="options-icon">↧↥</span> Kategorie
+                <span class="options-icon">↧↥</span> {{ 'list.sort_mode_category' | translate }}
                 <span class="sort-check">@if (sortBy() === 'category') { ✔ }</span>
               </button>
               <button type="button" data-testid="sort-option-name" (click)="selectSortFromSheet('name')" [class.sort-active]="sortBy() === 'name'">
-                <span class="options-icon">⇅</span> Alfabetycznie
+                <span class="options-icon">⇅</span> {{ 'list.sort_mode_name' | translate }}
                 <span class="sort-check">@if (sortBy() === 'name') { ✔ }</span>
               </button>
               <!-- Custom sort option disabled for now (see component TS). -->
@@ -156,7 +156,7 @@
       <div class="list-stats list-stats-compact">
         <span>{{ getPurchasedCount() }}/{{ getTotalCount() }} {{ 'app.products' | translate }}</span>
         @if (priceVisibility.showPrices() && getTotalPrice() > 0) {
-          <span class="total-price">{{ 'list.estimated_total' | translate }}: {{ getTotalPrice() | number:'1.2-2' }} zł</span>
+          <span class="total-price">{{ 'list.estimated_total' | translate }}: {{ getTotalPrice() | number:'1.2-2' }} {{ 'list.currency_suffix' | translate }}</span>
         }
       </div>
       @if (isOwner() && showShareForm()) {
@@ -165,12 +165,12 @@
             <input
               type="email"
               [(ngModel)]="shareEmail"
-              placeholder="Email użytkownika"
+              [placeholder]="'list.share_email_placeholder' | translate"
               class="share-input"
             />
             <div class="share-form-actions">
-              <button class="btn-share-submit" (click)="shareList()">Udostępnij</button>
-              <button class="btn-share-cancel" (click)="showShareForm.set(false)">Anuluj</button>
+              <button class="btn-share-submit" (click)="shareList()">{{ 'list.share_submit' | translate }}</button>
+              <button class="btn-share-cancel" (click)="showShareForm.set(false)">{{ 'app.cancel' | translate }}</button>
             </div>
             @if (shareError()) {
               <div class="share-error">{{ shareError() }}</div>
@@ -307,12 +307,12 @@
             />
             <select [(ngModel)]="editingProduct()!.category" class="edit-select">
               @for (category of categories; track category) {
-                <option [value]="category">{{ category }}</option>
+                <option [value]="category">{{ translate.getCategoryLabel(category) }}</option>
               }
             </select>
             <select [(ngModel)]="editingProduct()!.priority" class="edit-select">
               @for (priority of priorities; track priority) {
-                <option [value]="priority">{{ priority }}</option>
+                <option [value]="priority">{{ translate.getPriorityLabel(priority) }}</option>
               }
             </select>
             <textarea [(ngModel)]="editingProduct()!.note" class="edit-textarea" [placeholder]="'list.note' | translate"></textarea>
@@ -351,12 +351,12 @@
                     <span class="product-qty-inline">{{ getQuantityDisplay(product) }}</span>
                   </div>
                   <div class="product-meta-compact">
-                    <span class="product-category-chip">{{ product.category }}</span>
+                    <span class="product-category-chip">{{ translate.getCategoryLabel(product.category) }}</span>
                     <span class="product-quantity">{{ 'list.quantity' | translate }}: {{ getQuantityDisplay(product) }}</span>
                     @if (priceVisibility.showPrices() && product.price) {
-                      <span class="product-price">{{ product.price | number:'1.2-2' }} zł</span>
+                      <span class="product-price">{{ product.price | number:'1.2-2' }} {{ 'list.currency_suffix' | translate }}</span>
                     }
-                    <span class="product-priority priority-{{ product.priority }}">{{ product.priority }}</span>
+                    <span class="product-priority priority-{{ product.priority }}">{{ translate.getPriorityLabel(product.priority) }}</span>
                   </div>
                   @if (product.note) {
                     <p class="product-note">{{ product.note }}</p>
@@ -370,5 +370,5 @@
     </ng-template>
   </div>
 } @else {
-  <div class="loading">Ładowanie...</div>
+  <div class="loading">{{ 'app.loading' | translate }}</div>
 }

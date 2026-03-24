@@ -53,14 +53,15 @@ export class ShoppingListDetailComponent implements OnInit, OnDestroy {
   ];
   priorities = Object.values(ProductPriority);
   categories = Object.values(ProductCategory);
-  quantityUnits: { value: string; label: string }[] = [
-    { value: 'szt', label: 'szt.' },
-    { value: 'g', label: 'g' },
-    { value: 'kg', label: 'kg' },
-    { value: 'ml', label: 'ml' },
-    { value: 'l', label: 'l' }
-  ];
   defaultQuantityUnit = 'szt';
+
+  /** Unit dropdown labels follow current UI language. */
+  get quantityUnits(): { value: string; label: string }[] {
+    return ['szt', 'g', 'kg', 'ml', 'l'].map(value => ({
+      value,
+      label: this.translate.formatQuantityUnit(value),
+    }));
+  }
 
   shareEmail = '';
   showShareForm = signal(false);
@@ -149,7 +150,7 @@ export class ShoppingListDetailComponent implements OnInit, OnDestroy {
 
   getQuantityDisplay(product: Product): string {
     const unit = product.quantityUnit ?? this.defaultQuantityUnit;
-    return `${product.quantity} ${unit}`;
+    return `${product.quantity} ${this.translate.formatQuantityUnit(unit)}`;
   }
 
   onEditingQuantityChange(value: number | string | null): void {
@@ -324,7 +325,7 @@ export class ShoppingListDetailComponent implements OnInit, OnDestroy {
     this.shareError.set(null);
 
     if (!this.shareEmail.trim()) {
-      this.shareError.set('Podaj adres email');
+      this.shareError.set(this.translate.get('list.share_email_required'));
       return;
     }
 
@@ -335,7 +336,7 @@ export class ShoppingListDetailComponent implements OnInit, OnDestroy {
       this.showShareForm.set(false);
       this.loadList(list.id);
     } else {
-      this.shareError.set(result.error || 'Błąd udostępniania');
+      this.shareError.set(result.error || this.translate.get('list.share_error_generic'));
     }
   }
 
@@ -443,9 +444,9 @@ export class ShoppingListDetailComponent implements OnInit, OnDestroy {
 
   getCurrentSortLabel(): string {
     const current = this.sortBy();
-    if (current === 'category') return 'Kategorie';
-    if (current === 'name') return 'Alfabetycznie';
-    if (current === 'custom') return 'Własne';
+    if (current === 'category') return this.translate.get('list.sort_mode_category');
+    if (current === 'name') return this.translate.get('list.sort_mode_name');
+    if (current === 'custom') return this.translate.get('list.sort_mode_custom');
     if (current === 'priority') return this.translate.get('list.sort_priority');
     return this.translate.get('list.sort_status');
   }
@@ -479,7 +480,7 @@ export class ShoppingListDetailComponent implements OnInit, OnDestroy {
       return;
     }
     const currentName = list.name;
-    const newName = prompt('Nowa nazwa listy:', currentName);
+    const newName = prompt(this.translate.get('list.rename_prompt'), currentName);
     if (!newName) {
       this.showOptionsMenu.set(false);
       return;

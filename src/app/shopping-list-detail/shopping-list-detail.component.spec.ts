@@ -85,8 +85,17 @@ describe('ShoppingListDetailComponent', () => {
       setShowPrices: (_v: boolean): void => {},
       toggleShowPrices: (): void => {},
     };
-    const translate = jasmine.createSpyObj<TranslateService>('TranslateService', ['get', 'currentLang']);
+    const translate = jasmine.createSpyObj<TranslateService>('TranslateService', [
+      'get',
+      'currentLang',
+      'getCategoryLabel',
+      'getPriorityLabel',
+      'formatQuantityUnit',
+    ]);
     translate.currentLang.and.returnValue('pl');
+    translate.getCategoryLabel.and.callFake((c: ProductCategory) => String(c));
+    translate.getPriorityLabel.and.callFake((p: ProductPriority) => String(p));
+    translate.formatQuantityUnit.and.callFake((u: string) => (u === 'szt' ? 'szt.' : u));
     uiDialog = jasmine.createSpyObj<UiDialogService>('UiDialogService', ['confirm', 'alert']);
     uiDialog.confirm.and.returnValue(Promise.resolve(true));
     uiDialog.alert.and.returnValue(Promise.resolve());

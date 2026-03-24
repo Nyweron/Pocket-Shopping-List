@@ -1,6 +1,26 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { ProductCategory } from '../models/product-category.enum';
+import { ProductPriority } from '../models/product.model';
 
 export type Lang = 'pl' | 'en';
+
+const PRODUCT_CATEGORY_KEYS: Record<ProductCategory, string> = {
+  [ProductCategory.FRUITS_VEGETABLES]: 'category.fruits_vegetables',
+  [ProductCategory.DAIRY]: 'category.dairy',
+  [ProductCategory.MEAT]: 'category.meat',
+  [ProductCategory.BREAD]: 'category.bread',
+  [ProductCategory.GRAINS]: 'category.grains',
+  [ProductCategory.BEVERAGES]: 'category.beverages',
+  [ProductCategory.SWEETS]: 'category.sweets',
+  [ProductCategory.HOUSEHOLD]: 'category.household',
+  [ProductCategory.OTHER]: 'category.other',
+};
+
+const PRODUCT_PRIORITY_KEYS: Record<ProductPriority, string> = {
+  [ProductPriority.HIGH]: 'priority.high',
+  [ProductPriority.MEDIUM]: 'priority.medium',
+  [ProductPriority.LOW]: 'priority.low',
+};
 
 const TRANSLATIONS: Record<Lang, Record<string, string>> = {
   pl: {
@@ -106,6 +126,37 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'add.add_product': 'Dodaj do listy',
     'add.add_product_purchased': 'Na liście — już kupione; dotknij, by dodać ponownie',
     'add.readonly_hint': 'Możesz tylko przeglądać tę listę — nie możesz dodawać produktów.',
+    'category.fruits_vegetables': 'Owoce i warzywa',
+    'category.dairy': 'Nabiał',
+    'category.meat': 'Mięso i wędliny',
+    'category.bread': 'Pieczywo',
+    'category.grains': 'Produkty sypkie',
+    'category.beverages': 'Napoje',
+    'category.sweets': 'Słodycze',
+    'category.household': 'Chemia gospodarcza',
+    'category.other': 'Inne',
+    'priority.high': 'wysoki',
+    'priority.medium': 'średni',
+    'priority.low': 'niski',
+    'unit.szt': 'szt.',
+    'unit.g': 'g',
+    'unit.kg': 'kg',
+    'unit.ml': 'ml',
+    'unit.l': 'l',
+    'list.menu_search_list': 'Szukaj na liście',
+    'menu.stop_sharing': 'Przestań udostępniać',
+    'list.sort_sheet_title': 'Sortuj według',
+    'list.sort_by_label': 'Sortuj według:',
+    'list.sort_mode_category': 'Kategorie',
+    'list.sort_mode_name': 'Alfabetycznie',
+    'list.sort_mode_custom': 'Własne',
+    'list.share_submit': 'Udostępnij',
+    'list.share_email_placeholder': 'Email użytkownika',
+    'list.share_email_required': 'Podaj adres email',
+    'list.rename_prompt': 'Nowa nazwa listy:',
+    'list.share_error_generic': 'Błąd udostępniania',
+    'list.currency_suffix': 'zł',
+    'app.loading': 'Ładowanie...',
   },
   en: {
     'app.title': 'Shopping lists',
@@ -210,6 +261,37 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'add.add_product': 'Add to list',
     'add.add_product_purchased': 'On list — already bought; tap to add again',
     'add.readonly_hint': 'This list is view-only — you cannot add products.',
+    'category.fruits_vegetables': 'Fruit & vegetables',
+    'category.dairy': 'Dairy',
+    'category.meat': 'Meat & deli',
+    'category.bread': 'Bakery',
+    'category.grains': 'Dry goods & cereals',
+    'category.beverages': 'Beverages',
+    'category.sweets': 'Sweets',
+    'category.household': 'Household',
+    'category.other': 'Other',
+    'priority.high': 'high',
+    'priority.medium': 'medium',
+    'priority.low': 'low',
+    'unit.szt': 'pcs',
+    'unit.g': 'g',
+    'unit.kg': 'kg',
+    'unit.ml': 'ml',
+    'unit.l': 'l',
+    'list.menu_search_list': 'Search in list',
+    'menu.stop_sharing': 'Stop sharing',
+    'list.sort_sheet_title': 'Sort by',
+    'list.sort_by_label': 'Sort by:',
+    'list.sort_mode_category': 'Category',
+    'list.sort_mode_name': 'Alphabetical',
+    'list.sort_mode_custom': 'Custom',
+    'list.share_submit': 'Share',
+    'list.share_email_placeholder': 'User email',
+    'list.share_email_required': 'Enter an email address',
+    'list.rename_prompt': 'New list name:',
+    'list.share_error_generic': 'Sharing failed',
+    'list.currency_suffix': 'PLN',
+    'app.loading': 'Loading...',
   }
 };
 
@@ -241,5 +323,22 @@ export class TranslateService {
       }
     }
     return s;
+  }
+
+  getCategoryLabel(category: ProductCategory): string {
+    const key = PRODUCT_CATEGORY_KEYS[category];
+    return key ? this.get(key) : String(category);
+  }
+
+  getPriorityLabel(priority: ProductPriority): string {
+    const key = PRODUCT_PRIORITY_KEYS[priority];
+    return key ? this.get(key) : String(priority);
+  }
+
+  /** Localized quantity unit (e.g. szt. / pcs); unknown codes left as-is. */
+  formatQuantityUnit(unit: string): string {
+    const key = `unit.${unit}`;
+    const t = this.get(key);
+    return t === key ? unit : t;
   }
 }
