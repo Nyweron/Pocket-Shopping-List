@@ -1,6 +1,32 @@
 <div class="login-container">
   <div class="login-card">
-    <h1>{{ 'auth.login_title' | translate }}</h1>
+    <div class="login-card-header">
+      <h1 class="login-title">{{ 'auth.login_title' | translate }}</h1>
+      <div
+        class="lang-segment"
+        role="group"
+        [attr.aria-label]="'auth.lang_group_label' | translate"
+      >
+        <button
+          type="button"
+          class="lang-segment-btn"
+          data-testid="login-lang-pl"
+          [class.lang-segment-btn--active]="translate.currentLang() === 'pl'"
+          (click)="translate.setLang('pl')"
+        >
+          PL
+        </button>
+        <button
+          type="button"
+          class="lang-segment-btn"
+          data-testid="login-lang-en"
+          [class.lang-segment-btn--active]="translate.currentLang() === 'en'"
+          (click)="translate.setLang('en')"
+        >
+          EN
+        </button>
+      </div>
+    </div>
 
     <div class="demo-info">
       <p class="demo-info-title">{{ 'auth.login_demo_title' | translate }}</p>

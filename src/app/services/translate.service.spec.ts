@@ -47,6 +47,7 @@ describe('TranslateService', () => {
     service.setLang('en');
     expect(service.get('profile.title')).toBe('My profile');
     expect(service.get('auth.login_title')).toBe('Sign in');
+    expect(service.get('auth.lang_group_label')).toBe('Interface language');
     expect(service.get('share.error_user_not_found')).toBe('No user exists with that email');
   });
 });

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
+import { TranslateService } from '../services/translate.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
 
 @Component({
@@ -20,7 +21,8 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    public translate: TranslateService
   ) {
     // If already logged in, redirect to home
     if (this.authService.isAuthenticated()) {
@@ -32,7 +34,7 @@ export class LoginComponent {
     this.error.set(null);
     
     if (!this.email || !this.password) {
-      this.error.set('Wypełnij wszystkie pola');
+      this.error.set('auth.error_fill_fields');
       return;
     }
 
