@@ -136,6 +136,12 @@ describe('ShoppingListDetailComponent', () => {
     expect(component.purchasedSectionExpanded()).toBeTrue();
   });
 
+  it('togglePurchased collapses swipe-delete strip for that product', () => {
+    component.swipedProductId = 'p1';
+    component.togglePurchased('p1');
+    expect(component.swipedProductId).toBeNull();
+  });
+
   it('togglePurchased moves product between active and completed sections', () => {
     const store = structuredClone(baseList) as any;
     shoppingListService.getListById.and.callFake(() => structuredClone(store) as any);

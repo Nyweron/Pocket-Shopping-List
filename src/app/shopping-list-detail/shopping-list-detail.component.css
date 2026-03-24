@@ -507,6 +507,17 @@
 /* Wrapper for list row animations (see shopping-list-detail.animations.ts). */
 .product-row-motion {
   display: block;
+  /* Avoid subpixel gaps during vertical move; keep swipe strip fully covered. */
+  overflow: hidden;
+}
+
+/*
+ * During Angular :enter/:leave on the row, compositing can briefly reveal the red
+ * swipe-delete layer. Hide it for the duration of that animation only.
+ */
+.product-row-motion.ng-animating .swipe-delete {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .product-item-compact {

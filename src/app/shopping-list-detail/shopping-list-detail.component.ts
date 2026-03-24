@@ -132,6 +132,11 @@ export class ShoppingListDetailComponent implements OnInit, OnDestroy {
     const list = this.list();
     if (!list) return;
 
+    if (this.swipedProductId === productId) {
+      this.swipedProductId = null;
+      this.swipeDragX.set(0);
+    }
+
     this.shoppingListService.toggleProductPurchased(list.id, productId);
     this.loadList(list.id);
   }
