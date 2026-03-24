@@ -495,7 +495,7 @@ export class ShoppingListDetailComponent implements OnInit, OnDestroy {
 
   toggleThemeFromMenu(): void {
     this.themeService.toggleTheme();
-    this.showOptionsMenu.set(false);
+    this.closeOptionsMenu();
   }
 
   onShowPricesSwitchChange(event: Event): void {
