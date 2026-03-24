@@ -33,7 +33,7 @@
       }
     </div>
   } @else {
-    <nav class="add-tabs" role="tablist" aria-label="Widok produktów">
+    <nav class="add-tabs" role="tablist" [attr.aria-label]="'add.tabs_aria' | translate">
       <button
         type="button"
         role="tab"
@@ -81,7 +81,7 @@
             [class.add-chip-active]="selectedCategory() === cat"
             (click)="selectedCategory.set(cat)"
           >
-            {{ cat }}
+            {{ translate.getCategoryLabel(cat) }}
           </button>
         }
       </div>

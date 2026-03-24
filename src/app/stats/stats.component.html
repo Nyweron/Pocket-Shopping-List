@@ -18,7 +18,7 @@
       <span class="stat-label">{{ 'stats.total_products' | translate }}</span>
     </div>
     <div class="stat-card highlight">
-      <span class="stat-value">{{ totalCost() | number:'1.2-2' }} zł</span>
+      <span class="stat-value">{{ totalCost() | number:'1.2-2' }} {{ 'list.currency_suffix' | translate }}</span>
       <span class="stat-label">{{ 'stats.estimated_cost' | translate }}</span>
     </div>
   </div>
@@ -29,8 +29,8 @@
       <ul class="category-list">
         @for (item of costByCategory(); track item.category) {
           <li class="category-item">
-            <span class="cat-name">{{ item.category }}</span>
-            <span class="cat-meta">{{ item.count }} {{ 'app.products' | translate }} · {{ item.cost | number:'1.2-2' }} zł</span>
+            <span class="cat-name">{{ translate.getCategoryLabelFromData(item.category) }}</span>
+            <span class="cat-meta">{{ item.count }} {{ 'app.products' | translate }} · {{ item.cost | number:'1.2-2' }} {{ 'list.currency_suffix' | translate }}</span>
           </li>
         }
       </ul>

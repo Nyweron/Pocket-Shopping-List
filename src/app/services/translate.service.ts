@@ -22,6 +22,9 @@ const PRODUCT_PRIORITY_KEYS: Record<ProductPriority, string> = {
   [ProductPriority.LOW]: 'priority.low',
 };
 
+/** Stored product.category values (Polish enum strings) — for aggregations keyed by string. */
+const STORED_CATEGORY_VALUES: ReadonlySet<string> = new Set<string>(Object.values(ProductCategory));
+
 const TRANSLATIONS: Record<Lang, Record<string, string>> = {
   pl: {
     'app.title': 'Listy zakupów',
@@ -126,6 +129,7 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'add.add_product': 'Dodaj do listy',
     'add.add_product_purchased': 'Na liście — już kupione; dotknij, by dodać ponownie',
     'add.readonly_hint': 'Możesz tylko przeglądać tę listę — nie możesz dodawać produktów.',
+    'add.tabs_aria': 'Widok produktów',
     'category.fruits_vegetables': 'Owoce i warzywa',
     'category.dairy': 'Nabiał',
     'category.meat': 'Mięso i wędliny',
@@ -261,6 +265,7 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'add.add_product': 'Add to list',
     'add.add_product_purchased': 'On list — already bought; tap to add again',
     'add.readonly_hint': 'This list is view-only — you cannot add products.',
+    'add.tabs_aria': 'Product browser tabs',
     'category.fruits_vegetables': 'Fruit & vegetables',
     'category.dairy': 'Dairy',
     'category.meat': 'Meat & deli',
@@ -328,6 +333,14 @@ export class TranslateService {
   getCategoryLabel(category: ProductCategory): string {
     const key = PRODUCT_CATEGORY_KEYS[category];
     return key ? this.get(key) : String(category);
+  }
+
+  /** For category strings from storage/API (enum value in Polish); unknown values returned as-is. */
+  getCategoryLabelFromData(category: string): string {
+    if (STORED_CATEGORY_VALUES.has(category)) {
+      return this.getCategoryLabel(category as ProductCategory);
+    }
+    return category;
   }
 
   getPriorityLabel(priority: ProductPriority): string {
