@@ -34,16 +34,19 @@
   flex-shrink: 0;
 }
 
+/* Override global `button { min-width/min-height: 44px }` so both icon circles match. */
 .btn-theme {
+  box-sizing: border-box;
   padding: 0;
   width: 40px;
   height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   background: transparent;
   border-radius: 50%;
   border: 1px solid var(--color-border-soft);
   color: var(--color-text-secondary);
   cursor: pointer;
-  min-height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -165,15 +168,19 @@
   background: var(--color-bg-subtle);
 }
 
+/* Same footprint as .btn-theme (40×40); must override global button min 44×44. */
 .btn-lang {
-  min-width: 40px;
+  box-sizing: border-box;
+  width: 40px;
   height: 40px;
-  padding: 0 0.65rem;
-  border-radius: 999px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  border-radius: 50%;
   border: 1px solid var(--color-border-soft);
   background: var(--color-bg-elevated);
   color: var(--color-text-primary);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   cursor: pointer;
