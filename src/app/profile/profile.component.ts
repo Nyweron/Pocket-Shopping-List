@@ -5,10 +5,11 @@ import { AuthService } from '../services/auth.service';
 import { User } from '../models/user.model';
 import { UiDialogService } from '../services/ui-dialog.service';
 import { BackControlComponent } from '../shared/back-control.component';
+import { TranslatePipe } from '../pipes/translate.pipe';
 
 @Component({
   selector: 'app-profile',
-  imports: [CommonModule, RouterModule, BackControlComponent],
+  imports: [CommonModule, RouterModule, BackControlComponent, TranslatePipe],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })

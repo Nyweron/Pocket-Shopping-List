@@ -68,7 +68,7 @@ describe('AuthService', () => {
       });
 
       expect(result.success).toBeFalse();
-      expect(result.error).toContain('Email');
+      expect(result.error).toBe('auth.error_email_taken');
     });
 
     it('rejects duplicate username', () => {
@@ -81,7 +81,7 @@ describe('AuthService', () => {
       });
 
       expect(result.success).toBeFalse();
-      expect(result.error).toContain('Nazwa użytkownika');
+      expect(result.error).toBe('auth.error_username_taken');
     });
   });
 
@@ -107,7 +107,7 @@ describe('AuthService', () => {
       const result = service.login({ email: 'abc@test.pl', password: 'wrong' });
 
       expect(result.success).toBeFalse();
-      expect(result.error).toContain('Nieprawidłowy');
+      expect(result.error).toBe('auth.error_invalid_credentials');
       expect(service.isAuthenticated()).toBeFalse();
     });
   });

@@ -76,12 +76,12 @@ export class AuthService {
     
     // Reject duplicate email
     if (users.some(u => u.email.toLowerCase() === data.email.toLowerCase())) {
-      return { success: false, error: 'Email już jest zarejestrowany' };
+      return { success: false, error: 'auth.error_email_taken' };
     }
 
     // Reject duplicate username
     if (users.some(u => u.username.toLowerCase() === data.username.toLowerCase())) {
-      return { success: false, error: 'Nazwa użytkownika już istnieje' };
+      return { success: false, error: 'auth.error_username_taken' };
     }
 
     const newUser: User = {
@@ -109,7 +109,7 @@ export class AuthService {
     );
 
     if (!user) {
-      return { success: false, error: 'Nieprawidłowy email lub hasło' };
+      return { success: false, error: 'auth.error_invalid_credentials' };
     }
 
     this.currentUser.set(user);

@@ -20,33 +20,33 @@ export class ShareService {
   shareList(listId: string, email: string): { success: boolean; error?: string } {
     const list = this.shoppingListService.getListById(listId);
     if (!list) {
-      return { success: false, error: 'Lista nie istnieje' };
+      return { success: false, error: 'share.error_list_missing' };
     }
 
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser) {
-      return { success: false, error: 'Musisz być zalogowany' };
+      return { success: false, error: 'share.error_not_logged_in' };
     }
 
     if (list.ownerId !== currentUser.id) {
-      return { success: false, error: 'Możesz udostępniać tylko swoje listy' };
+      return { success: false, error: 'share.error_not_owner' };
     }
 
     const normalizedEmail = email.toLowerCase().trim();
     
     if (normalizedEmail === currentUser.email.toLowerCase()) {
-      return { success: false, error: 'Nie możesz udostępnić listy samemu sobie' };
+      return { success: false, error: 'share.error_self_share' };
     }
 
     if (list.sharedWith.includes(normalizedEmail)) {
-      return { success: false, error: 'Lista jest już udostępniona temu użytkownikowi' };
+      return { success: false, error: 'share.error_already_shared' };
     }
 
     // Target user must exist
     const allUsers = this.getAllUsers();
     const targetUser = allUsers.find(u => u.email.toLowerCase() === normalizedEmail);
     if (!targetUser) {
-      return { success: false, error: 'Użytkownik o podanym emailu nie istnieje' };
+      return { success: false, error: 'share.error_user_not_found' };
     }
 
     // Append to shared-with list on the list

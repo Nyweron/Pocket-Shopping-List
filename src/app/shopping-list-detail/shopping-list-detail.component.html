@@ -137,7 +137,7 @@
               <!-- Custom sort option disabled for now (see component TS). -->
               <!--
               <button type="button" (click)="selectSortFromSheet('custom')" [class.sort-active]="sortBy() === 'custom'">
-                <span class="options-icon">≡</span> Własne
+                <span class="options-icon">≡</span> {{ 'list.sort_mode_custom' | translate }}
                 <span class="sort-check">@if (sortBy() === 'custom') { ✔ }</span>
               </button>
               -->
@@ -173,7 +173,7 @@
               <button class="btn-share-cancel" (click)="showShareForm.set(false)">{{ 'app.cancel' | translate }}</button>
             </div>
             @if (shareError()) {
-              <div class="share-error">{{ shareError() }}</div>
+              <div class="share-error">{{ shareError()! | translate }}</div>
             }
           </div>
         </div>

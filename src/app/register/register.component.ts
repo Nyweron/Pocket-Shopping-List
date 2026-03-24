@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
+import { TranslatePipe } from '../pipes/translate.pipe';
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslatePipe],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
@@ -15,6 +16,7 @@ export class RegisterComponent {
   username = '';
   password = '';
   confirmPassword = '';
+  /** i18n keys; template uses TranslatePipe. */
   error = signal<string | null>(null);
   isLoading = signal(false);
 
@@ -32,17 +34,17 @@ export class RegisterComponent {
     this.error.set(null);
     
     if (!this.email || !this.username || !this.password || !this.confirmPassword) {
-      this.error.set('Wypełnij wszystkie pola');
+      this.error.set('auth.error_fill_fields');
       return;
     }
 
     if (this.password !== this.confirmPassword) {
-      this.error.set('Hasła nie są identyczne');
+      this.error.set('auth.error_password_mismatch');
       return;
     }
 
     if (this.password.length < 6) {
-      this.error.set('Hasło musi mieć co najmniej 6 znaków');
+      this.error.set('auth.error_password_short');
       return;
     }
 
@@ -59,7 +61,7 @@ export class RegisterComponent {
     if (result.success) {
       this.router.navigate(['/']);
     } else {
-      this.error.set(result.error || 'Błąd rejestracji');
+      this.error.set(result.error || 'auth.error_register_generic');
     }
   }
 }

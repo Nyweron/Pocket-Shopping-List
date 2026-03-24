@@ -42,4 +42,11 @@ describe('TranslateService', () => {
     service.setLang('en');
     expect(service.getProductDisplayName({ id: 'custom_x', name: 'My item' })).toBe('My item');
   });
+
+  it('profile and auth UI strings exist in EN', () => {
+    service.setLang('en');
+    expect(service.get('profile.title')).toBe('My profile');
+    expect(service.get('auth.login_title')).toBe('Sign in');
+    expect(service.get('share.error_user_not_found')).toBe('No user exists with that email');
+  });
 });

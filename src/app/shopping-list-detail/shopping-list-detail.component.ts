@@ -65,6 +65,7 @@ export class ShoppingListDetailComponent implements OnInit, OnDestroy {
 
   shareEmail = '';
   showShareForm = signal(false);
+  /** i18n keys; shown with TranslatePipe in template. */
   shareError = signal<string | null>(null);
   showOptionsMenu = signal(false);
   showSortSheet = signal(false);
@@ -330,18 +331,18 @@ export class ShoppingListDetailComponent implements OnInit, OnDestroy {
     this.shareError.set(null);
 
     if (!this.shareEmail.trim()) {
-      this.shareError.set(this.translate.get('list.share_email_required'));
+      this.shareError.set('list.share_email_required');
       return;
     }
 
     const result = this.shareService.shareList(list.id, this.shareEmail);
-    
+
     if (result.success) {
       this.shareEmail = '';
       this.showShareForm.set(false);
       this.loadList(list.id);
     } else {
-      this.shareError.set(result.error || this.translate.get('list.share_error_generic'));
+      this.shareError.set(result.error ?? 'list.share_error_generic');
     }
   }
 

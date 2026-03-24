@@ -1,21 +1,21 @@
 <div class="register-container">
   <div class="register-card">
-    <h1>Rejestracja</h1>
-    
+    <h1>{{ 'auth.register_title' | translate }}</h1>
+
     <div class="demo-info">
-      <p class="demo-info-title">ℹ️ Aplikacja DEMO</p>
+      <p class="demo-info-title">{{ 'auth.register_demo_title' | translate }}</p>
       <p class="demo-info-text">
-        To jest wersja demonstracyjna. Możesz utworzyć własne konto lub użyć testowego konta do logowania.
+        {{ 'auth.register_demo_text' | translate }}
       </p>
     </div>
-    
+
     @if (error()) {
-      <div class="error-message">{{ error() }}</div>
+      <div class="error-message">{{ error()! | translate }}</div>
     }
 
     <form (ngSubmit)="onSubmit()" class="register-form">
       <div class="form-group">
-        <label for="email">Email</label>
+        <label for="email">{{ 'auth.field_email' | translate }}</label>
         <input
           type="email"
           id="email"
@@ -23,12 +23,12 @@
           name="email"
           required
           class="form-input"
-          placeholder="twoj@email.pl"
+          [placeholder]="'auth.placeholder_email' | translate"
         />
       </div>
 
       <div class="form-group">
-        <label for="username">Nazwa użytkownika</label>
+        <label for="username">{{ 'auth.field_username' | translate }}</label>
         <input
           type="text"
           id="username"
@@ -36,12 +36,12 @@
           name="username"
           required
           class="form-input"
-          placeholder="Nazwa użytkownika"
+          [placeholder]="'auth.placeholder_username' | translate"
         />
       </div>
 
       <div class="form-group">
-        <label for="password">Hasło</label>
+        <label for="password">{{ 'auth.field_password' | translate }}</label>
         <input
           type="password"
           id="password"
@@ -49,12 +49,12 @@
           name="password"
           required
           class="form-input"
-          placeholder="Hasło (min. 6 znaków)"
+          [placeholder]="'auth.placeholder_password_min' | translate"
         />
       </div>
 
       <div class="form-group">
-        <label for="confirmPassword">Potwierdź hasło</label>
+        <label for="confirmPassword">{{ 'auth.field_confirm_password' | translate }}</label>
         <input
           type="password"
           id="confirmPassword"
@@ -62,21 +62,24 @@
           name="confirmPassword"
           required
           class="form-input"
-          placeholder="Potwierdź hasło"
+          [placeholder]="'auth.placeholder_confirm_password' | translate"
         />
       </div>
 
       <button type="submit" class="btn-submit" [disabled]="isLoading()">
         @if (isLoading()) {
-          Rejestrowanie...
+          {{ 'auth.register_loading' | translate }}
         } @else {
-          Zarejestruj się
+          {{ 'auth.register_submit' | translate }}
         }
       </button>
     </form>
 
     <div class="login-link">
-      <p>Masz już konto? <a [routerLink]="['/login']">Zaloguj się</a></p>
+      <p>
+        {{ 'auth.footer_has_account' | translate }}
+        <a [routerLink]="['/login']">{{ 'auth.footer_login' | translate }}</a>
+      </p>
     </div>
   </div>
 </div>

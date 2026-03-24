@@ -3,16 +3,18 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
+import { TranslatePipe } from '../pipes/translate.pipe';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslatePipe],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
   email = '';
   password = '';
+  /** i18n keys; template uses TranslatePipe. */
   error = signal<string | null>(null);
   isLoading = signal(false);
 
@@ -46,7 +48,7 @@ export class LoginComponent {
     if (result.success) {
       this.router.navigate(['/']);
     } else {
-      this.error.set(result.error || 'Błąd logowania');
+      this.error.set(result.error || 'auth.error_login_generic');
     }
   }
 }

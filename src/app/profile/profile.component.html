@@ -2,25 +2,25 @@
   <div class="profile-container">
     <div class="profile-card">
       <app-back-control [routerLink]="backLink()" />
-      <h1>Mój profil</h1>
-      
+      <h1>{{ 'profile.title' | translate }}</h1>
+
       <div class="profile-info">
         <div class="info-item">
-          <label>Email:</label>
+          <label>{{ 'profile.label_email' | translate }}</label>
           <span>{{ user()!.email }}</span>
         </div>
         <div class="info-item">
-          <label>Nazwa użytkownika:</label>
+          <label>{{ 'profile.label_username' | translate }}</label>
           <span>{{ user()!.username }}</span>
         </div>
         <div class="info-item">
-          <label>Data rejestracji:</label>
+          <label>{{ 'profile.label_registered' | translate }}</label>
           <span>{{ user()!.createdAt | date:'short' }}</span>
         </div>
       </div>
 
       <button class="btn-logout" (click)="logout()">
-        Wyloguj się
+        {{ 'profile.logout' | translate }}
       </button>
     </div>
   </div>
