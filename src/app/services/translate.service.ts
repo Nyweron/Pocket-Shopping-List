@@ -113,6 +113,9 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'demo.limit_products': 'Osiągnięto limit produktów na liście (max 10 w wersji demo).',
     'demo.reset': 'Zresetuj dane demo',
     'demo.reset_done': 'Dane demo zresetowane.',
+    'demo.banner_label': 'DEMO',
+    'demo.banner_text':
+      'To jest wersja demonstracyjna aplikacji. Dane są przechowywane lokalnie w przeglądarce.',
     'confirm.delete_list': 'Czy na pewno chcesz usunąć tę listę?',
     'confirm.delete_product': 'Czy na pewno chcesz usunąć ten produkt?',
     'confirm.uncheck_all': 'Czy na pewno chcesz odznaczyć wszystkie produkty?',
@@ -250,6 +253,9 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'demo.limit_products': 'Product limit per list reached (max 10 in demo).',
     'demo.reset': 'Reset demo data',
     'demo.reset_done': 'Demo data reset.',
+    'demo.banner_label': 'DEMO',
+    'demo.banner_text':
+      'This is a demo version of the app. Data is stored locally in your browser.',
     'confirm.delete_list': 'Are you sure you want to delete this list?',
     'confirm.delete_product': 'Are you sure you want to delete this product?',
     'confirm.uncheck_all': 'Are you sure you want to uncheck all products?',
