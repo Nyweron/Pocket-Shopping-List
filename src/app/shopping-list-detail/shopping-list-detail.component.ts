@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -35,7 +35,7 @@ type SortOption = 'name' | 'category' | 'priority' | 'purchased' | 'custom';
   templateUrl: './shopping-list-detail.component.html',
   styleUrls: ['./shopping-list-detail.component.css', './shopping-list-detail-overlays.component.css']
 })
-export class ShoppingListDetailComponent implements OnInit {
+export class ShoppingListDetailComponent implements OnInit, OnDestroy {
   @ViewChild('listSearchInput') listSearchInput?: ElementRef<HTMLInputElement>;
   list = signal<ShoppingList | null>(null);
   editingProduct = signal<Product | null>(null);
@@ -87,6 +87,10 @@ export class ShoppingListDetailComponent implements OnInit {
   private optionsSheetDragStartY = 0;
   private optionsSheetDragArmed = false;
 
+  /** Drives CSS slide-out + dim fade when closing the options bottom sheet. */
+  optionsMenuClosing = signal(false);
+  private optionsMenuCloseTimer: ReturnType<typeof setTimeout> | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -103,6 +107,13 @@ export class ShoppingListDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadList(id);
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.optionsMenuCloseTimer !== null) {
+      clearTimeout(this.optionsMenuCloseTimer);
+      this.optionsMenuCloseTimer = null;
     }
   }
 
@@ -344,11 +355,34 @@ export class ShoppingListDetailComponent implements OnInit {
   }
 
   toggleOptionsMenu(): void {
-    this.showOptionsMenu.set(!this.showOptionsMenu());
+    if (this.optionsMenuClosing()) {
+      return;
+    }
+    if (this.showOptionsMenu()) {
+      this.closeOptionsMenu();
+    } else {
+      this.showOptionsMenu.set(true);
+    }
   }
 
+  /** Animates sheet down and backdrop fade, then removes the overlay from the DOM. */
   closeOptionsMenu(): void {
-    this.showOptionsMenu.set(false);
+    if (!this.showOptionsMenu() || this.optionsMenuClosing()) {
+      return;
+    }
+    this.optionsMenuClosing.set(true);
+    if (this.optionsMenuCloseTimer !== null) {
+      clearTimeout(this.optionsMenuCloseTimer);
+    }
+    const ms =
+      typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+        ? 60
+        : 320;
+    this.optionsMenuCloseTimer = setTimeout(() => {
+      this.optionsMenuCloseTimer = null;
+      this.showOptionsMenu.set(false);
+      this.optionsMenuClosing.set(false);
+    }, ms);
   }
 
   onOptionsSheetDragStart(event: PointerEvent): void {

@@ -23,7 +23,11 @@
         <div class="list-progress-fill" [style.width.%]="getListProgressPercent()"></div>
       </div>
       @if (showOptionsMenu()) {
-        <div class="options-overlay" (click)="closeOptionsMenu()">
+        <div
+          class="options-overlay"
+          [class.options-overlay--closing]="optionsMenuClosing()"
+          (click)="closeOptionsMenu()"
+        >
           <div class="options-sheet" (click)="$event.stopPropagation()">
             <div
               class="options-sheet-drag"
