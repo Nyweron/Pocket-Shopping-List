@@ -18,6 +18,7 @@ import { BackControlComponent } from '../shared/back-control.component';
 import { UiDialogService } from '../services/ui-dialog.service';
 import { shouldSwipeStayOpen, shouldSuppressNextRowClickAfterSwipe } from './swipe-end.util';
 import { isSwipeDeleteTarget } from './swipe-target.util';
+import { activeProductRowAnim, completedProductRowAnim } from './shopping-list-detail.animations';
 
 type SortOption = 'name' | 'category' | 'priority' | 'purchased' | 'custom';
 
@@ -33,7 +34,8 @@ type SortOption = 'name' | 'category' | 'priority' | 'purchased' | 'custom';
     BackControlComponent,
   ],
   templateUrl: './shopping-list-detail.component.html',
-  styleUrls: ['./shopping-list-detail.component.css', './shopping-list-detail-overlays.component.css']
+  styleUrls: ['./shopping-list-detail.component.css', './shopping-list-detail-overlays.component.css'],
+  animations: [activeProductRowAnim, completedProductRowAnim],
 })
 export class ShoppingListDetailComponent implements OnInit, OnDestroy {
   @ViewChild('listSearchInput') listSearchInput?: ElementRef<HTMLInputElement>;

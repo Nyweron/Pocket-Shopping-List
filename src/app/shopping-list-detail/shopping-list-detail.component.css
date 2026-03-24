@@ -504,6 +504,11 @@
   border-radius: 0;
 }
 
+/* Wrapper for list row animations (see shopping-list-detail.animations.ts). */
+.product-row-motion {
+  display: block;
+}
+
 .product-item-compact {
   background: transparent;
   border: none;
@@ -513,7 +518,8 @@
   margin: 0;
 }
 
-.product-item-compact:last-child {
+/* Last visible row: motion wrapper is the last child of the list (not the inner .product-item). */
+.product-row-motion:last-child .product-item-compact {
   border-bottom: none;
 }
 

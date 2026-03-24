@@ -193,7 +193,9 @@
         </div>
       } @else {
         @for (product of getFilteredActiveProducts(); track product.id) {
-          <ng-container *ngTemplateOutlet="productRow; context: { $implicit: product }" />
+          <div class="product-row-motion" @activeProductRow>
+            <ng-container *ngTemplateOutlet="productRow; context: { $implicit: product }" />
+          </div>
         }
         @if (getFilteredCompletedProducts().length > 0) {
           <button
@@ -227,7 +229,9 @@
           </button>
           @if (purchasedSectionExpanded()) {
             @for (product of getFilteredCompletedProducts(); track product.id) {
-              <ng-container *ngTemplateOutlet="productRow; context: { $implicit: product }" />
+              <div class="product-row-motion" @completedProductRow>
+                <ng-container *ngTemplateOutlet="productRow; context: { $implicit: product }" />
+              </div>
             }
           }
         }

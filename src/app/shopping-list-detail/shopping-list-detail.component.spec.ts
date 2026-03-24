@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShoppingListDetailComponent } from './shopping-list-detail.component';
 import { ShoppingListService } from '../services/shopping-list.service';
@@ -89,6 +90,7 @@ describe('ShoppingListDetailComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ShoppingListDetailComponent],
       providers: [
+        provideNoopAnimations(),
         { provide: ShoppingListService, useValue: shoppingListService },
         { provide: ShareService, useValue: shareService },
         { provide: AuthService, useValue: authService },
