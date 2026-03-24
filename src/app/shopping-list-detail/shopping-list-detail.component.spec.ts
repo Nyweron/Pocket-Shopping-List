@@ -91,11 +91,15 @@ describe('ShoppingListDetailComponent', () => {
       'getCategoryLabel',
       'getPriorityLabel',
       'formatQuantityUnit',
+      'getProductDisplayName',
+      'getCategoryLabelFromData',
     ]);
     translate.currentLang.and.returnValue('pl');
     translate.getCategoryLabel.and.callFake((c: ProductCategory) => String(c));
     translate.getPriorityLabel.and.callFake((p: ProductPriority) => String(p));
     translate.formatQuantityUnit.and.callFake((u: string) => (u === 'szt' ? 'szt.' : u));
+    translate.getProductDisplayName.and.callFake((p: { name: string }) => p.name);
+    translate.getCategoryLabelFromData.and.callFake((c: string) => c);
     uiDialog = jasmine.createSpyObj<UiDialogService>('UiDialogService', ['confirm', 'alert']);
     uiDialog.confirm.and.returnValue(Promise.resolve(true));
     uiDialog.alert.and.returnValue(Promise.resolve());

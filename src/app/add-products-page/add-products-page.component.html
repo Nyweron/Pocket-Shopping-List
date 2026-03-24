@@ -119,7 +119,7 @@
         <app-icon-plus class="add-row-plus-icon" />
       }
     </button>
-    <span class="add-row-name">{{ p.name }}</span>
+    <span class="add-row-name">{{ translate.getProductDisplayName(p) }}</span>
     <div class="add-row-actions">
       @if (st.onList) {
         @if (st.totalQty > 1) {

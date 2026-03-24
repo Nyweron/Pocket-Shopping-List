@@ -59,7 +59,9 @@ export class AddProductsPageComponent implements OnInit {
     }
     const q = raw.toLowerCase();
     const hits = this.searchResults();
-    const exact = hits.some(p => p.name.toLowerCase().trim() === q);
+    const exact = hits.some(
+      p => this.translate.getProductDisplayName(p).toLowerCase().trim() === q
+    );
     return !exact;
   });
 

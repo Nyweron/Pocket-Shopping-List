@@ -209,12 +209,17 @@ export class ShoppingListDetailComponent implements OnInit, OnDestroy {
     let products = [...list.products];
     const search = this.listSearchQuery().toLowerCase().trim();
     if (search) {
-      products = products.filter(
-        p =>
+      products = products.filter(p => {
+        const nameMatch =
           p.name.toLowerCase().includes(search) ||
-          String(p.category || '').toLowerCase().includes(search) ||
-          (p.note && p.note.toLowerCase().includes(search))
-      );
+          this.translate.getProductDisplayName(p).toLowerCase().includes(search);
+        const catRaw = String(p.category || '').toLowerCase();
+        const catMatch =
+          catRaw.includes(search) ||
+          this.translate.getCategoryLabelFromData(String(p.category || '')).toLowerCase().includes(search);
+        const noteMatch = p.note && p.note.toLowerCase().includes(search);
+        return nameMatch || catMatch || !!noteMatch;
+      });
     }
     return products;
   }

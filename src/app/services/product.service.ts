@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Product, ProductPriority } from '../models/product.model';
 import { ProductCategory } from '../models/product-category.enum';
+import { TranslateService } from './translate.service';
 
 @Injectable({
   providedIn: 'root'
@@ -121,7 +122,7 @@ export class ProductService {
     '36'
   ];
 
-  constructor() {}
+  constructor(private translate: TranslateService) {}
 
   searchProducts(query: string): Product[] {
     const lowerQuery = query.toLowerCase().trim();
@@ -130,9 +131,13 @@ export class ProductService {
     }
     
     const allProducts = this.getAllProducts();
-    return allProducts.filter(product => 
-      product.name.toLowerCase().includes(lowerQuery)
-    );
+    return allProducts.filter(product => {
+      if (product.name.toLowerCase().includes(lowerQuery)) {
+        return true;
+      }
+      const display = this.translate.getProductDisplayName(product).toLowerCase();
+      return display.includes(lowerQuery);
+    });
   }
 
   getAllProducts(): Product[] {

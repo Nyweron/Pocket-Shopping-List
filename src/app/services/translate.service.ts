@@ -1,4 +1,9 @@
 import { Injectable, signal, computed } from '@angular/core';
+import {
+  resolveCatalogProductIdForDisplay,
+  CATALOG_PRODUCT_NAMES_EN,
+  CATALOG_PRODUCT_NAMES_PL,
+} from '../i18n/catalog-product-names';
 import { ProductCategory } from '../models/product-category.enum';
 import { ProductPriority } from '../models/product.model';
 
@@ -161,6 +166,7 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'list.share_error_generic': 'Błąd udostępniania',
     'list.currency_suffix': 'zł',
     'app.loading': 'Ładowanie...',
+    ...CATALOG_PRODUCT_NAMES_PL,
   },
   en: {
     'app.title': 'Shopping lists',
@@ -297,7 +303,8 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'list.share_error_generic': 'Sharing failed',
     'list.currency_suffix': 'PLN',
     'app.loading': 'Loading...',
-  }
+    ...CATALOG_PRODUCT_NAMES_EN,
+  },
 };
 
 @Injectable({ providedIn: 'root' })
@@ -353,5 +360,17 @@ export class TranslateService {
     const key = `unit.${unit}`;
     const t = this.get(key);
     return t === key ? unit : t;
+  }
+
+  /**
+   * Single label for the active UI language (PL or EN), never both.
+   * Catalog rows use i18n by id; custom / unknown ids use stored `name`.
+   */
+  getProductDisplayName(product: { id: string; name: string }): string {
+    const catalogId = resolveCatalogProductIdForDisplay(product.id);
+    if (catalogId !== undefined) {
+      return this.get(`catalog.product.${catalogId}`);
+    }
+    return product.name;
   }
 }
