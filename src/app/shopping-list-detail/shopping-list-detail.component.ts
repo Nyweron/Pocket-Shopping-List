@@ -83,6 +83,10 @@ export class ShoppingListDetailComponent implements OnInit {
    */
   private ignoreNextRowClickProductId: string | null = null;
 
+  /** Swipe-down on options sheet handle strip to dismiss (mobile / pointer). */
+  private optionsSheetDragStartY = 0;
+  private optionsSheetDragArmed = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -345,6 +349,31 @@ export class ShoppingListDetailComponent implements OnInit {
 
   closeOptionsMenu(): void {
     this.showOptionsMenu.set(false);
+  }
+
+  onOptionsSheetDragStart(event: PointerEvent): void {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
+    this.optionsSheetDragStartY = event.clientY;
+    this.optionsSheetDragArmed = true;
+  }
+
+  onOptionsSheetDragEnd(event: PointerEvent): void {
+    if (!this.optionsSheetDragArmed) return;
+    const dy = event.clientY - this.optionsSheetDragStartY;
+    this.optionsSheetDragArmed = false;
+    try {
+      (event.currentTarget as HTMLElement).releasePointerCapture?.(event.pointerId);
+    } catch {
+      /* capture may already be released */
+    }
+    if (dy > 72) {
+      this.closeOptionsMenu();
+    }
+  }
+
+  onOptionsSheetDragCancel(): void {
+    this.optionsSheetDragArmed = false;
   }
 
   openSortSheet(): void {

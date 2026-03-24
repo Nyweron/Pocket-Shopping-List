@@ -25,7 +25,15 @@
       @if (showOptionsMenu()) {
         <div class="options-overlay" (click)="closeOptionsMenu()">
           <div class="options-sheet" (click)="$event.stopPropagation()">
-            <div class="options-handle"></div>
+            <div
+              class="options-sheet-drag"
+              aria-hidden="true"
+              (pointerdown)="onOptionsSheetDragStart($event)"
+              (pointerup)="onOptionsSheetDragEnd($event)"
+              (pointercancel)="onOptionsSheetDragCancel()"
+            >
+              <div class="options-handle"></div>
+            </div>
 
             <div class="options-section">
               <button type="button" (click)="focusListSearchFromMenu()"><span class="options-icon">⌕</span> Szukaj na liście</button>

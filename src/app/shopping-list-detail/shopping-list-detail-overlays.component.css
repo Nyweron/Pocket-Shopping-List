@@ -23,10 +23,24 @@
   border: 1px solid var(--color-border-soft);
   border-bottom: none;
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.28);
-  padding: 0.5rem 0.75rem 1rem;
-  max-height: 82vh;
+  /* Extra bottom space: last row stays above system nav / gesture bar */
+  padding: 0.5rem 0.75rem calc(1.35rem + max(36px, env(safe-area-inset-bottom, 0px)));
+  max-height: min(82vh, calc(100dvh - env(safe-area-inset-top, 0px) - 12px));
   overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
   box-sizing: border-box;
+  scroll-padding-bottom: calc(1rem + max(36px, env(safe-area-inset-bottom, 0px)));
+}
+
+:host .options-sheet-drag {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  padding: 0.15rem 0 0.65rem;
+  margin: 0 -0.75rem 0;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
 }
 
 :host .options-handle {
@@ -34,7 +48,8 @@
   height: 4px;
   background: var(--color-border-strong);
   border-radius: 999px;
-  margin: 0.25rem auto 0.75rem;
+  margin: 0.25rem auto 0;
+  pointer-events: none;
 }
 
 :host .options-section {
