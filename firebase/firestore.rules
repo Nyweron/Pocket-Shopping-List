@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function listDoc(listId) {
+      return get(/databases/$(database)/documents/lists/$(listId));
+    }
+
+    function isListOwner(listId) {
+      return signedIn() && listDoc(listId).data.ownerUid == request.auth.uid;
+    }
+
+    function isListMember(listId) {
+      return signedIn() && exists(/databases/$(database)/documents/lists/$(listId)/members/$(request.auth.uid));
+    }
+
+    match /users/{uid} {
+      allow read, write: if isSelf(uid);
+    }
+
+    match /lists/{listId} {
+      allow create: if signedIn()
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 80;
+
+      allow read: if isListOwner(listId) || isListMember(listId);
+
+      allow update: if isListOwner(listId)
+        && request.resource.data.ownerUid == resource.data.ownerUid;
+
+      allow delete: if isListOwner(listId);
+
+      match /items/{itemId} {
+        allow read: if isListOwner(listId) || isListMember(listId);
+        allow create, update, delete: if isListOwner(listId) || isListMember(listId);
+      }
+
+      match /members/{memberUid} {
+        allow read: if isListOwner(listId) || isListMember(listId);
+        allow create, update, delete: if isListOwner(listId);
+      }
+    }
+  }
+}

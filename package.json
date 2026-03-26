@@ -41,6 +41,8 @@
     "icons": "node scripts/generate-favicons.cjs",
     "lint": "eslint \"src/**/*.ts\"",
     "test:e2e": "playwright test",
+    "check:secrets": "node scripts/check-secrets.cjs",
+    "verify:security": "npm run check:secrets && npm run lint",
     "cap:copy": "npx cap copy android",
     "cap:sync": "npx cap sync android",
     "build:android": "npm run build:production && npx cap copy android && npx cap sync android",
