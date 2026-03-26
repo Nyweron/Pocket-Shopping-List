@@ -580,9 +580,10 @@ a.avatar-profile-link.compact-user-avatar:active {
 
 .compact-checkbox-input {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  /* Keep visual circle size, but make tap target larger around it. */
+  inset: -10px;
+  width: auto;
+  height: auto;
   margin: 0;
   opacity: 0;
   cursor: pointer;
