@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -38,11 +38,9 @@ type SortOption = 'name' | 'category' | 'priority' | 'purchased' | 'custom';
   animations: [activeProductRowAnim, completedProductRowAnim],
 })
 export class ShoppingListDetailComponent implements OnInit, OnDestroy {
-  @ViewChild('listSearchInput') listSearchInput?: ElementRef<HTMLInputElement>;
   list = signal<ShoppingList | null>(null);
   editingProduct = signal<Product | null>(null);
   sortBy = signal<SortOption>('category');
-  listSearchQuery = signal('');
 
   sortOptions: SortOption[] = [
     'category',
@@ -203,26 +201,9 @@ export class ShoppingListDetailComponent implements OnInit, OnDestroy {
     this.purchasedSectionExpanded.update(v => !v);
   }
 
-  /** Filter list search only (no sort). */
   private getSearchFilteredProducts(): Product[] {
     const list = this.list();
-    if (!list) return [];
-    let products = [...list.products];
-    const search = this.listSearchQuery().toLowerCase().trim();
-    if (search) {
-      products = products.filter(p => {
-        const nameMatch =
-          p.name.toLowerCase().includes(search) ||
-          this.translate.getProductDisplayName(p).toLowerCase().includes(search);
-        const catRaw = String(p.category || '').toLowerCase();
-        const catMatch =
-          catRaw.includes(search) ||
-          this.translate.getCategoryLabelFromData(String(p.category || '')).toLowerCase().includes(search);
-        const noteMatch = p.note && p.note.toLowerCase().includes(search);
-        return nameMatch || catMatch || !!noteMatch;
-      });
-    }
-    return products;
+    return list ? [...list.products] : [];
   }
 
   private sortProductsSubset(products: Product[]): Product[] {
@@ -441,11 +422,6 @@ export class ShoppingListDetailComponent implements OnInit, OnDestroy {
   selectSortFromSheet(option: SortOption): void {
     this.sortBy.set(option);
     this.showSortSheet.set(false);
-  }
-
-  focusListSearchFromMenu(): void {
-    this.showOptionsMenu.set(false);
-    setTimeout(() => this.listSearchInput?.nativeElement?.focus(), 10);
   }
 
   getCurrentSortLabel(): string {

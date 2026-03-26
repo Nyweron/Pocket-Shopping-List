@@ -142,14 +142,11 @@ describe('ShoppingListDetailComponent', () => {
     expect(link!.textContent?.trim()).toBe('D');
   });
 
-  it('filters and sorts products by search and sort mode', () => {
-    component.listSearchQuery.set('milk');
+  it('sorts products by selected sort mode', () => {
     component.sortBy.set('name');
-    const products = component.getFilteredAndSortedProducts();
-    expect(products.length).toBe(1);
-    expect(products[0].name).toBe('Milk');
+    const nameSorted = component.getFilteredAndSortedProducts();
+    expect(nameSorted[0].name).toBe('Milk');
 
-    component.listSearchQuery.set('');
     component.sortBy.set('category');
     const categorySorted = component.getFilteredAndSortedProducts();
     expect(categorySorted[0].category <= categorySorted[1].category).toBeTrue();

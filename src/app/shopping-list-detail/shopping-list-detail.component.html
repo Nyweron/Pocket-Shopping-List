@@ -47,10 +47,6 @@
             </div>
 
             <div class="options-section">
-              <button type="button" (click)="focusListSearchFromMenu()"><span class="options-icon">⌕</span> {{ 'list.menu_search_list' | translate }}</button>
-            </div>
-
-            <div class="options-section">
               <button type="button" (click)="renameList()"><span class="options-icon">✎</span> {{ 'menu.rename' | translate }}</button>
               <button type="button" (click)="openShareFromMenu()" [disabled]="!isOwner()"><span class="options-icon">◎</span> {{ 'menu.share' | translate }}</button>
               <button type="button" (click)="stopSharingFromMenu()" [disabled]="!isOwner() || getSharedWith().length === 0"><span class="options-icon">⊘</span> {{ 'menu.stop_sharing' | translate }}</button>
@@ -178,18 +174,6 @@
           </div>
         </div>
       }
-    </div>
-
-    <div class="list-search">
-      <input
-        #listSearchInput
-        type="text"
-        data-testid="list-search-input"
-        [placeholder]="'list.search_products' | translate"
-        [ngModel]="listSearchQuery()"
-        (ngModelChange)="listSearchQuery.set($event)"
-        class="list-search-input"
-      />
     </div>
 
     <div class="products-list products-list-compact">
