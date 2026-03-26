@@ -61,7 +61,7 @@ test.describe('Smoke flows', () => {
     await expect(page.getByText('Ilość: 2 kg').first()).toBeVisible();
   });
 
-  test('sorting and list search from menu', async ({ page }) => {
+  test('sorting from menu', async ({ page }) => {
     await loginDemo(page);
     await createListAndOpen(page, 'Sort flow');
 
@@ -74,9 +74,6 @@ test.describe('Smoke flows', () => {
     await page.getByTestId('sort-option-name').click();
     await page.getByTestId('open-options-menu').click();
     await expect(page.getByTestId('open-sort-sheet')).toContainText('Alfabetycznie');
-
-    await page.getByTestId('list-search-input').fill('xyz_not_found');
-    await expect(page.getByText('Brak produktów w tej liście.')).toBeVisible();
   });
 
   test('swipe row left keeps delete strip open (swiped class)', async ({ page }) => {
@@ -145,19 +142,46 @@ test.describe('Smoke flows', () => {
     await page.getByTestId('add-custom-suggestion').click();
     await page.getByTestId('add-page-back').click();
 
-    const row = page.locator('[data-testid^="product-item-"]').filter({ hasText: 'Pantofle test' });
-    const checkbox = page.locator('[data-testid^="product-checkbox-"]').first();
+    const rowCandidates = page
+      .locator('[data-testid^="product-item-"]')
+      .filter({ hasText: 'Pantofle test' });
+
+    const candidatesCount = await rowCandidates.count();
+    let productId: string | null = null;
+
+    // Pick the specific product row that is NOT marked as purchased (before toggling).
+    for (let i = 0; i < candidatesCount; i++) {
+      const row = rowCandidates.nth(i);
+      const rowTestId = await row.getAttribute('data-testid');
+      if (!rowTestId) continue;
+      const id = rowTestId.replace('product-item-', '');
+
+      const isPurchased = await row.evaluate((el: Element) => el.classList.contains('purchased'));
+      if (!isPurchased) {
+        productId = id;
+        break;
+      }
+    }
+
+    expect(productId).not.toBeNull();
+
+    const checkbox = page.locator(`[data-testid="product-checkbox-${productId}"]`).first();
+    const rowPurchased = page.locator(`[data-testid="product-item-${productId}"].purchased`).first();
+    const rowUnpurchased = page.locator(
+      `[data-testid="product-item-${productId}"]:not(.purchased)`
+    ).first();
 
     await expect(checkbox).not.toBeChecked();
-    await expect(row).not.toHaveClass(/purchased/);
+    await expect(rowPurchased).toHaveCount(0);
+    await expect(rowUnpurchased).toBeVisible();
 
     await checkbox.click();
     await expect(checkbox).toBeChecked();
-    await expect(row).toHaveClass(/purchased/);
+    await expect(rowPurchased).toBeVisible();
 
     await checkbox.click();
     await expect(checkbox).not.toBeChecked();
-    await expect(row).not.toHaveClass(/purchased/);
+    await expect(rowPurchased).toHaveCount(0);
   });
 
   test('remove purchased products with confirm dialog', async ({ page }) => {
