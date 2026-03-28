@@ -17,7 +17,7 @@ Mobilna aplikacja list zakupów (mobile-first), zbudowana w Angularze i przygoto
 - Tworzenie i zarządzanie listami zakupów
 - Produkty (dodawanie, edycja, usuwanie, oznaczanie jako kupione)
 - Ilość z jednostkami (`szt`, `g`, `kg`, `ml`, `l`)
-- Udostępnianie list (właściciel + współużytkownicy)
+- Udostępnianie list: model właściciel + współużytkownicy w danych lokalnych; **w obecnej wersji demo zaproszenie przez e-mail jest wyłączone** (walidacja adresu + komunikat w UI — szczegóły w **Dane i tryb demo**)
 - Menu opcji w formie bottom sheet (UX mobilny)
 - Sortowanie z menu (`kategoria`, `nazwa`, `priorytet`, `status`)
 - Wyszukiwanie w obrębie listy
@@ -154,6 +154,7 @@ npm run build:android
 - Dane są w `localStorage` przeglądarki / urządzenia.
 - Dostępne jest konto demo do szybkich testów.
 - Obowiązują limity demo (np. listy/produkty), z możliwością resetu.
+- **Udostępnianie listy na adres e-mail:** w tej wersji demonstracyjnej po wpisaniu adresu (sprawdzany jest podstawowy format e-mail) użytkownik otrzymuje informację, że funkcja jest wyłączona — nie ma backendu ani wysyłki zaproszeń. W docelowej „pełnej” aplikacji możliwe będzie zapraszanie innego użytkownika (np. z synchronizacją w czasie rzeczywistym). Cofanie wcześniej zapisanego udostępnienia (**przestań udostępniać** / pojedynczy adres) nadal działa dla wpisów już obecnych w lokalnych danych.
 
 ### Wskazówki dla współtwórców
 
@@ -179,7 +180,7 @@ Mobile-first shopping list application built with Angular and prepared for Andro
 - Create and manage shopping lists
 - Product management (add, edit, delete, mark purchased)
 - Quantity with units (`szt`, `g`, `kg`, `ml`, `l`)
-- List sharing flow (owner + shared users)
+- List sharing model (owner + shared users in local data); **in the current demo build, e-mail invitations are disabled** (address validation + in-app message — see **Data and demo mode**)
 - Bottom-sheet options menu (mobile UX)
 - Sorting from menu (`category`, `name`, `priority`, `status`)
 - Search inside list
@@ -316,6 +317,7 @@ npm run build:android
 - Data is stored in browser/device `localStorage`.
 - Demo user flow is available for quick testing.
 - Demo constraints apply (e.g. list/product limits), with reset support.
+- **Share list by e-mail:** in this demo, after the user enters an address (basic e-mail format is validated), the app explains that the feature is off — there is no backend or invitation delivery. A future full build may support inviting another user (e.g. with real-time sync). Revoking an existing share (**stop sharing** / per e-mail) still works for entries already present in local data.
 
 ### Notes for contributors
 

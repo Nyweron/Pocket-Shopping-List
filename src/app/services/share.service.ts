@@ -5,6 +5,23 @@ import { ShoppingListService } from './shopping-list.service';
 import { LocalStorageService } from './local-storage.service';
 import { User } from '../models/user.model';
 
+/** Demo build: list sharing by email is disabled (no backend). */
+const DEMO_SHARING_BY_EMAIL_DISABLED = true;
+
+const SHARE_EMAIL_FORMAT =
+  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+/**
+ * Validates a single email address for the share form (ASCII-oriented, same idea as typical HTML email inputs).
+ */
+export function isValidShareEmailFormat(email: string): boolean {
+  const trimmed = email.trim();
+  if (trimmed.length < 5 || trimmed.length > 254) {
+    return false;
+  }
+  return SHARE_EMAIL_FORMAT.test(trimmed);
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -33,7 +50,19 @@ export class ShareService {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
-    
+
+    if (!normalizedEmail) {
+      return { success: false, error: 'list.share_email_required' };
+    }
+
+    if (!isValidShareEmailFormat(normalizedEmail)) {
+      return { success: false, error: 'list.share_email_invalid' };
+    }
+
+    if (DEMO_SHARING_BY_EMAIL_DISABLED) {
+      return { success: false, error: 'share.error_demo_unavailable' };
+    }
+
     if (normalizedEmail === currentUser.email.toLowerCase()) {
       return { success: false, error: 'share.error_self_share' };
     }

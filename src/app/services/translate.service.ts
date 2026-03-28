@@ -159,6 +159,8 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'share.error_self_share': 'Nie możesz udostępnić listy samemu sobie',
     'share.error_already_shared': 'Lista jest już udostępniona temu użytkownikowi',
     'share.error_user_not_found': 'Użytkownik o podanym emailu nie istnieje',
+    'share.error_demo_unavailable':
+      'W wersji demonstracyjnej udostępnianie listy na adres e-mail jest wyłączone. Pełna wersja aplikacji pozwoli zaprosić innego użytkownika.',
     'confirm.delete_list': 'Czy na pewno chcesz usunąć tę listę?',
     'confirm.delete_product': 'Czy na pewno chcesz usunąć ten produkt?',
     'confirm.uncheck_all': 'Czy na pewno chcesz odznaczyć wszystkie produkty?',
@@ -208,6 +210,7 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'list.share_submit': 'Udostępnij',
     'list.share_email_placeholder': 'Email użytkownika',
     'list.share_email_required': 'Podaj adres email',
+    'list.share_email_invalid': 'Podaj poprawny adres e-mail (np. jan@example.com).',
     'list.rename_prompt': 'Nowa nazwa listy:',
     'list.share_error_generic': 'Błąd udostępniania',
     'list.currency_suffix': 'zł',
@@ -342,6 +345,8 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'share.error_self_share': 'You cannot share a list with yourself',
     'share.error_already_shared': 'This list is already shared with that user',
     'share.error_user_not_found': 'No user exists with that email',
+    'share.error_demo_unavailable':
+      'Sharing a list by email is not available in the demo. The full app will let you invite another user.',
     'confirm.delete_list': 'Are you sure you want to delete this list?',
     'confirm.delete_product': 'Are you sure you want to delete this product?',
     'confirm.uncheck_all': 'Are you sure you want to uncheck all products?',
@@ -391,6 +396,7 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'list.share_submit': 'Share',
     'list.share_email_placeholder': 'User email',
     'list.share_email_required': 'Enter an email address',
+    'list.share_email_invalid': 'Enter a valid email address (e.g. jan@example.com).',
     'list.rename_prompt': 'New list name:',
     'list.share_error_generic': 'Sharing failed',
     'list.currency_suffix': 'PLN',
