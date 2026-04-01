@@ -63,6 +63,7 @@ W przeglądarce: `http://localhost:4200/`
 - `npm run start` — serwer deweloperski Angular
 - `npm run build` — build aplikacji
 - `npm run build:production` — build produkcyjny
+- `npm run build:github-pages` — build demo pod GitHub Pages (z poprawnym `base-href`)
 - `npm run test` — testy jednostkowe (tryb watch)
 - `npm run test:unit` — testy jednostkowe jednorazowo (tryb bramki lokalnej / CI)
 - `npm run test:watch` — testy jednostkowe w trybie watch
@@ -71,6 +72,7 @@ W przeglądarce: `http://localhost:4200/`
 - `npm run lint` — ESLint dla plików TypeScript
 - `npm run verify` — lokalna bramka: `lint + testy jednostkowe + build produkcyjny`
 - `npm run verify:full` — rozszerzona bramka: `lint + testy jednostkowe + e2e + build produkcyjny`
+- `npm run pages:prepare-spa-fallback` — kopiuje `index.html` do `404.html` (fallback routingu SPA na GitHub Pages)
 - `npm run cap:copy` — kopiowanie zasobów web do projektu Android
 - `npm run cap:sync` — synchronizacja projektu Capacitor (Android)
 - `npm run build:android` — build produkcyjny + copy/sync pod Androida
@@ -133,6 +135,22 @@ src/
 android/                     # projekt Capacitor (Android)
 graphics/                    # grafiki źródłowe / ikony
 ```
+
+### Deploy demo na GitHub Pages
+
+Repo jest skonfigurowane tak, aby publikować wersję demo (LocalStorage only) z gałęzi `master` przez GitHub Actions:
+
+1. Wejdź w **Settings > Pages** i ustaw **Source: GitHub Actions**.
+2. Wypchnij zmiany do `master`.
+3. Workflow `.github/workflows/deploy-pages.yml` uruchomi:
+   - `npm run verify`,
+   - `npm run build:github-pages`,
+   - przygotowanie `404.html` dla fallbacku routingu Angular SPA,
+   - publikację artefaktu na GitHub Pages.
+4. Aplikacja będzie dostępna pod adresem:
+   - `https://nyweron.github.io/pocket-shopping-list/`
+
+> Jeśli zmienisz nazwę repo, zaktualizuj ścieżkę `--base-href` w skrypcie `build:github-pages` w `package.json`.
 
 ### Build APK (lokalnie)
 
@@ -226,6 +244,7 @@ Open: `http://localhost:4200/`
 - `npm run start` — start Angular dev server
 - `npm run build` — build Angular app
 - `npm run build:production` — production build
+- `npm run build:github-pages` — demo build for GitHub Pages (with proper `base-href`)
 - `npm run test` — unit tests (watch mode)
 - `npm run test:unit` — run unit tests once (local/CI gate mode)
 - `npm run test:watch` — unit tests in watch mode
@@ -234,6 +253,7 @@ Open: `http://localhost:4200/`
 - `npm run lint` — ESLint for TypeScript sources
 - `npm run verify` — local quality gate: `lint + unit tests + production build`
 - `npm run verify:full` — extended gate: `lint + unit tests + e2e + production build`
+- `npm run pages:prepare-spa-fallback` — copies `index.html` to `404.html` (SPA routing fallback on GitHub Pages)
 - `npm run cap:copy` — copy web assets to Android project
 - `npm run cap:sync` — sync Capacitor Android project
 - `npm run build:android` — production build + copy/sync for Android
@@ -296,6 +316,22 @@ src/
 android/                     # Capacitor Android project
 graphics/                    # source graphics/icons
 ```
+
+### Demo deployment to GitHub Pages
+
+The repository is configured to publish the demo build (LocalStorage only) from `master` via GitHub Actions:
+
+1. Open **Settings > Pages** and set **Source: GitHub Actions**.
+2. Push changes to `master`.
+3. The workflow `.github/workflows/deploy-pages.yml` will run:
+   - `npm run verify`,
+   - `npm run build:github-pages`,
+   - `404.html` generation for Angular SPA route fallback,
+   - deployment to GitHub Pages.
+4. The app will be available at:
+   - `https://nyweron.github.io/pocket-shopping-list/`
+
+> If you rename the repository, update the `--base-href` path in `build:github-pages` in `package.json`.
 
 ### Android build (local APK)
 
