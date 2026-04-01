@@ -34,7 +34,7 @@ jobs:
         run: npm run verify
 
       - name: Build for GitHub Pages
-        run: npm run build:github-pages
+        run: npx ng build --configuration production --base-href "/${{ github.event.repository.name }}/"
 
       - name: Create SPA 404 fallback
         run: npm run pages:prepare-spa-fallback

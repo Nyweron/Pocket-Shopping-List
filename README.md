@@ -148,9 +148,9 @@ Repo jest skonfigurowane tak, aby publikować wersję demo (LocalStorage only) z
    - przygotowanie `404.html` dla fallbacku routingu Angular SPA,
    - publikację artefaktu na GitHub Pages.
 4. Aplikacja będzie dostępna pod adresem:
-   - `https://nyweron.github.io/pocket-shopping-list/`
+   - `https://nyweron.github.io/Pocket-Shopping-List/`
 
-> Jeśli zmienisz nazwę repo, zaktualizuj ścieżkę `--base-href` w skrypcie `build:github-pages` w `package.json`.
+> Ważne: GitHub Pages jest case-sensitive. Ścieżka po domenie musi mieć dokładnie taką samą wielkość liter jak nazwa repozytorium.
 
 ### Build APK (lokalnie)
 
@@ -329,9 +329,9 @@ The repository is configured to publish the demo build (LocalStorage only) from 
    - `404.html` generation for Angular SPA route fallback,
    - deployment to GitHub Pages.
 4. The app will be available at:
-   - `https://nyweron.github.io/pocket-shopping-list/`
+   - `https://nyweron.github.io/Pocket-Shopping-List/`
 
-> If you rename the repository, update the `--base-href` path in `build:github-pages` in `package.json`.
+> Important: GitHub Pages paths are case-sensitive. The path segment after the domain must match the repository name exactly, including letter casing.
 
 ### Android build (local APK)
 

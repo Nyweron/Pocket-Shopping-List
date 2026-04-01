@@ -48,7 +48,7 @@
     "build:android": "npm run build:production && npx cap copy android && npx cap sync android",
     "verify": "npm run lint && npm run test:unit && npm run build:production",
     "verify:full": "npm run lint && npm run test:unit && npm run test:e2e && npm run build:production",
-    "build:github-pages": "ng build --configuration production --base-href /pocket-shopping-list/",
+    "build:github-pages": "ng build --configuration production --base-href /Pocket-Shopping-List/",
     "pages:prepare-spa-fallback": "node -e \"const fs=require('fs'); fs.copyFileSync('dist/todo-angular-cursor/browser/index.html','dist/todo-angular-cursor/browser/404.html');\""
   },
   "private": true,
