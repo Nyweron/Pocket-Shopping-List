@@ -5,8 +5,8 @@ import { ShoppingListService } from './shopping-list.service';
 import { LocalStorageService } from './local-storage.service';
 import { User } from '../models/user.model';
 
-/** Demo build: list sharing by email is disabled (no backend). */
-const DEMO_SHARING_BY_EMAIL_DISABLED = true;
+/** Demo build: list sharing by email is handled locally via localStorage users. */
+const DEMO_SHARING_BY_EMAIL_DISABLED = false;
 
 const SHARE_EMAIL_FORMAT =
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;

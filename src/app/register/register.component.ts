@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
+import { navigateAfterAuth } from '../auth/auth-redirect.util';
 
 @Component({
   selector: 'app-register',
@@ -22,11 +23,11 @@ export class RegisterComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
-    // If already logged in, redirect to home
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/']);
+      navigateAfterAuth(this.router, this.route);
     }
   }
 
@@ -59,7 +60,7 @@ export class RegisterComponent {
     this.isLoading.set(false);
 
     if (result.success) {
-      this.router.navigate(['/']);
+      navigateAfterAuth(this.router, this.route);
     } else {
       this.error.set(result.error || 'auth.error_register_generic');
     }

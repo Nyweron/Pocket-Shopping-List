@@ -1,10 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { TranslateService } from '../services/translate.service';
 import { TranslatePipe } from '../pipes/translate.pipe';
+import { navigateAfterAuth } from '../auth/auth-redirect.util';
 
 @Component({
   selector: 'app-login',
@@ -22,11 +23,11 @@ export class LoginComponent {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     public translate: TranslateService
   ) {
-    // If already logged in, redirect to home
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/']);
+      navigateAfterAuth(this.router, this.route);
     }
   }
 
@@ -48,7 +49,7 @@ export class LoginComponent {
     this.isLoading.set(false);
 
     if (result.success) {
-      this.router.navigate(['/']);
+      navigateAfterAuth(this.router, this.route);
     } else {
       this.error.set(result.error || 'auth.error_login_generic');
     }

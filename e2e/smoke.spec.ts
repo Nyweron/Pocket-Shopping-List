@@ -24,6 +24,18 @@ test.describe('Smoke flows', () => {
     await page.context().clearCookies();
     await page.goto('/');
     await page.evaluate(() => localStorage.clear());
+    // Second navigation: avoids relying on init script (which would clear storage on reload()).
+    await page.goto('/');
+  });
+
+  test('unauthenticated user is redirected from home to login', async ({ page }) => {
+    await expect(page).toHaveURL(/\/login/);
+  });
+
+  test('unauthenticated user cannot open list URL directly', async ({ page }) => {
+    await page.goto('/list/smoke-unauth-guard');
+    await expect(page).toHaveURL(/\/login/);
+    await expect(page).toHaveURL(/returnUrl=%2Flist%2Fsmoke-unauth-guard/);
   });
 
   test('demo login -> create list -> add product -> mark purchased', async ({ page }) => {
@@ -141,29 +153,14 @@ test.describe('Smoke flows', () => {
     await page.getByTestId('add-products-search-input').fill('Pantofle test');
     await page.getByTestId('add-custom-suggestion').click();
     await page.getByTestId('add-page-back').click();
+    await expect(page.getByText('Pantofle test')).toBeVisible();
 
-    const rowCandidates = page
-      .locator('[data-testid^="product-item-"]')
-      .filter({ hasText: 'Pantofle test' });
-
-    const candidatesCount = await rowCandidates.count();
-    let productId: string | null = null;
-
-    // Pick the specific product row that is NOT marked as purchased (before toggling).
-    for (let i = 0; i < candidatesCount; i++) {
-      const row = rowCandidates.nth(i);
-      const rowTestId = await row.getAttribute('data-testid');
-      if (!rowTestId) continue;
-      const id = rowTestId.replace('product-item-', '');
-
-      const isPurchased = await row.evaluate((el: Element) => el.classList.contains('purchased'));
-      if (!isPurchased) {
-        productId = id;
-        break;
-      }
-    }
-
-    expect(productId).not.toBeNull();
+    const productRow = page.locator('.product-item-compact').filter({ hasText: 'Pantofle test' }).first();
+    await expect(productRow).toBeVisible();
+    const checkboxInRow = productRow.locator('[data-testid^="product-checkbox-"]');
+    const checkboxTestId = await checkboxInRow.getAttribute('data-testid');
+    expect(checkboxTestId).toBeTruthy();
+    const productId = checkboxTestId!.replace('product-checkbox-', '');
 
     const checkbox = page.locator(`[data-testid="product-checkbox-${productId}"]`).first();
     const rowPurchased = page.locator(`[data-testid="product-item-${productId}"].purchased`).first();

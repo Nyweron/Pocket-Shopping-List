@@ -160,7 +160,7 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'share.error_already_shared': 'Lista jest już udostępniona temu użytkownikowi',
     'share.error_user_not_found': 'Użytkownik o podanym emailu nie istnieje',
     'share.error_demo_unavailable':
-      'W wersji demonstracyjnej udostępnianie listy na adres e-mail jest wyłączone. Pełna wersja aplikacji pozwoli zaprosić innego użytkownika.',
+      'Udostępnianie listy jest chwilowo niedostępne.',
     'confirm.delete_list': 'Czy na pewno chcesz usunąć tę listę?',
     'confirm.delete_product': 'Czy na pewno chcesz usunąć ten produkt?',
     'confirm.uncheck_all': 'Czy na pewno chcesz odznaczyć wszystkie produkty?',
@@ -346,7 +346,7 @@ const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'share.error_already_shared': 'This list is already shared with that user',
     'share.error_user_not_found': 'No user exists with that email',
     'share.error_demo_unavailable':
-      'Sharing a list by email is not available in the demo. The full app will let you invite another user.',
+      'List sharing is temporarily unavailable.',
     'confirm.delete_list': 'Are you sure you want to delete this list?',
     'confirm.delete_product': 'Are you sure you want to delete this product?',
     'confirm.uncheck_all': 'Are you sure you want to uncheck all products?',

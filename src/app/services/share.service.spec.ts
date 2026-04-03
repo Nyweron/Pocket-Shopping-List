@@ -86,13 +86,12 @@ describe('ShareService', () => {
     });
   });
 
-  it('returns demo-unavailable when email is valid (sharing disabled in demo)', () => {
+  it('shares list with existing local user by email', () => {
     const list = shoppingListService.getActiveLists()[0];
     const result = service.shareList(list.id, 'other@test.pl');
-    expect(result.success).toBeFalse();
-    expect(result.error).toBe('share.error_demo_unavailable');
+    expect(result.success).toBeTrue();
     const after = shoppingListService.getListById(list.id);
-    expect(after!.sharedWith).toEqual([]);
+    expect(after!.sharedWith).toEqual(['other@test.pl']);
   });
 
   it('returns invalid email before demo message', () => {
@@ -107,5 +106,15 @@ describe('ShareService', () => {
     const result = service.shareList(list.id, '   ');
     expect(result.success).toBeFalse();
     expect(result.error).toBe('list.share_email_required');
+  });
+
+  it('returns already-shared when sharing same user twice', () => {
+    const list = shoppingListService.getActiveLists()[0];
+    const first = service.shareList(list.id, 'other@test.pl');
+    const second = service.shareList(list.id, 'other@test.pl');
+
+    expect(first.success).toBeTrue();
+    expect(second.success).toBeFalse();
+    expect(second.error).toBe('share.error_already_shared');
   });
 });
